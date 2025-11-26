@@ -89,7 +89,7 @@ now(function()
         local branch = (head and head ~= "") and (" " .. head) or ""
         local branch_hl = "MiniStatuslineDevinfo"
 
-        local filename = s.section_filename({ trunc_width = 140 })
+        local filename = vim.bo.buftype ~= "terminal" and "%f%m%r" or "%t"
         local filename_hl = "MiniStatuslineFilename"
 
         -- right side
