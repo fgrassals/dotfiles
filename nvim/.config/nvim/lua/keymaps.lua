@@ -52,6 +52,11 @@ map({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, "Code actions")
 map("n", "<leader>d", vim.diagnostic.open_float, "Line diagnostics")
 map("n", "<leader>D", function() vim.diagnostic.open_float({ scope = "buffer" }) end, "Line diagnostics")
 
+-- mini deps
+map("n", "<leader>Du", "<cmd>DepsUpdate<CR>", "Plugin updates")
+map("n", "<leader>Ds", "<cmd>DepsSnapSave<CR>", "Save deps snapshot")
+map("n", "<leader>Dl", "<cmd>DepsSnapLoad<CR>", "Load deps snapshot")
+
 -- misc
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", "Clear search highlight")
 
