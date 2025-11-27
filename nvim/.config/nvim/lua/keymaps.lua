@@ -36,12 +36,12 @@ map({ "n", "x" }, "<leader>fw", function() Snacks.grep_word() end, "Find word un
 -- git
 map("n", "<leader>gf", function() Snacks.picker.git_log_file() end, "Git log current file")
 map("n", "<leader>gg", function() Snacks.lazygit() end, "Lazygit")
-map("n", "<leader>gb", function() gitsigns.blame_line({ full = true }) end, "Blane line")
-map("n", "<leader>gd", function() gitsigns.diffthis() end, "Diff this hunk")
-map("n", "<leader>gD", function() gitsigns.diffthis("~") end, "Diff this buffer")
+map("n", "<leader>gb", function() require("gitsigns").blame_line({ full = true }) end, "Blane line")
+map("n", "<leader>gd", function() require("gitsigns").diffthis() end, "Diff this hunk")
+map("n", "<leader>gD", function() require("gitsigns").diffthis("~") end, "Diff this buffer")
 map("n", "<leader>gl", function() Snacks.picker.git_log_line() end, "Git log current line")
 map("n", "<leader>gL", function() Snacks.picker.git_log() end, "Git log workspace")
-map("n", "<leader>gp", function() gitsigns.preview_hunk() end, "Preview hunk")
+map("n", "<leader>gp", function() require("gitsigns").preview_hunk() end, "Preview hunk")
 
 -- lsp
 map("n", "gd", vim.lsp.buf.definition, "Go to definition")
@@ -72,8 +72,8 @@ map("n", "<leader>e", "<cmd>Neotree toggle float reveal<CR>", "Toggle neo-tree f
 map("n", "<leader><tab>", "<cmd>Neotree toggle float<CR>", "Toggle neo-tree float")
 map("n", "<leader>E", "<cmd>Neotree toggle left reveal<CR>", "Toggle neo-tree sidebar")
 map("n", "<leader>th", function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end, "Toggle inlay hints")
-map("n", "<leader>tb", function() gitsigns.toggle_current_line_blame() end, "Toggle blame line")
-map("n", "<leader>tw", function() gitsigns.toggle_word_diff() end, "Toggle word diff")
+map("n", "<leader>tb", function() require("gitsigns").toggle_current_line_blame() end, "Toggle blame line")
+map("n", "<leader>tw", function() require("gitsigns").toggle_word_diff() end, "Toggle word diff")
 
 -- window splits
 map("n", "<leader>sv", "<C-w>v", "Split window vertically")
