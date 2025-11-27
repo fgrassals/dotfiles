@@ -305,6 +305,7 @@ later(function()
       "lua_ls",
       "ruff",
       "stylua",
+      "ts_ls",
       "yamlls",
     },
   })
