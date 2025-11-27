@@ -77,3 +77,13 @@ map("n", "<leader>sv", "<C-w>v", "Split window vertically")
 map("n", "<leader>sh", "<C-w>s", "Split window horizontally")
 map("n", "<leader>se", "<C-w>=", "Make split windows equal width & height")
 map("n", "<leader>cs", "<lua> close<CR>", "Close current split window")
+
+-- stay in visual mode after indenting
+map("v", "<", "<gv")
+map("v", ">", ">gv")
+
+-- keep last yanked when pasting
+map("v", "p", '"_dP')
+
+-- delete single char without yanking
+map("n", "x", '"_x')
