@@ -367,56 +367,34 @@ now(function()
 end)
 -- }}}
 
--- {{{ nvim-tree
+-- {{{ neo-tree
 now_if_args(function()
-  add("nvim-tree/nvim-tree.lua")
-
-  require("nvim-tree").setup({
-    renderer = {
-      hidden_display = "all", -- or simple
-      symlink_destination = true,
-      decorators = { "Git", "Open", "Hidden", "Modified", "Bookmark", "Diagnostics", "Copied", "Cut" },
-      -- name/icon/all/none
-      highlight_modified = "all",
-      highlight_hidden = "all",
-      indent_markers = {
-        enable = true,
-      },
-      icons = {
-        -- before/after/signcolumn/right_align
-        git_placement = "after",
-        modified_placement = "right_align",
-        diagnostics_placement = "right_align",
-        bookmarks_placement = "before",
-      },
-    },
-    modified = {
-      enable = true,
-      show_on_dirs = false,
-      show_on_open_dirs = true,
-    },
-    filters = {
-      git_ignored = false,
-      dotfiles = true,
-    },
-    actions = {
-      open_file = {
-        quit_on_open = true,
-      },
+  add({
+    source = "nvim-neo-tree/neo-tree.nvim",
+    checkout = "v3.x",
+    depends = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
     },
   })
 
-  vim.api.nvim_create_autocmd("BufEnter", {
-    desc = "Close nvim-tree when switching buffers",
-    group = _G.fgconf.augroup,
-    callback = function()
-      local api = require("nvim-tree.api")
-      local view = require("nvim-tree.view")
-
-      if view.is_visible() and vim.bo.filetype ~= "NvimTree" then
-        api.tree.close()
-      end
-    end,
+  require("neo-tree").setup({
+    sources = { "filesystem" },
+    close_if_last_window = true,
+    popup_border_style = "", -- use vim.o.winborder
+    use_popups_for_input = false,
+    event_handlers = {
+      {
+        event = "file_opened",
+        handler = function(file_path) require("neo-tree.command").execute({ action = "close" }) end,
+      },
+    },
+    window = {
+      position = "float",
+    },
+    filesystem = {
+      bind_to_cwd = false,
+    },
   })
 end)
 -- }}}

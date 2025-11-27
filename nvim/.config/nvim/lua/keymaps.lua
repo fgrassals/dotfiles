@@ -56,6 +56,7 @@ map("n", "<leader>D", function() vim.diagnostic.open_float({ scope = "buffer" })
 map("n", "<leader>Du", "<cmd>DepsUpdate<CR>", "Plugin updates")
 map("n", "<leader>Ds", "<cmd>DepsSnapSave<CR>", "Save deps snapshot")
 map("n", "<leader>Dl", "<cmd>DepsSnapLoad<CR>", "Load deps snapshot")
+map("n", "<leader>Dc", "<cmd>DepsClean<CR>", "Clean deps")
 
 -- misc
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", "Clear search highlight")
@@ -67,7 +68,9 @@ map("n", "<leader>sr", function() MiniSessions.select("read") end, "Read")
 map("n", "<leader>sw", function() MiniSessions.write() end, "Write current")
 
 -- toggles
-map("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", "Toggle nvim-tree")
+map("n", "<leader>e", "<cmd>Neotree toggle float reveal<CR>", "Toggle neo-tree float at current file")
+map("n", "<leader><tab>", "<cmd>Neotree toggle float<CR>", "Toggle neo-tree float")
+map("n", "<leader>E", "<cmd>Neotree toggle left reveal<CR>", "Toggle neo-tree sidebar")
 map("n", "<leader>th", function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end, "Toggle inlay hints")
 map("n", "<leader>tb", function() gitsigns.toggle_current_line_blame() end, "Toggle blame line")
 map("n", "<leader>tw", function() gitsigns.toggle_word_diff() end, "Toggle word diff")
