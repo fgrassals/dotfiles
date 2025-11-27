@@ -153,7 +153,7 @@ now(function()
 end)
 
 later(function() require("mini.extra").setup() end)
--- later(function() require("mini.ai").setup() end)
+later(function() require("mini.ai").setup() end)
 -- later(function() require("mini.surround").setup() end)
 later(function() require("mini.bracketed").setup() end)
 
@@ -258,6 +258,7 @@ now_if_args(function()
     "typescript",
     "vim",
     "vimdoc",
+    "yaml",
   }
 
   -- finds parsers not installed from the languages list and installs them
@@ -304,6 +305,7 @@ later(function()
       "lua_ls",
       "ruff",
       "stylua",
+      "yamlls",
     },
   })
 
