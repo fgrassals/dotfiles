@@ -54,10 +54,10 @@ map("n", "<leader>D", function() vim.diagnostic.open_float({ scope = "buffer" })
 map("n", "<leader>rn", vim.lsp.buf.rename, "Rename")
 
 -- mini deps
-map("n", "<leader>Du", "<cmd>DepsUpdate<CR>", "Plugin updates")
-map("n", "<leader>Ds", "<cmd>DepsSnapSave<CR>", "Save deps snapshot")
-map("n", "<leader>Dl", "<cmd>DepsSnapLoad<CR>", "Load deps snapshot")
-map("n", "<leader>Dc", "<cmd>DepsClean<CR>", "Clean deps")
+map("n", "<leader>uD", "<cmd>DepsUpdate<CR>", "Plugin updates")
+map("n", "<leader>uS", "<cmd>DepsSnapSave<CR>", "Save deps snapshot")
+map("n", "<leader>uL", "<cmd>DepsSnapLoad<CR>", "Load deps snapshot")
+map("n", "<leader>uC", "<cmd>DepsClean<CR>", "Clean deps")
 
 -- misc
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", "Clear search highlight")
