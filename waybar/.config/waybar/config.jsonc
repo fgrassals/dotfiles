@@ -68,7 +68,7 @@
     //     }
     // },
     "tray": {
-        "icon-size": 12,
+        "icon-size": 13,
         "spacing": 17,
         // "icons": {
         //   "blueman": "bluetooth",
@@ -76,7 +76,7 @@
         // }
     },
     "clock": {
-        "format": "{:L%A %H:%M}",
+        "format": "{:L%a %b %d %H:%M}",
         "format-alt": "{:L%d %B W%V %Y}",
         "tooltip": false
     },
