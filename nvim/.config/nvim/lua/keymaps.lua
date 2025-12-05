@@ -69,9 +69,7 @@ map("n", "<leader>sr", function() MiniSessions.select("read") end, "Read")
 map("n", "<leader>sw", function() MiniSessions.write() end, "Write current")
 
 -- toggles
-map("n", "<leader>e", "<cmd>Neotree toggle float reveal<CR>", "Toggle neo-tree float at current file")
-map("n", "<leader><tab>", "<cmd>Neotree toggle float<CR>", "Toggle neo-tree float")
-map("n", "<leader>E", "<cmd>Neotree toggle left reveal<CR>", "Toggle neo-tree sidebar")
+map("n", "<leader>e", "<cmd>Neotree toggle<CR>", "Toggle neo-tree at current file")
 map("n", "<leader>th", function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end, "Toggle inlay hints")
 map("n", "<leader>tb", function() require("gitsigns").toggle_current_line_blame() end, "Toggle blame line")
 map("n", "<leader>tw", function() require("gitsigns").toggle_word_diff() end, "Toggle word diff")

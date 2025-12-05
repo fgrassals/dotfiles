@@ -393,7 +393,7 @@ now_if_args(function()
       },
     },
     window = {
-      position = "float",
+      width = 50,
     },
     filesystem = {
       bind_to_cwd = false,
