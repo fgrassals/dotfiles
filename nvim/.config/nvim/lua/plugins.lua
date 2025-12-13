@@ -436,3 +436,7 @@ later(function()
   })
 end)
 -- }}}
+
+-- {{{ vim-sleuth
+later(function() add("tpope/vim-sleuth") end)
+-- }}}
