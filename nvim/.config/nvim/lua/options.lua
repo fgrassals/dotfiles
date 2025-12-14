@@ -3,9 +3,6 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
 vim.o.complete = ".,w,b"
 vim.o.completeopt = "menuone,noselect,fuzzy,nosort"
 vim.o.expandtab = true

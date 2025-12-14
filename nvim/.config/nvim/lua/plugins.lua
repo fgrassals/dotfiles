@@ -154,7 +154,7 @@ end)
 
 later(function() require("mini.extra").setup() end)
 later(function() require("mini.ai").setup() end)
--- later(function() require("mini.surround").setup() end)
+later(function() require("mini.surround").setup() end)
 later(function() require("mini.bracketed").setup() end)
 
 later(function()
@@ -358,45 +358,25 @@ now(function()
   require("snacks").setup({
     bigfile = { enabled = true },
     bufdelete = { enabled = true },
+    explorer = {
+      replace_netrw = true,
+      trash = true,
+    },
     indent = {
       animate = { enabled = false },
       enable = true,
     },
+    input = { enabled = true },
     notifier = { enable = true },
     quickfile = { enable = true },
-    input = { enabled = true },
-    picker = { enabled = true, ui_select = true },
-  })
-end)
--- }}}
-
--- {{{ neo-tree
-now_if_args(function()
-  add({
-    source = "nvim-neo-tree/neo-tree.nvim",
-    checkout = "v3.x",
-    depends = {
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-    },
-  })
-
-  require("neo-tree").setup({
-    sources = { "filesystem" },
-    close_if_last_window = true,
-    popup_border_style = "", -- use vim.o.winborder
-    use_popups_for_input = false,
-    event_handlers = {
-      {
-        event = "file_opened",
-        handler = function(file_path) require("neo-tree.command").execute({ action = "close" }) end,
+    picker = {
+      enabled = true,
+      ui_select = true,
+      sources = {
+        explorer = {
+          auto_close = true,
+        },
       },
-    },
-    window = {
-      width = 50,
-    },
-    filesystem = {
-      bind_to_cwd = false,
     },
   })
 end)
