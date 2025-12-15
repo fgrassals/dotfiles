@@ -279,7 +279,7 @@ now_if_args(function()
 
   local enable_ts = function(args)
     vim.treesitter.start(args.buf) --  highligting
-    vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()" -- ts indent (experimental)
+    vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()" -- ts indent
   end
 
   vim.api.nvim_create_autocmd("FileType", {
