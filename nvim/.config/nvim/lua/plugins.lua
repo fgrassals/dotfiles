@@ -223,6 +223,7 @@ now_if_args(function()
   add({
     source = "nvim-treesitter/nvim-treesitter",
     hooks = { post_checkout = function() vim.cmd("TSUpdate") end },
+    checkout = "main",
   })
   add({ source = "nvim-treesitter/nvim-treesitter-textobjects", checkout = "main" })
 
@@ -261,7 +262,7 @@ now_if_args(function()
   }
 
   -- finds parsers not installed from the languages list and installs them
-  local installed = require("nvim-treesitter.config").get_installed()
+  local installed = require("nvim-treesitter").get_installed()
   local to_install = vim.tbl_filter(function(lang) return not vim.tbl_contains(installed, lang) end, languages)
 
   if #to_install > 0 then
