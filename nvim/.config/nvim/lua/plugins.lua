@@ -301,6 +301,7 @@ later(function()
   require("mason").setup()
   require("mason-lspconfig").setup({
     ensure_installed = {
+      "djlsp",
       "pyrefly",
       "lua_ls",
       "ruff",
