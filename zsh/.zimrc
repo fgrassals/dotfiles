@@ -1,0 +1,42 @@
+# ~/.zimrc
+# zimfw module list — defines what gets installed and initialized.
+# After editing this file, run: zimfw install
+# To update all modules:       zimfw update
+
+# Use degit (tarball) instead of git for faster, lighter installs
+zstyle ':zim:zmodule' use 'degit'
+
+# ---[ Core ]------------------------------------------------------------------
+
+# Sensible zsh defaults (history size, setopt flags, etc.)
+zmodule environment
+
+# Better key bindings — Home/End/Delete/arrow keys work as expected
+zmodule input
+
+# Sets the terminal window/tab title to the current directory
+zmodule termtitle
+
+# Useful aliases and functions: ll, la, mkcd, etc.
+zmodule utility
+
+# ---[ Completions ]-----------------------------------------------------------
+
+# Additional completion definitions from the community
+zmodule zsh-users/zsh-completions --fpath src
+
+# Configures zsh's completion system — must come after fpath additions
+zmodule completion
+
+# ---[ Enhancements ]----------------------------------------------------------
+
+# Fish-like inline autosuggestions from history (→ to accept)
+zmodule zsh-users/zsh-autosuggestions
+
+# Syntax highlighting as you type — valid commands turn green, errors red
+zmodule zsh-users/zsh-syntax-highlighting
+
+# ---[ Prompt ]----------------------------------------------------------------
+
+# asciiship — zimfw's default prompt
+zmodule asciiship

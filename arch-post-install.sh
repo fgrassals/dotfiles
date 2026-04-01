@@ -241,7 +241,7 @@ success "Done"
 # 18. SCREENSHOTS + RECORDING
 # =============================================================================
 info "Installing screenshot and recording tools..."
-sudo pacman -S --noconfirm --needed grim slurp satty wf-recorder
+sudo pacman -S --noconfirm --needed grim slurp satty wf-recorder zoxide
 success "Done"
 
 # =============================================================================
@@ -319,7 +319,10 @@ sudo pacman -S --noconfirm --needed \
     btop \
     curl \
     wget \
-    tmux
+    tmux \
+    fzf \
+    fd \
+    ripgrep
 xdg-user-dirs-update
 success "Done"
 
