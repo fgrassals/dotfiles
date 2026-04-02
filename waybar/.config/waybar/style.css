@@ -88,6 +88,10 @@ window#waybar {
     color: #585b70;
 }
 
+#bluetooth {
+    margin-right: -4px;
+}
+
 /* ── System tray ─────────────────────────────────────────────── */
 #tray {
     padding: 0 8px;
@@ -136,6 +140,7 @@ window#waybar {
     color: #585b70;
     padding: 0 8px;
     font-size: 13px;
+    margin-left: -3px;
 }
 
 #custom-power:hover {
