@@ -41,10 +41,12 @@ export PATH="$XDG_DATA_HOME/bob/nvim-bin:$PATH"
 eval "$(mise activate zsh)"
 
 # =============================================================================
-# ZOXIDE — replaces cd with smart frecency-based navigation
-# zi  → interactive selection with fzf
+# EZA — modern ls replacement
 # =============================================================================
-eval "$(zoxide init zsh --cmd cd)"
+alias ls='eza --icons --group-directories-first'
+alias ll='eza -lh --icons --group-directories-first --git'
+alias la='eza -lah --icons --group-directories-first --git'
+alias lt='eza --tree --icons --level=2'
 
 # =============================================================================
 # FZF — fuzzy finder key bindings

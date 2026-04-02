@@ -322,7 +322,8 @@ sudo pacman -S --noconfirm --needed \
     tmux \
     fzf \
     fd \
-    ripgrep
+    ripgrep \
+    eza
 xdg-user-dirs-update
 success "Done"
 
