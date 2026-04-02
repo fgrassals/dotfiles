@@ -159,13 +159,13 @@
         "format-full": "󰁹",
         "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
         "tooltip-format": "{capacity}% — {timeTo}\n{power}W",
-        "on-click": "~/.local/bin/waybar-battery-threshold"
+        "on-click": "~/.local/bin/waybar-battery-threshold.sh"
     },
 
     "custom/power": {
         "format": "󰐥",
         "tooltip": false,
-        "on-click": "~/.local/bin/waybar-power-menu"
+        "on-click": "~/.local/bin/waybar-power-menu.sh"
     }
 }
 
