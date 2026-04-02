@@ -17,9 +17,6 @@ zmodule input
 # Sets the terminal window/tab title to the current directory
 zmodule termtitle
 
-# Useful aliases and functions: ll, la, mkcd, etc.
-zmodule utility
-
 # ---[ Completions ]-----------------------------------------------------------
 
 # Additional completion definitions from the community
