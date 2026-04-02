@@ -266,7 +266,7 @@ sudo pacman -S --noconfirm --needed \
     noto-fonts \
     noto-fonts-cjk \
     noto-fonts-emoji \
-    ttf-cascadia-code-nerd
+    ttf-cascadia-mono-nerd
 fc-cache -fv &>/dev/null
 success "Done"
 
