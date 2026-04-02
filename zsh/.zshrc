@@ -34,11 +34,24 @@ eval "$(mise activate zsh)"
 
 # =============================================================================
 # EZA — modern ls replacement
+# Icons disabled in TTY (no nerd font support in framebuffer)
 # =============================================================================
-alias ls='eza --icons --group-directories-first'
-alias ll='eza -lh --icons --group-directories-first --git'
-alias la='eza -lah --icons --group-directories-first --git'
-alias lt='eza --tree --icons --level=2'
+if [[ "$TERM" == "linux" ]]; then
+    alias ls='eza --group-directories-first'
+    alias ll='eza -lh --group-directories-first --git'
+    alias la='eza -lah --group-directories-first --git'
+    alias lt='eza --tree --level=2'
+else
+    alias ls='eza --icons --group-directories-first'
+    alias ll='eza -lh --icons --group-directories-first --git'
+    alias la='eza -lah --icons --group-directories-first --git'
+    alias lt='eza --tree --icons --level=2'
+fi
+
+# =============================================================================
+# GREP — readable highlight color outside TTY
+# =============================================================================
+[[ "$TERM" != "linux" ]] && export GREP_COLORS='mt=30;48;5;17'
 
 # =============================================================================
 # FZF — fuzzy finder key bindings
