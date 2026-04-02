@@ -429,8 +429,9 @@ success "Done"
 # =============================================================================
 info "Installing zsh..."
 sudo pacman -S --noconfirm --needed zsh zsh-completions
-if [[ "$SHELL" != "$(which zsh)" ]]; then
-    chsh -s "$(which zsh)"
+ZSH_PATH="$(grep '^/.*zsh$' /etc/shells | head -1)"
+if [[ -n "$ZSH_PATH" && "$SHELL" != "$ZSH_PATH" ]]; then
+    sudo chsh -s "$ZSH_PATH" "$USER"
 fi
 success "Done"
 
