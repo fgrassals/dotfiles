@@ -271,10 +271,12 @@ fc-cache -fv &>/dev/null
 success "Done"
 
 # =============================================================================
-# 22. KEYRING
+# 22. KEYRING — gnome-keyring
 # =============================================================================
-info "Installing keyring..."
+info "Installing gnome-keyring..."
 sudo pacman -S --noconfirm --needed gnome-keyring libsecret seahorse
+
+systemctl --user enable gnome-keyring-daemon.socket
 success "Done"
 
 # =============================================================================
@@ -427,11 +429,34 @@ success "Done"
 # =============================================================================
 info "Installing zsh..."
 sudo pacman -S --noconfirm --needed zsh zsh-completions
-chsh -s "$(which zsh)"
+if [[ "$SHELL" != "$(which zsh)" ]]; then
+    chsh -s "$(which zsh)"
+fi
 success "Done"
 
 # =============================================================================
-# 34. DOTFILES — Stow + permissions
+# 34. DISPLAY MANAGER — ly
+# =============================================================================
+info "Installing ly..."
+sudo pacman -S --noconfirm --needed ly
+
+sudo tee /etc/pam.d/ly > /dev/null << 'EOF'
+#%PAM-1.0
+auth       include      system-login
+auth       optional     pam_gnome_keyring.so
+account    include      system-login
+password   include      system-login
+session    include      system-login
+session    optional     pam_gnome_keyring.so auto_start
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable ly@tty2.service
+sudo systemctl disable getty@tty2.service
+success "Done"
+
+# =============================================================================
+# 35. DOTFILES — Stow + permissions
 # Assumes dotfiles repo is at ~/dotfiles.
 # Stows every package (subdirectory) found there.
 # Makes all scripts in ~/.local/bin executable.

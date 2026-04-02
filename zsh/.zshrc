@@ -2,14 +2,6 @@
 # Sourced for interactive shells only.
 
 # =============================================================================
-# HYPRLAND AUTOSTART
-# Avoids loading zimfw needlessly.
-# =============================================================================
-if [[ -z $WAYLAND_DISPLAY && -z $DISPLAY && $(tty) = /dev/tty1 ]]; then
-    exec start-hyprland
-fi
-
-# =============================================================================
 # ZIMFW bootstrap
 # =============================================================================
 ZIM_HOME="$XDG_DATA_HOME/zim"
