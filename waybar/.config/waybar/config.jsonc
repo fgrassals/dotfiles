@@ -46,8 +46,10 @@
     "hyprland/window": {
         "max-length": 50,
         "separate-outputs": true,
-        // Separator after title — only visible when this module has content
+        // Separator after title — only visible when a window is focused
+        // When no window is focused the module outputs nothing, hiding the |
         "format": "{title} | ",
+        "format-default": "",
         "rewrite": {
             // Strip common suffixes for cleaner titles
             "(.+) — Mozilla Firefox": "$1",
