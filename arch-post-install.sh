@@ -241,7 +241,7 @@ success "Done"
 # 18. SCREENSHOTS + RECORDING
 # =============================================================================
 info "Installing screenshot and recording tools..."
-sudo pacman -S --noconfirm --needed grim slurp satty wf-recorder zoxide
+sudo pacman -S --noconfirm --needed grim slurp satty wf-recorder zoxide jq
 success "Done"
 
 # =============================================================================
@@ -418,6 +418,33 @@ info "Installing zsh..."
 sudo pacman -S --noconfirm --needed zsh zsh-completions
 chsh -s "$(which zsh)"
 success "Done"
+
+# =============================================================================
+# 33. DOTFILES — Stow + permissions
+# Assumes dotfiles repo is at ~/dotfiles.
+# Stows every package (subdirectory) found there.
+# Makes all scripts in ~/.local/bin executable.
+# =============================================================================
+info "Setting up dotfiles via Stow..."
+
+DOTFILES_DIR="$HOME/dotfiles"
+
+if [[ ! -d "$DOTFILES_DIR" ]]; then
+    warn "~/dotfiles not found — skipping Stow. Run manually when ready:"
+    note "cd ~/dotfiles && stow *"
+else
+    cd "$DOTFILES_DIR"
+    for pkg in */; do
+        pkg="${pkg%/}"
+        stow "$pkg" && success "Stowed: $pkg" || warn "Stow failed for: $pkg (conflict?)"
+    done
+
+    # Make all scripts in ~/.local/bin executable
+    if [[ -d "$HOME/.local/bin" ]]; then
+        chmod +x "$HOME"/.local/bin/*
+        success "chmod +x applied to ~/.local/bin/*"
+    fi
+fi
 
 # =============================================================================
 # DONE
