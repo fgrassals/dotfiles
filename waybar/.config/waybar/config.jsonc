@@ -15,7 +15,9 @@
     ],
 
     "modules-right": [
-        "group/hidden",
+        "idle_inhibitor",
+        "tray",
+        "bluetooth",
         "network",
         "pulseaudio",
         "battery",
@@ -27,14 +29,19 @@
     // =========================================================================
 
     "hyprland/workspaces": {
-        "active-only": false,
-        "all-outputs": false,
         "disable-scroll": true,
         "on-click": "activate",
         "show-special": false,
         "sort-by": "number",
-        // Numbers only, no icons — active styled bold via CSS
-        "format": "{id}"
+        "format": "{id}",
+        // Always show workspaces 1-5 regardless of whether they are open
+        "persistent-workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+        }
     },
 
     // =========================================================================
@@ -46,50 +53,28 @@
     "hyprland/window": {
         "max-length": 50,
         "separate-outputs": true,
-        // Separator after title — only visible when a window is focused
-        // When no window is focused the module outputs nothing, hiding the |
-        "format": "{title} | ",
-        "format-default": "",
+        // format is empty by default — rewrite adds "| " only when title has content
+        // This means: no window open → module outputs nothing → clock sits centered alone
+        "format": "{title}",
         "rewrite": {
-            // Strip common suffixes for cleaner titles
-            "(.+) — Mozilla Firefox": "$1",
-            "(.+) - Brave": "$1",
-            "(.+) - Google Chrome": "$1"
+            "(.+) — Mozilla Firefox": "$1 |",
+            "(.+) - Brave": "$1 |",
+            "(.+) - Google Chrome": "$1 |",
+            // Catch-all: any other title gets the separator appended
+            "(.+)": "$1 |"
         }
     },
 
     "clock": {
-        "format": "{:%H:%M}",
+        "format": " {:%H:%M}",
         // Click to toggle between time and full date
-        "format-alt": "{:%A, %d %B %Y}",
+        "format-alt": " {:%A, %d %B %Y}",
         "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"
     },
 
     // =========================================================================
-    // RIGHT — drawer group (hidden) + always-visible modules
+    // RIGHT — all modules always visible
     // =========================================================================
-
-    // Drawer: chevron reveals idle_inhibitor, bluetooth, tray on hover
-    "group/hidden": {
-        "orientation": "horizontal",
-        "drawer": {
-            "transition-duration": 200,
-            "children-class": "hidden-child",
-            "transition-left-to-right": false
-        },
-        "modules": [
-            "custom/chevron",
-            "tray",
-            "bluetooth",
-            "idle_inhibitor"
-        ]
-    },
-
-    "custom/chevron": {
-        // Points left — hover to expand the hidden group rightward
-        "format": "<",
-        "tooltip": false
-    },
 
     "idle_inhibitor": {
         "format": "{icon}",
@@ -101,6 +86,13 @@
         "tooltip-format-deactivated": "Idle inhibitor OFF"
     },
 
+    "tray": {
+        "icon-size": 14,
+        "spacing": 8
+    },
+
+    // Always visible: network, volume, battery, power
+
     "bluetooth": {
         "format": "󰂯",
         "format-connected": "󰂱",
@@ -109,14 +101,7 @@
         "tooltip-format": "Bluetooth: {status}",
         "tooltip-format-connected": "{device_alias}",
         "tooltip-format-connected-battery": "{device_alias} — {device_battery_percentage}%",
-        // Opens bluetui in a small floating foot window
-        // Window rule in hyprland.conf matches title "bluetui"
         "on-click": "foot --title bluetui bluetui"
-    },
-
-    "tray": {
-        "icon-size": 14,
-        "spacing": 5
     },
 
     // Always visible: network, volume, battery, power
@@ -154,10 +139,12 @@
             "warning": 30,
             "critical": 15
         },
-        // Icon only on battery — plug + % when charging or plugged
+        // On battery: icon only
+        // Charging: plug icon + percentage (so you can track progress)
+        // Plugged but full/not charging: plug icon only
         "format": "{icon}",
         "format-charging": "󰂄 {capacity}%",
-        "format-plugged": "󰚥 {capacity}%",
+        "format-plugged": "󰚥",
         "format-full": "󰁹",
         "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
         "tooltip-format": "{capacity}% — {timeTo}\n{power}W",

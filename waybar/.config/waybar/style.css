@@ -20,21 +20,19 @@ window#waybar {
 .modules-center { padding: 0; }
 .modules-right  { padding: 0 4px; }
 
-/* ── Generic module padding ─────────────────────────────────── */
-#workspaces,
-#window,
-#clock,
+/* ── Generic module padding — right side modules only ────────── */
+#idle_inhibitor,
+#bluetooth,
 #network,
 #pulseaudio,
-#battery,
-#custom-power {
+#battery {
     padding: 0 8px;
     color: #cdd6f4;
 }
 
 /* ── Workspaces ─────────────────────────────────────────────── */
 #workspaces button {
-    padding: 0 7px;
+    padding: 0 3px;
     color: #585b70;
     background: transparent;
     font-weight: normal;
@@ -56,41 +54,22 @@ window#waybar {
     font-weight: bold;
 }
 
-/* ── Window title ───────────────────────────────────────────── */
+/* ── Window title + clock ───────────────────────────────────── */
+/* Zero padding on both — spacing around | comes only from the  */
+/* space characters in the rewrite string, so both sides equal  */
 #window {
-    color: #a6adc8;
+    color: #cdd6f4;
     font-weight: normal;
+    padding: 0;
 }
 
-/* ── Clock ──────────────────────────────────────────────────── */
 #clock {
     color: #cdd6f4;
     font-weight: normal;
-}
-
-/* ── Drawer group ───────────────────────────────────────────── */
-/* Chevron: larger, clearly visible, points left */
-#custom-chevron {
-    color: #a6adc8;
-    font-size: 16px;
-    padding: 0 6px;
-    min-width: 24px;
-}
-
-#custom-chevron:hover {
-    color: #cdd6f4;
-}
-
-/* Hidden children padding */
-.hidden-child {
-    padding: 0 6px;
+    padding: 0;
 }
 
 /* ── Idle inhibitor ─────────────────────────────────────────── */
-#idle_inhibitor {
-    padding: 0 6px;
-}
-
 #idle_inhibitor.activated {
     color: #f9e2af;
 }
@@ -100,10 +79,6 @@ window#waybar {
 }
 
 /* ── Bluetooth ───────────────────────────────────────────────── */
-#bluetooth {
-    padding: 0 6px;
-}
-
 #bluetooth.connected {
     color: #89b4fa;
 }
@@ -115,7 +90,7 @@ window#waybar {
 
 /* ── System tray ─────────────────────────────────────────────── */
 #tray {
-    padding: 0 4px;
+    padding: 0 8px;
 }
 
 #tray > .passive {
@@ -159,7 +134,7 @@ window#waybar {
 /* ── Power button ────────────────────────────────────────────── */
 #custom-power {
     color: #585b70;
-    padding: 0 10px 0 6px;
+    padding: 0 8px;
     font-size: 13px;
 }
 
