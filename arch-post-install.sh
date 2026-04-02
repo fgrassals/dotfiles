@@ -112,7 +112,7 @@ sudo pacman -S --noconfirm --needed \
     pipewire-jack \
     pipewire-pulse \
     wireplumber \
-    pavucontrol \
+    wiremix \
     alsa-utils
 systemctl --user enable --now pipewire pipewire-pulse wireplumber
 success "Done"
@@ -176,7 +176,7 @@ success "Done"
 # 13. NETWORK
 # =============================================================================
 info "Installing NetworkManager..."
-sudo pacman -S --noconfirm --needed networkmanager network-manager-applet
+sudo pacman -S --noconfirm --needed networkmanager
 sudo systemctl enable --now NetworkManager
 success "Done"
 
@@ -184,15 +184,15 @@ success "Done"
 # 14. BLUETOOTH
 # =============================================================================
 info "Installing Bluetooth..."
-sudo pacman -S --noconfirm --needed bluez bluez-utils blueman
+sudo pacman -S --noconfirm --needed bluez bluez-utils bluetui
 sudo systemctl enable --now bluetooth
 success "Done"
 
 # =============================================================================
-# 15. BROWSERS
+# 15. BROWSERS + AUR TOOLS
 # =============================================================================
 info "Installing browsers..."
-paru -S --noconfirm --needed brave-bin google-chrome
+paru -S --noconfirm --needed brave-bin google-chrome gazelle-tui
 success "Done"
 
 # =============================================================================
@@ -241,7 +241,7 @@ success "Done"
 # 18. SCREENSHOTS + RECORDING
 # =============================================================================
 info "Installing screenshot and recording tools..."
-sudo pacman -S --noconfirm --needed grim slurp satty wf-recorder zoxide jq
+sudo pacman -S --noconfirm --needed grim slurp satty wf-recorder jq
 success "Done"
 
 # =============================================================================
@@ -380,7 +380,17 @@ success "fprintd installed and PAM configured"
 note "Run 'fprintd-enroll' after reboot to register your fingerprint"
 
 # =============================================================================
-# 29. NEOVIM — bob + mise + prerequisites
+# 29. SUDO RULES
+# =============================================================================
+info "Adding sudo rules..."
+
+# Battery threshold script — allows writing TLP config and restarting TLP
+echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/tlp.d/10-battery-threshold.conf, /usr/bin/tlp" | sudo tee /etc/sudoers.d/waybar-battery > /dev/null
+sudo chmod 440 /etc/sudoers.d/waybar-battery
+success "Done"
+
+# =============================================================================
+# 30. NEOVIM — bob + mise + prerequisites
 # =============================================================================
 info "Installing bob, mise, and neovim prerequisites..."
 sudo pacman -S --noconfirm --needed \
@@ -396,7 +406,7 @@ note "  1. Add 'eval \$(mise activate zsh)' to .zshrc"
 note "  2. Run: mise use --global node@lts python@latest"
 
 # =============================================================================
-# 30. NVME TWEAKS
+# 31. NVME TWEAKS
 # =============================================================================
 info "Enabling fstrim.timer..."
 sudo systemctl enable fstrim.timer
@@ -405,7 +415,7 @@ note "Add 'noatime' to your NVMe root partition in /etc/fstab"
 note "  Example: UUID=xxxx / ext4 defaults,noatime 0 1"
 
 # =============================================================================
-# 31. POWER MANAGEMENT — TLP
+# 32. POWER MANAGEMENT — TLP
 # =============================================================================
 info "Installing TLP..."
 sudo pacman -S --noconfirm --needed tlp tlp-rdw
@@ -413,7 +423,7 @@ sudo systemctl enable tlp
 success "Done"
 
 # =============================================================================
-# 32. SHELL — zsh
+# 33. SHELL — zsh
 # =============================================================================
 info "Installing zsh..."
 sudo pacman -S --noconfirm --needed zsh zsh-completions
@@ -421,7 +431,7 @@ chsh -s "$(which zsh)"
 success "Done"
 
 # =============================================================================
-# 33. DOTFILES — Stow + permissions
+# 34. DOTFILES — Stow + permissions
 # Assumes dotfiles repo is at ~/dotfiles.
 # Stows every package (subdirectory) found there.
 # Makes all scripts in ~/.local/bin executable.

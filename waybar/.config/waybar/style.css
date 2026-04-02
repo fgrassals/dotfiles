@@ -1,0 +1,178 @@
+/* =============================================================================
+   Waybar style.css — dark minimal full-width bar
+   ============================================================================= */
+
+* {
+    font-family: "Noto Sans", sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+    min-height: 0;
+    border: none;
+    border-radius: 0;
+}
+
+window#waybar {
+    background-color: rgba(15, 15, 20, 0.95);
+    color: #cdd6f4;
+}
+
+.modules-left   { padding: 0 4px; }
+.modules-center { padding: 0; }
+.modules-right  { padding: 0 4px; }
+
+/* ── Generic module padding ─────────────────────────────────── */
+#workspaces,
+#window,
+#clock,
+#network,
+#pulseaudio,
+#battery,
+#custom-power {
+    padding: 0 8px;
+    color: #cdd6f4;
+}
+
+/* ── Workspaces ─────────────────────────────────────────────── */
+#workspaces button {
+    padding: 0 7px;
+    color: #585b70;
+    background: transparent;
+    font-weight: normal;
+}
+
+#workspaces button:hover {
+    color: #cdd6f4;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Active workspace: bold, no underline */
+#workspaces button.active {
+    color: #89b4fa;
+    font-weight: bold;
+}
+
+#workspaces button.urgent {
+    color: #f38ba8;
+    font-weight: bold;
+}
+
+/* ── Window title ───────────────────────────────────────────── */
+#window {
+    color: #a6adc8;
+    font-weight: normal;
+}
+
+/* Hide the module completely when empty (no focused window)
+   so the clock sits centered without the | separator */
+#window:empty {
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    font-size: 0;
+    color: transparent;
+}
+
+/* ── Clock ──────────────────────────────────────────────────── */
+#clock {
+    color: #cdd6f4;
+    font-weight: normal;
+}
+
+/* ── Drawer group ───────────────────────────────────────────── */
+/* Chevron: larger, clearly visible, points left */
+#custom-chevron {
+    color: #a6adc8;
+    font-size: 16px;
+    padding: 0 6px;
+    min-width: 24px;
+}
+
+#custom-chevron:hover {
+    color: #cdd6f4;
+}
+
+/* Hidden children padding */
+.hidden-child {
+    padding: 0 6px;
+}
+
+/* ── Idle inhibitor ─────────────────────────────────────────── */
+#idle_inhibitor {
+    padding: 0 6px;
+}
+
+#idle_inhibitor.activated {
+    color: #f9e2af;
+}
+
+#idle_inhibitor.deactivated {
+    color: #585b70;
+}
+
+/* ── Bluetooth ───────────────────────────────────────────────── */
+#bluetooth {
+    padding: 0 6px;
+}
+
+#bluetooth.connected {
+    color: #89b4fa;
+}
+
+#bluetooth.disabled,
+#bluetooth.off {
+    color: #585b70;
+}
+
+/* ── System tray ─────────────────────────────────────────────── */
+#tray {
+    padding: 0 4px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: rgba(243, 139, 168, 0.2);
+}
+
+/* ── Network ─────────────────────────────────────────────────── */
+#network.disconnected {
+    color: #f38ba8;
+}
+
+/* ── Volume ─────────────────────────────────────────────────── */
+#pulseaudio.muted {
+    color: #585b70;
+}
+
+/* ── Battery ─────────────────────────────────────────────────── */
+#battery.charging,
+#battery.plugged {
+    color: #a6e3a1;
+}
+
+#battery.warning:not(.charging) {
+    color: #f9e2af;
+}
+
+#battery.critical:not(.charging) {
+    color: #f38ba8;
+    animation: blink 1s step-start infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.5; }
+}
+
+/* ── Power button ────────────────────────────────────────────── */
+#custom-power {
+    color: #585b70;
+    padding: 0 10px 0 6px;
+    font-size: 13px;
+}
+
+#custom-power:hover {
+    color: #f38ba8;
+}

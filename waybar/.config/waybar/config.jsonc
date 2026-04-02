@@ -1,0 +1,171 @@
+// -*- mode: jsonc -*-
+{
+    "layer": "top",
+    "position": "top",
+    "height": 26,
+    "spacing": 0,
+
+    "modules-left": [
+        "hyprland/workspaces"
+    ],
+
+    "modules-center": [
+        "hyprland/window",
+        "clock"
+    ],
+
+    "modules-right": [
+        "group/hidden",
+        "network",
+        "pulseaudio",
+        "battery",
+        "custom/power"
+    ],
+
+    // =========================================================================
+    // LEFT — workspaces
+    // =========================================================================
+
+    "hyprland/workspaces": {
+        "active-only": false,
+        "all-outputs": false,
+        "disable-scroll": true,
+        "on-click": "activate",
+        "show-special": false,
+        "sort-by": "number",
+        // Numbers only, no icons — active styled bold via CSS
+        "format": "{id}"
+    },
+
+    // =========================================================================
+    // CENTER — window title + clock
+    // Window title only shows when a window is focused.
+    // When no window: clock sits centered alone, no dangling separator.
+    // =========================================================================
+
+    "hyprland/window": {
+        "max-length": 50,
+        "separate-outputs": true,
+        // Separator after title — only visible when this module has content
+        "format": "{title} | ",
+        "rewrite": {
+            // Strip common suffixes for cleaner titles
+            "(.+) — Mozilla Firefox": "$1",
+            "(.+) - Brave": "$1",
+            "(.+) - Google Chrome": "$1"
+        }
+    },
+
+    "clock": {
+        "format": "{:%H:%M}",
+        // Click to toggle between time and full date
+        "format-alt": "{:%A, %d %B %Y}",
+        "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+
+    // =========================================================================
+    // RIGHT — drawer group (hidden) + always-visible modules
+    // =========================================================================
+
+    // Drawer: chevron reveals idle_inhibitor, bluetooth, tray on hover
+    "group/hidden": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 200,
+            "children-class": "hidden-child",
+            "transition-left-to-right": false
+        },
+        "modules": [
+            "custom/chevron",
+            "tray",
+            "bluetooth",
+            "idle_inhibitor"
+        ]
+    },
+
+    "custom/chevron": {
+        // Points left — hover to expand the hidden group rightward
+        "format": "<",
+        "tooltip": false
+    },
+
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "󰒳",
+            "deactivated": "󰒲"
+        },
+        "tooltip-format-activated": "Idle inhibitor ON — screen will not sleep",
+        "tooltip-format-deactivated": "Idle inhibitor OFF"
+    },
+
+    "bluetooth": {
+        "format": "󰂯",
+        "format-connected": "󰂱",
+        "format-disabled": "󰂲",
+        "format-off": "󰂲",
+        "tooltip-format": "Bluetooth: {status}",
+        "tooltip-format-connected": "{device_alias}",
+        "tooltip-format-connected-battery": "{device_alias} — {device_battery_percentage}%",
+        // Opens bluetui in a small floating foot window
+        // Window rule in hyprland.conf matches title "bluetui"
+        "on-click": "foot --title bluetui bluetui"
+    },
+
+    "tray": {
+        "icon-size": 14,
+        "spacing": 5
+    },
+
+    // Always visible: network, volume, battery, power
+
+    "network": {
+        "format-wifi": "󰤨",
+        "format-ethernet": "󱘖",   // simple plug/ethernet icon
+        "format-disconnected": "󰤭",
+        "format-linked": "󰤫",
+        "tooltip-format-wifi": "{essid}  {signalStrength}%\n{ipaddr}",
+        "tooltip-format-ethernet": "{ifname}  {ipaddr}/{cidr}",
+        "tooltip-format-disconnected": "Disconnected",
+        // Opens gazelle in a small floating foot window
+        // Window rule in hyprland.conf matches title "gazelle"
+        "on-click": "foot --title gazelle gazelle"
+    },
+
+    "pulseaudio": {
+        "format": "{icon}",
+        "format-muted": "󰝟",
+        "format-icons": {
+            "headphone": "󰋋",
+            "headset": "󰋎",
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "tooltip-format": "{volume}% — {desc}",
+        // Opens wiremix in a small floating foot window
+        // Window rule in hyprland.conf matches title "wiremix"
+        "on-click": "foot --title wiremix wiremix",
+        "scroll-step": 5
+    },
+
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        // Icon only on battery — plug + % when charging or plugged
+        "format": "{icon}",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": "󰚥 {capacity}%",
+        "format-full": "󰁹",
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "tooltip-format": "{capacity}% — {timeTo}\n{power}W",
+        "on-click": "~/.local/bin/waybar-battery-threshold"
+    },
+
+    "custom/power": {
+        "format": "󰐥",
+        "tooltip": false,
+        "on-click": "~/.local/bin/waybar-power-menu"
+    }
+}
+
