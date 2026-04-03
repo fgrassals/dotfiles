@@ -1,0 +1,112 @@
+// Catppuccin Macchiato
+* {
+    base:     #24273a;
+    mantle:   #1e2030;
+    crust:    #181926;
+    surface0: #363a4f;
+    surface1: #494d64;
+    surface2: #5b6078;
+    overlay0: #6e738d;
+    overlay1: #8087a2;
+    overlay2: #939ab7;
+    text:     #cad3f5;
+    subtext0: #a5adcb;
+    subtext1: #b8c0e0;
+    blue:     #8aadf4;
+    lavender: #b7bdf8;
+    mauve:    #c6a0f6;
+    red:      #ed8796;
+    peach:    #f5a97f;
+    green:    #a6da95;
+    teal:     #8bd5ca;
+    sky:      #91d7e3;
+
+    // Layout
+    background-color: transparent;
+    text-color:       @text;
+}
+
+window {
+    background-color: @base;
+    border:           2px;
+    border-color:     @blue;
+    border-radius:    0px;
+    width:            600px;
+}
+
+mainbox {
+    background-color: transparent;
+    children:         [ inputbar, listview ];
+    spacing:          0px;
+    padding:          12px;
+}
+
+inputbar {
+    background-color: @mantle;
+    border-radius:    0px;
+    children:         [ prompt, entry ];
+    padding:          10px 12px;
+    margin:           0px 0px 10px 0px;
+}
+
+prompt {
+    background-color: transparent;
+    text-color:       @blue;
+    padding:          0px 8px 0px 0px;
+}
+
+entry {
+    background-color: transparent;
+    text-color:       @text;
+    placeholder:      "Search...";
+    placeholder-color: @overlay0;
+}
+
+listview {
+    background-color: transparent;
+    columns:          1;
+    lines:            8;
+    scrollbar:        false;
+    spacing:          4px;
+}
+
+element {
+    background-color: transparent;
+    border-radius:    0px;
+    children:         [ element-icon, element-text ];
+    orientation:      horizontal;
+    padding:          8px 10px;
+    spacing:          10px;
+}
+
+element selected {
+    background-color: @surface0;
+    text-color:       @text;
+}
+
+element-icon {
+    background-color: transparent;
+    size:             24px;
+}
+
+element-text {
+    background-color: transparent;
+    text-color:       inherit;
+    vertical-align:   0.5;
+}
+
+element normal urgent {
+    text-color: @peach;
+}
+
+element normal active {
+    text-color: @blue;
+}
+
+element selected urgent {
+    text-color: @peach;
+}
+
+element selected active {
+    text-color: @blue;
+}
