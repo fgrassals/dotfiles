@@ -70,6 +70,8 @@ window#waybar {
 }
 
 /* ── Idle inhibitor ─────────────────────────────────────────── */
+#idle_inhibitor:hover { color: #8aadf4; }
+
 #idle_inhibitor.activated {
     color: #f9e2af;
 }
@@ -92,6 +94,8 @@ window#waybar {
     margin-right: -4px;
 }
 
+#bluetooth:hover { color: #8aadf4; }
+
 /* ── System tray ─────────────────────────────────────────────── */
 #tray {
     padding: 0 8px;
@@ -107,16 +111,22 @@ window#waybar {
 }
 
 /* ── Network ─────────────────────────────────────────────────── */
+#network:hover { color: #8aadf4; }
+
 #network.disconnected {
     color: #f38ba8;
 }
 
 /* ── Volume ─────────────────────────────────────────────────── */
+#pulseaudio:hover { color: #8aadf4; }
+
 #pulseaudio.muted {
     color: #585b70;
 }
 
 /* ── Battery ─────────────────────────────────────────────────── */
+#battery:hover { color: #8aadf4; }
+
 #battery.charging,
 #battery.plugged {
     color: #a6e3a1;
