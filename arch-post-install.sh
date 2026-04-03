@@ -155,7 +155,7 @@ success "Done"
 # 10. LAUNCHER — rofi 2.0
 # =============================================================================
 info "Installing rofi..."
-sudo pacman -S --noconfirm --needed rofi
+sudo pacman -S --noconfirm --needed rofi rofi-calc
 success "Done"
 
 # =============================================================================
