@@ -330,7 +330,26 @@ xdg-user-dirs-update
 success "Done"
 
 # =============================================================================
-# 27. FIRMWARE UPDATES
+# 27. PRINTING AND SCANNING — CUPS + HPLIP
+# hplip-plugin (AUR) is required for this model — printing and scanning both
+# depend on it. hp-setup must be run interactively after reboot to add the
+# printer. The hpaio SANE backend is uncommented here for scanner detection.
+# =============================================================================
+info "Installing CUPS and HPLIP..."
+sudo pacman -S --noconfirm --needed cups sane hplip simple-scan
+paru -S --noconfirm --needed hplip-plugin
+
+sudo systemctl enable cups.service
+
+# Enable hpaio SANE backend for HP scanners
+sudo sed -i 's/^#hpaio/hpaio/' /etc/sane.d/dll.conf
+
+success "Done"
+note "Run 'hp-setup' after reboot to add the HP printer to CUPS"
+note "Verify scanner with: scanimage -L"
+
+# =============================================================================
+# 28. FIRMWARE UPDATES
 # =============================================================================
 info "Installing fwupd..."
 sudo pacman -S --noconfirm --needed fwupd
