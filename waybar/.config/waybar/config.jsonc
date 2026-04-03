@@ -15,6 +15,7 @@
     ],
 
     "modules-right": [
+        "custom/btop",
         "idle_inhibitor",
         "tray",
         "bluetooth",
@@ -149,6 +150,13 @@
         "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
         "tooltip-format": "{capacity}% — {timeTo}\n{power}W",
         "on-click": "~/.local/bin/waybar-battery-threshold.sh"
+    },
+
+    "custom/btop": {
+        "format": "󰍛",
+        "tooltip": true,
+        "tooltip-format": "System monitor",
+        "on-click": "sh -c 'pgrep -x btop || (foot -T btop -e btop &); hyprctl dispatch togglespecialworkspace btop'"
     },
 
     "custom/power": {

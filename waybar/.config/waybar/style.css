@@ -135,6 +135,16 @@ window#waybar {
     50% { opacity: 0.5; }
 }
 
+/* ── btop ────────────────────────────────────────────────────── */
+#custom-btop {
+    color: #cdd6f4;
+    padding: 0 8px;
+}
+
+#custom-btop:hover {
+    color: #8aadf4;
+}
+
 /* ── Power button ────────────────────────────────────────────── */
 #custom-power {
     color: #585b70;
