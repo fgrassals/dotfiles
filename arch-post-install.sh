@@ -192,7 +192,7 @@ success "Done"
 # 15. BROWSERS + AUR TOOLS
 # =============================================================================
 info "Installing browsers..."
-paru -S --noconfirm --needed brave-bin google-chrome gazelle-tui
+paru -S --noconfirm --needed brave-bin google-chrome gazelle-tui hyprshutdown
 success "Done"
 
 # =============================================================================
