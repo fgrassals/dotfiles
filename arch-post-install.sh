@@ -296,10 +296,18 @@ sudo pacman -S --noconfirm --needed mate-polkit
 success "Done"
 
 # =============================================================================
-# 25. QT THEMING
+# 25. THEMING — GTK + Qt (Catppuccin Macchiato, Papirus icons, Kvantum)
 # =============================================================================
-info "Installing Qt theming tools..."
-sudo pacman -S --noconfirm --needed qt5ct qt6ct
+info "Installing theming packages..."
+sudo pacman -S --noconfirm --needed \
+    qt5ct \
+    qt6ct \
+    kvantum \
+    papirus-icon-theme \
+    nwg-look
+paru -S --noconfirm --needed \
+    catppuccin-gtk-theme-macchiato \
+    kvantum-theme-catppuccin-git
 success "Done"
 
 # =============================================================================
