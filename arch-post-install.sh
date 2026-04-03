@@ -398,6 +398,7 @@ info "Installing bob, mise, and neovim prerequisites..."
 sudo pacman -S --noconfirm --needed \
     bob \
     lazygit \
+    lazydocker \
     mise \
     python \
     tree-sitter-cli
