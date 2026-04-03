@@ -181,7 +181,18 @@ sudo systemctl enable --now NetworkManager
 success "Done"
 
 # =============================================================================
-# 14. BLUETOOTH
+# 14. FIREWALL — ufw
+# =============================================================================
+info "Configuring ufw..."
+sudo pacman -S --noconfirm --needed ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw enable
+sudo systemctl enable ufw
+success "Done"
+
+# =============================================================================
+# 15. BLUETOOTH
 # =============================================================================
 info "Installing Bluetooth..."
 sudo pacman -S --noconfirm --needed bluez bluez-utils bluetui
@@ -348,7 +359,22 @@ xdg-user-dirs-update
 success "Done"
 
 # =============================================================================
-# 27. PRINTING AND SCANNING — CUPS + HPLIP
+# 27. SNAPPER — Btrfs snapshots (snap-pac only, no timeline)
+# Assumes snapper, grub-btrfs and snap-pac were installed by archinstall.
+# =============================================================================
+info "Configuring snapper..."
+
+# Enable GRUB snapshot entries and cleanup — skip timeline timer
+sudo systemctl enable --now grub-btrfsd.service
+sudo systemctl enable --now snapper-cleanup.timer
+
+# Disable timeline creation in snapper config
+sudo sed -i 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE=no/' /etc/snapper/configs/root
+
+success "Done"
+
+# =============================================================================
+# 28. PRINTING AND SCANNING — CUPS + HPLIP
 # hplip-plugin (AUR) is required for this model — printing and scanning both
 # depend on it. hp-setup must be run interactively after reboot to add the
 # printer. The hpaio SANE backend is uncommented here for scanner detection.
