@@ -196,7 +196,17 @@ paru -S --noconfirm --needed brave-bin google-chrome gazelle-tui hyprshutdown
 success "Done"
 
 # =============================================================================
-# 16. MEDIA
+# 16. DOCKER
+# =============================================================================
+info "Installing Docker..."
+sudo pacman -S --noconfirm --needed docker docker-compose
+sudo usermod -aG docker "$USER"
+success "Done"
+note "Log out and back in for Docker group membership to take effect"
+note "Start Docker manually when needed: sudo systemctl start docker"
+
+# =============================================================================
+# 17. MEDIA
 # =============================================================================
 info "Installing media stack..."
 sudo pacman -S --noconfirm --needed \
