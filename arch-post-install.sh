@@ -429,7 +429,17 @@ sudo chmod 440 /etc/sudoers.d/waybar-battery
 success "Done"
 
 # =============================================================================
-# 30. NEOVIM — bob + mise + prerequisites
+# 30. TMUX — TPM + plugins
+# =============================================================================
+info "Installing TPM and tmux plugins..."
+if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
+    git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+fi
+"$HOME/.tmux/plugins/tpm/bin/install_plugins"
+success "Done"
+
+# =============================================================================
+# 31. NEOVIM — bob + mise + prerequisites
 # =============================================================================
 info "Installing bob, mise, and neovim prerequisites..."
 sudo pacman -S --noconfirm --needed \
