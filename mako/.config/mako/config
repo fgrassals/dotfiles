@@ -1,0 +1,22 @@
+font=CaskaydiaMono Nerd Font 11
+
+background-color=#24273a
+text-color=#cad3f5
+border-color=#8aadf4
+progress-color=over #363a4f
+
+width=380
+height=120
+padding=12
+margin=12
+border-size=2
+border-radius=0
+
+anchor=top-right
+layer=overlay
+default-timeout=5000
+max-visible=5
+
+[urgency=high]
+border-color=#f5a97f
+default-timeout=0
