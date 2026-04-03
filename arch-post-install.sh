@@ -519,7 +519,6 @@ else
         chmod +x "$HOME"/.local/bin/*
         success "chmod +x applied to ~/.local/bin/*"
     fi
-fi
 
 # =============================================================================
 # DONE
