@@ -15,9 +15,10 @@
     ],
 
     "modules-right": [
+        "tray",
+        "privacy",
         "custom/btop",
         "idle_inhibitor",
-        "tray",
         "bluetooth",
         "network",
         "pulseaudio",
@@ -76,6 +77,16 @@
     // =========================================================================
     // RIGHT — all modules always visible
     // =========================================================================
+
+    "privacy": {
+        "icon-spacing": 4,
+        "icon-size": 14,
+        "transition-duration": 250,
+        "modules": [
+            { "type": "screenshare" },
+            { "type": "audio-in" }
+        ]
+    },
 
     "idle_inhibitor": {
         "format": "{icon}",

@@ -145,6 +145,23 @@ window#waybar {
     50% { opacity: 0.5; }
 }
 
+/* ── Privacy indicators ─────────────────────────────────────── */
+#privacy {
+    padding: 0 4px;
+}
+
+#privacy-item {
+    padding: 0 4px;
+}
+
+#privacy-item.screenshare {
+    color: #ed8796;
+}
+
+#privacy-item.audio-in {
+    color: #f5a97f;
+}
+
 /* ── btop ────────────────────────────────────────────────────── */
 #custom-btop {
     color: #cdd6f4;
