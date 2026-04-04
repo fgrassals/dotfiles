@@ -457,12 +457,12 @@ success "Done"
 # =============================================================================
 # 30. TMUX — TPM + plugins
 # =============================================================================
-info "Installing TPM and tmux plugins..."
+info "Installing TPM..."
 if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
     git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
-"$HOME/.tmux/plugins/tpm/bin/install_plugins"
 success "Done"
+note "Install tmux plugins: open tmux and press Prefix+I"
 
 # =============================================================================
 # 31. NEOVIM — bob + mise + prerequisites
@@ -555,6 +555,7 @@ else
         chmod +x "$HOME"/.local/bin/*
         success "chmod +x applied to ~/.local/bin/*"
     fi
+fi
 
 # =============================================================================
 # DONE
