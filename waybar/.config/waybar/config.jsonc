@@ -18,6 +18,7 @@
         "tray",
         "privacy",
         "custom/btop",
+        "custom/nightlight",
         "idle_inhibitor",
         "bluetooth",
         "network",
@@ -168,6 +169,14 @@
         "tooltip": true,
         "tooltip-format": "System monitor",
         "on-click": "sh -c 'pgrep -x btop || (foot -T btop -e btop &); hyprctl dispatch togglespecialworkspace btop'"
+    },
+
+    "custom/nightlight": {
+        "format": "{}",
+        "exec": "pgrep -x hyprsunset >/dev/null && echo '󰖔' || echo '󰖕'",
+        "interval": 2,
+        "tooltip-format": "Night light toggle",
+        "on-click": "pgrep -x hyprsunset && killall hyprsunset || hyprsunset -t 3500"
     },
 
     "custom/power": {

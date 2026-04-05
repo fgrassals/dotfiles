@@ -172,6 +172,16 @@ window#waybar {
     color: #8aadf4;
 }
 
+/* ── Night light ─────────────────────────────────────────────── */
+#custom-nightlight {
+    color: #585b70;
+    padding: 0 8px;
+}
+
+#custom-nightlight:hover {
+    color: #f9e2af;
+}
+
 /* ── Power button ────────────────────────────────────────────── */
 #custom-power {
     color: #585b70;
