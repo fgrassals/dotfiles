@@ -8,6 +8,7 @@ set -euo pipefail
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
 info()    { echo -e "${BLUE}[INFO]${NC} $*"; }
 success() { echo -e "${GREEN}[OK]${NC} $*"; }
+warn()    { echo -e "${YELLOW}[WARN]${NC} $*"; }
 die()     { echo -e "${RED}[ERROR]${NC} $*"; exit 1; }
 
 # All warnings and post-install notes are collected here and printed at the end
@@ -135,6 +136,7 @@ sudo pacman -S --noconfirm --needed \
     qt5-wayland \
     qt6-wayland \
     wl-clipboard
+paru -S --needed hyprshutdown
 success "Done"
 
 # =============================================================================
@@ -200,14 +202,14 @@ sudo systemctl enable --now bluetooth
 success "Done"
 
 # =============================================================================
-# 15. BROWSERS + AUR TOOLS
+# 16. BROWSERS + AUR TOOLS
 # =============================================================================
 info "Installing browsers..."
-paru -S --noconfirm --needed brave-bin google-chrome gazelle-tui hyprshutdown
+paru -S --needed brave-bin google-chrome gazelle-tui
 success "Done"
 
 # =============================================================================
-# 16. DOCKER
+# 17. DOCKER
 # =============================================================================
 info "Installing Docker..."
 sudo pacman -S --noconfirm --needed docker docker-compose
@@ -217,7 +219,7 @@ note "Log out and back in for Docker group membership to take effect"
 note "Start Docker manually when needed: sudo systemctl start docker"
 
 # =============================================================================
-# 17. MEDIA
+# 18. MEDIA
 # =============================================================================
 info "Installing media stack..."
 sudo pacman -S --noconfirm --needed \
@@ -238,7 +240,7 @@ sudo pacman -S --noconfirm --needed \
 success "Done"
 
 # =============================================================================
-# 17. FILE MANAGERS — Thunar + yazi
+# 19. FILE MANAGERS — Thunar + yazi
 # =============================================================================
 info "Installing file managers..."
 sudo pacman -S --noconfirm --needed \
@@ -246,6 +248,7 @@ sudo pacman -S --noconfirm --needed \
     thunar-archive-plugin \
     thunar-media-tags-plugin \
     thunar-volman \
+    gvfs-gphoto2 \
     file-roller \
     unzip \
     p7zip \
@@ -255,32 +258,32 @@ sudo pacman -S --noconfirm --needed \
     tumbler \
     ffmpegthumbnailer \
     yazi
-paru -S --noconfirm --needed unrar
+paru -S --needed unrar
 success "Done"
 
 # =============================================================================
-# 18. SCREENSHOTS + RECORDING
+# 20. SCREENSHOTS + RECORDING
 # =============================================================================
 info "Installing screenshot and recording tools..."
 sudo pacman -S --noconfirm --needed grim slurp satty wf-recorder jq
 success "Done"
 
 # =============================================================================
-# 19. IMAGE VIEWER — imv
+# 21. IMAGE VIEWER — imv
 # =============================================================================
 info "Installing imv..."
 sudo pacman -S --noconfirm --needed imv
 success "Done"
 
 # =============================================================================
-# 20. PDF VIEWER — zathura
+# 22. PDF VIEWER — zathura
 # =============================================================================
 info "Installing zathura..."
 sudo pacman -S --noconfirm --needed zathura zathura-pdf-mupdf
 success "Done"
 
 # =============================================================================
-# 21. FONTS
+# 23. FONTS
 # =============================================================================
 info "Installing fonts..."
 sudo pacman -S --noconfirm --needed \
@@ -292,7 +295,7 @@ fc-cache -fv &>/dev/null
 success "Done"
 
 # =============================================================================
-# 22. KEYRING — gnome-keyring
+# 24. KEYRING — gnome-keyring
 # =============================================================================
 info "Installing gnome-keyring..."
 sudo pacman -S --noconfirm --needed gnome-keyring libsecret seahorse
@@ -301,23 +304,23 @@ systemctl --user enable gnome-keyring-daemon.socket
 success "Done"
 
 # =============================================================================
-# 23. 1PASSWORD
+# 25. 1PASSWORD
 # =============================================================================
 info "Installing 1Password..."
 curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --import
-paru -S --noconfirm --needed 1password 1password-cli
+paru -S --needed 1password 1password-cli
 sudo pacman -S --noconfirm --needed pinentry
 success "Done"
 
 # =============================================================================
-# 24. POLKIT
+# 26. POLKIT
 # =============================================================================
 info "Installing mate-polkit..."
 sudo pacman -S --noconfirm --needed mate-polkit
 success "Done"
 
 # =============================================================================
-# 25. THEMING — GTK + Qt (Catppuccin Macchiato, Papirus icons, Kvantum)
+# 27. THEMING — GTK + Qt (Catppuccin Macchiato, Papirus icons, Kvantum)
 # =============================================================================
 info "Installing theming packages..."
 sudo pacman -S --noconfirm --needed \
@@ -326,13 +329,13 @@ sudo pacman -S --noconfirm --needed \
     kvantum \
     papirus-icon-theme \
     nwg-look
-paru -S --noconfirm --needed \
+paru -S --needed \
     catppuccin-gtk-theme-macchiato \
     kvantum-theme-catppuccin-git
 success "Done"
 
 # =============================================================================
-# 26. SYSTEM UTILITIES
+# 28. SYSTEM UTILITIES
 # =============================================================================
 info "Installing system utilities..."
 sudo pacman -S --noconfirm --needed \
@@ -359,7 +362,7 @@ xdg-user-dirs-update
 success "Done"
 
 # =============================================================================
-# 27. SNAPPER — Btrfs snapshots (snap-pac only, no timeline)
+# 29. SNAPPER — Btrfs snapshots (snap-pac only, no timeline)
 # Assumes snapper, grub-btrfs and snap-pac were installed by archinstall.
 # =============================================================================
 info "Configuring snapper..."
@@ -374,14 +377,14 @@ sudo sed -i 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE=no/' /etc/snapper/configs/roo
 success "Done"
 
 # =============================================================================
-# 28. PRINTING AND SCANNING — CUPS + HPLIP
+# 30. PRINTING AND SCANNING — CUPS + HPLIP
 # hplip-plugin (AUR) is required for this model — printing and scanning both
 # depend on it. hp-setup must be run interactively after reboot to add the
 # printer. The hpaio SANE backend is uncommented here for scanner detection.
 # =============================================================================
 info "Installing CUPS and HPLIP..."
 sudo pacman -S --noconfirm --needed cups sane hplip simple-scan
-paru -S --noconfirm --needed hplip-plugin
+paru -S --needed hplip-plugin
 
 sudo systemctl enable cups.service
 
@@ -393,14 +396,14 @@ note "Run 'hp-setup' after reboot to add the HP printer to CUPS"
 note "Verify scanner with: scanimage -L"
 
 # =============================================================================
-# 28. FIRMWARE UPDATES
+# 31. FIRMWARE UPDATES
 # =============================================================================
 info "Installing fwupd..."
 sudo pacman -S --noconfirm --needed fwupd
 success "Done"
 
 # =============================================================================
-# 28. FINGERPRINT — fprintd + PAM configuration
+# 32. FINGERPRINT — fprintd + PAM configuration
 # =============================================================================
 info "Installing fprintd and configuring PAM..."
 sudo pacman -S --noconfirm --needed fprintd
@@ -445,7 +448,7 @@ success "fprintd installed and PAM configured"
 note "Run 'fprintd-enroll' after reboot to register your fingerprint"
 
 # =============================================================================
-# 29. SUDO RULES
+# 33. SUDO RULES
 # =============================================================================
 info "Adding sudo rules..."
 
@@ -455,17 +458,7 @@ sudo chmod 440 /etc/sudoers.d/waybar-battery
 success "Done"
 
 # =============================================================================
-# 30. TMUX — TPM + plugins
-# =============================================================================
-info "Installing TPM..."
-if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
-    git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-fi
-success "Done"
-note "Install tmux plugins: open tmux and press Prefix+I"
-
-# =============================================================================
-# 31. NEOVIM — bob + mise + prerequisites
+# 34. NEOVIM — bob + mise + prerequisites
 # =============================================================================
 info "Installing bob, mise, and neovim prerequisites..."
 sudo pacman -S --noconfirm --needed \
@@ -477,21 +470,19 @@ sudo pacman -S --noconfirm --needed \
     tree-sitter-cli
 success "Done"
 note "Run 'bob install stable' after reboot to install neovim"
-note "For node/python via mise, after dotfiles:"
-note "  1. Add 'eval \$(mise activate zsh)' to .zshrc"
-note "  2. Run: mise use --global node@lts python@latest"
+note "For node/python via mise: run 'mise use --global node@lts python@latest'"
 
 # =============================================================================
-# 31. NVME TWEAKS
+# 35. NVME TWEAKS
 # =============================================================================
 info "Enabling fstrim.timer..."
 sudo systemctl enable fstrim.timer
 success "Done"
 note "Add 'noatime' to your NVMe root partition in /etc/fstab"
-note "  Example: UUID=xxxx / ext4 defaults,noatime 0 1"
+note "  Example: UUID=xxxx / btrfs subvol=@,noatime,compress=zstd 0 0"
 
 # =============================================================================
-# 32. POWER MANAGEMENT — TLP
+# 36. POWER MANAGEMENT — TLP
 # =============================================================================
 info "Installing TLP..."
 sudo pacman -S --noconfirm --needed tlp tlp-rdw
@@ -499,7 +490,7 @@ sudo systemctl enable tlp
 success "Done"
 
 # =============================================================================
-# 33. SHELL — zsh
+# 37. SHELL — zsh
 # =============================================================================
 info "Installing zsh..."
 sudo pacman -S --noconfirm --needed zsh zsh-completions
@@ -510,7 +501,7 @@ fi
 success "Done"
 
 # =============================================================================
-# 34. DISPLAY MANAGER — ly
+# 38. DISPLAY MANAGER — ly
 # =============================================================================
 info "Installing ly..."
 sudo pacman -S --noconfirm --needed ly
@@ -529,9 +520,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable ly@tty2.service
 sudo systemctl disable getty@tty2.service
 success "Done"
+note "At first login, select 'hyprland' as the session in ly"
 
 # =============================================================================
-# 35. DOTFILES — Stow + permissions
+# 39. DOTFILES — Stow + permissions
 # Assumes dotfiles repo is at ~/dotfiles.
 # Stows every package (subdirectory) found there.
 # Makes all scripts in ~/.local/bin executable.

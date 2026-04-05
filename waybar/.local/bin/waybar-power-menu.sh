@@ -10,3 +10,4 @@ case "$chosen" in
     *Reboot)   systemctl reboot ;;
     *Shutdown) systemctl poweroff ;;
 esac
+
