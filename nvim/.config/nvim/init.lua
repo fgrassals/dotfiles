@@ -1,0 +1,10 @@
+-- options
+--
+--
+-- plugins
+--
+--
+-- keymaps
+--
+--
+-- autocommands

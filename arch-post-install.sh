@@ -61,33 +61,8 @@ success "Done"
 
 # =============================================================================
 # 4. KERNEL PARAMETERS
-# amdgpu.dcdebugmask=0x10  — fixes screen flickering on AMD iGPU
-# mem_sleep_default=s2idle  — S3 not supported, enforce s2idle
-#
-# Handles both traditional systemd-boot entries and UKI setups.
+# No kernel parameters required for this setup.
 # =============================================================================
-info "Patching kernel parameters..."
-PARAMS="amdgpu.dcdebugmask=0x10 mem_sleep_default=s2idle"
-
-ENTRY=$(ls /boot/loader/entries/*.conf 2>/dev/null | grep -v fallback | head -n1 || true)
-if [[ -n "$ENTRY" ]]; then
-    if ! grep -q "amdgpu.dcdebugmask" "$ENTRY"; then
-        sudo sed -i '/^options/ s/$/ '"$PARAMS"'/' "$ENTRY"
-        success "Kernel params added to: $(basename "$ENTRY")"
-    else
-        success "Kernel params already in systemd-boot entry"
-    fi
-fi
-
-if [[ ! -f /etc/kernel/cmdline ]] || ! grep -q "amdgpu.dcdebugmask" /etc/kernel/cmdline; then
-    echo "$PARAMS" | sudo tee -a /etc/kernel/cmdline > /dev/null
-    success "Kernel params written to /etc/kernel/cmdline"
-    if [[ -z "$ENTRY" ]]; then
-        note "UKI setup detected — run 'sudo mkinitcpio -P' to embed params into the image"
-    fi
-else
-    success "Kernel params already in /etc/kernel/cmdline"
-fi
 
 # =============================================================================
 # 5. AMD GPU — Mesa, Vulkan, VA-API
@@ -339,7 +314,6 @@ success "Done"
 # =============================================================================
 info "Installing system utilities..."
 sudo pacman -S --noconfirm --needed \
-    brightnessctl \
     playerctl \
     cliphist \
     udiskie \
@@ -452,9 +426,6 @@ note "Run 'fprintd-enroll' after reboot to register your fingerprint"
 # =============================================================================
 info "Adding sudo rules..."
 
-# Battery threshold script — allows writing TLP config and restarting TLP
-echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/tlp.d/10-battery-threshold.conf, /usr/bin/tlp" | sudo tee /etc/sudoers.d/waybar-battery > /dev/null
-sudo chmod 440 /etc/sudoers.d/waybar-battery
 success "Done"
 
 # =============================================================================
@@ -482,12 +453,9 @@ note "Add 'noatime' to your NVMe root partition in /etc/fstab"
 note "  Example: UUID=xxxx / btrfs subvol=@,noatime,compress=zstd 0 0"
 
 # =============================================================================
-# 36. POWER MANAGEMENT — TLP
+# 36. POWER MANAGEMENT
+# Nothing to install for this setup.
 # =============================================================================
-info "Installing TLP..."
-sudo pacman -S --noconfirm --needed tlp tlp-rdw
-sudo systemctl enable tlp
-success "Done"
 
 # =============================================================================
 # 37. SHELL — zsh
@@ -523,7 +491,17 @@ success "Done"
 note "At first login, select 'hyprland' as the session in ly"
 
 # =============================================================================
-# 39. DOTFILES — Stow + permissions
+# 39. OLLAMA — local LLM inference with AMD GPU (ROCm)
+# =============================================================================
+info "Installing ollama and ROCm runtime..."
+sudo pacman -S --noconfirm --needed \
+    ollama \
+    rocm-hip-runtime \
+    rocm-opencl-runtime
+success "Done"
+
+# =============================================================================
+# 40. DOTFILES — Stow + permissions
 # Assumes dotfiles repo is at ~/dotfiles.
 # Stows every package (subdirectory) found there.
 # Makes all scripts in ~/.local/bin executable.

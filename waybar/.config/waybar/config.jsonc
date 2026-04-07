@@ -23,7 +23,6 @@
         "bluetooth",
         "network",
         "pulseaudio",
-        "battery",
         "custom/power"
     ],
 
@@ -37,13 +36,10 @@
         "show-special": false,
         "sort-by": "number",
         "format": "{id}",
-        // Always show workspaces 1-5 regardless of whether they are open
+        // Always show all 10 workspaces (single monitor desktop)
         "persistent-workspaces": {
-            "1": [],
-            "2": [],
-            "3": [],
-            "4": [],
-            "5": []
+            "1": [], "2": [], "3": [], "4": [], "5": [],
+            "6": [], "7": [], "8": [], "9": [], "10": []
         }
     },
 
@@ -145,23 +141,6 @@
         // Window rule in hyprland.conf matches title "wiremix"
         "on-click": "foot --title wiremix wiremix",
         "scroll-step": 5
-    },
-
-    "battery": {
-        "states": {
-            "warning": 30,
-            "critical": 15
-        },
-        // On battery: icon only
-        // Charging: plug icon + percentage (so you can track progress)
-        // Plugged but full/not charging: plug icon only
-        "format": "{icon}",
-        "format-charging": "󰂄 {capacity}%",
-        "format-plugged": "󰚥",
-        "format-full": "󰁹",
-        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-        "tooltip-format": "{capacity}% — {timeTo}\n{power}W",
-        "on-click": "~/.local/bin/waybar-battery-threshold.sh"
     },
 
     "custom/btop": {
