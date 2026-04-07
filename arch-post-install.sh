@@ -492,13 +492,25 @@ note "At first login, select 'hyprland' as the session in ly"
 
 # =============================================================================
 # 39. OLLAMA — local LLM inference with AMD GPU (ROCm)
+# RX 6800 XT (gfx1030) — officially supported, no HSA override needed.
 # =============================================================================
-info "Installing ollama and ROCm runtime..."
-sudo pacman -S --noconfirm --needed \
-    ollama \
-    rocm-hip-runtime \
-    rocm-opencl-runtime
+info "Installing ollama-rocm and GPU monitoring tools..."
+sudo pacman -S --noconfirm --needed ollama-rocm rocminfo rocm-smi-lib nvtop radeontop
+
+# Guard in case groups are missing (e.g. script run without step 5)
+getent group render >/dev/null || sudo groupadd --system render
+getent group video  >/dev/null || sudo groupadd --system video
+sudo usermod -aG render,video ollama
+sudo usermod -aG render,video "$USER"
 success "Done"
+note "Log out and back in for render/video group membership to take effect"
+note "Start Ollama when needed: sudo systemctl start ollama"
+# Open WebUI (optional): run via Docker when needed — no install required:
+# docker run -d -p 3000:80 -v open-webui:/app/backend/data \
+#   --add-host=host.docker.internal:host-gateway \
+#   -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+#   ghcr.io/open-webui/open-webui:main
+# Then open http://localhost:3000
 
 # =============================================================================
 # 40. DOTFILES — Stow + permissions
