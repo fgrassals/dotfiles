@@ -363,16 +363,25 @@ success "Done"
 
 # =============================================================================
 # 29. SNAPPER — Btrfs snapshots (snap-pac only, no timeline)
-# Assumes snapper, grub-btrfs and snap-pac were installed by archinstall.
 # =============================================================================
-info "Configuring snapper..."
+info "Installing and configuring snapper..."
+
+sudo pacman -S --noconfirm --needed snapper grub-btrfs snap-pac
+
+# Create root snapper config if it doesn't exist yet
+if [[ ! -f /etc/snapper/configs/root ]]; then
+    sudo snapper -c root create-config /
+fi
+
+# Disable timeline creation
+sudo sed -i 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE=no/' /etc/snapper/configs/root
 
 # Enable GRUB snapshot entries and cleanup — skip timeline timer
 sudo systemctl enable --now grub-btrfsd.service
 sudo systemctl enable --now snapper-cleanup.timer
 
-# Disable timeline creation in snapper config
-sudo sed -i 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE=no/' /etc/snapper/configs/root
+# Populate GRUB with existing snapshots
+sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 success "Done"
 
