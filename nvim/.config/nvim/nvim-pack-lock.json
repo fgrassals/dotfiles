@@ -5,7 +5,7 @@
       "src": "https://github.com/stevearc/conform.nvim"
     },
     "fzf-lua": {
-      "rev": "8223eb24a7adf72c4b24e04b751486b492775414",
+      "rev": "58f52b7df97aa3104db8a6763f4523e3e14e4b9b",
       "src": "https://github.com/ibhagwan/fzf-lua"
     },
     "gitsigns.nvim": {
@@ -13,7 +13,7 @@
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "mason-lspconfig.nvim": {
-      "rev": "0a3b42c3e503df87aef6d6513e13148381495c3a",
+      "rev": "0c2823e0418f3d9230ff8b201c976e84de1cb401",
       "src": "https://github.com/mason-org/mason-lspconfig.nvim"
     },
     "mason-tool-installer.nvim": {
@@ -33,7 +33,7 @@
       "src": "https://github.com/nvim-neo-tree/neo-tree.nvim"
     },
     "neogit": {
-      "rev": "d1cfc4986195239cac55700b675cea7a9578d430",
+      "rev": "2d94da0032e201865a5b65a6bc008dd6fce8f52e",
       "src": "https://github.com/NeogitOrg/neogit"
     },
     "nui.nvim": {
@@ -45,7 +45,7 @@
       "src": "https://github.com/catppuccin/nvim"
     },
     "nvim-lspconfig": {
-      "rev": "e146efacbafed3789ac568abcc5a981c5decaa58",
+      "rev": "81878de76c0de4ce289513734ad80c31ec7871b8",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-notify": {
