@@ -108,6 +108,8 @@ vim.pack.add({
   "https://github.com/NeogitOrg/neogit",
   "https://github.com/rcarriga/nvim-notify",
   "https://github.com/stevearc/conform.nvim",
+  "https://github.com/MunifTanjim/nui.nvim",
+  "https://github.com/nvim-neo-tree/neo-tree.nvim",
 })
 
 vim.cmd("packadd nvim.undotree")
@@ -205,6 +207,21 @@ local notify = require("notify")
 notify.setup()
 vim.notify = notify
 
+-- neo-tree
+require("neo-tree").setup({
+  close_if_last_window = true,
+  filesystem = {
+    follow_current_file = { enabled = true },
+    use_libuv_file_watcher = true,
+  },
+  event_handlers = {
+    {
+      event = "file_opened",
+      handler = function() require("neo-tree.command").execute({ action = "close" }) end,
+    },
+  },
+})
+
 ---------------------
 ------ Keymaps ------
 ---------------------
@@ -242,6 +259,7 @@ vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Window right" })
 --toggles
 vim.keymap.set("n", "\\w", "<cmd>setlocal wrap!<cr>", { desc = "Toggle line wrap" })
 vim.keymap.set("n", "\\u", "<cmd>Undotree<cr>", { desc = "Toggle Undotree" })
+vim.keymap.set("n", "\\e", "<cmd>Neotree toggle<cr>", { desc = "Toggle file tree" })
 
 vim.keymap.set("n", "\\q", function()
   local wins = vim.fn.getqflist({ winid = 0 }).winid
