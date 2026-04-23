@@ -204,7 +204,11 @@ require("neogit").setup()
 
 -- nvim-notify
 local notify = require("notify")
-notify.setup()
+notify.setup({
+  stages = "static",
+  timeout = 2000,
+  render = "wrapped-compact",
+})
 vim.notify = notify
 
 -- neo-tree
