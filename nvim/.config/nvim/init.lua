@@ -301,6 +301,7 @@ vim.keymap.set({ "n", "x", "o" }, "[[", function() move.goto_previous_start("@cl
 -- misc
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>")
 vim.keymap.set("n", "<leader>nh", require("notify").history, { desc = "Notification history" })
+vim.keymap.set("n", "<leader>ud", function() vim.pack.update() end, { desc = "Update plugins" })
 
 --------------------------
 ------ Autocommands ------
