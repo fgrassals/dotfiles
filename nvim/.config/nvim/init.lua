@@ -242,6 +242,7 @@ vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Window right" })
 --toggles
 vim.keymap.set("n", "\\w", "<cmd>setlocal wrap!<cr>", { desc = "Toggle line wrap" })
 vim.keymap.set("n", "\\u", "<cmd>Undotree<cr>", { desc = "Toggle Undotree" })
+
 vim.keymap.set("n", "\\q", function()
   local wins = vim.fn.getqflist({ winid = 0 }).winid
   if wins ~= 0 then
@@ -264,6 +265,8 @@ vim.keymap.set("n", "\\l", function()
     vim.cmd("lopen")
   end
 end, { desc = "Toggle loclist" })
+
+vim.keymap.set("n", "\\c", function() vim.lsp.codelens.enable(not vim.lsp.codelens.is_enabled()) end, { desc = "Toggle codelens" })
 
 -- diagnostics
 vim.keymap.set("n", "<leader>d", function() vim.diagnostic.setloclist({ open = true }) end)
@@ -303,13 +306,4 @@ end)
 
 vim.api.nvim_create_autocmd("FileType", {
   callback = function() pcall(vim.treesitter.start) end,
-})
-
-vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client and client:supports_method("textDocument/codeLens") then
-      vim.lsp.codelens.enable(true, { bufnr = args.buf })
-    end
-  end,
 })
