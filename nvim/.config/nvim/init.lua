@@ -245,6 +245,7 @@ vim.keymap.set("n", "<leader>fw", fzf.grep_cword, { desc = "Grep word" })
 -- git
 vim.keymap.set("n", "<leader>gg", "<cmd>Neogit<cr>", { desc = "Neogit" })
 vim.keymap.set("n", "<leader>gc", "<cmd>Neogit commit<cr>", { desc = "Neogit commit" })
+vim.keymap.set("n", "<leader>gb", function() require("gitsigns").blame() end, { desc = "Blame file" })
 
 -- lsp
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Definition" })
@@ -264,6 +265,8 @@ vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Window right" })
 vim.keymap.set("n", "\\w", "<cmd>setlocal wrap!<cr>", { desc = "Toggle line wrap" })
 vim.keymap.set("n", "\\u", "<cmd>Undotree<cr>", { desc = "Toggle Undotree" })
 vim.keymap.set("n", "\\e", "<cmd>Neotree toggle<cr>", { desc = "Toggle file tree" })
+vim.keymap.set("n", "\\b", function() require("gitsigns").blame_line({ full = true }) end, { desc = "Blame line popup" })
+vim.keymap.set("n", "\\c", function() vim.lsp.codelens.enable(not vim.lsp.codelens.is_enabled()) end, { desc = "Toggle codelens" })
 
 vim.keymap.set("n", "\\q", function()
   local wins = vim.fn.getqflist({ winid = 0 }).winid
@@ -287,8 +290,6 @@ vim.keymap.set("n", "\\l", function()
     vim.cmd("lopen")
   end
 end, { desc = "Toggle loclist" })
-
-vim.keymap.set("n", "\\c", function() vim.lsp.codelens.enable(not vim.lsp.codelens.is_enabled()) end, { desc = "Toggle codelens" })
 
 -- diagnostics
 vim.keymap.set("n", "<leader>d", function() vim.diagnostic.setloclist({ open = true }) end)
