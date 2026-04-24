@@ -114,6 +114,17 @@ vim.pack.add({
 
 vim.cmd("packadd nvim.undotree")
 
+require("catppuccin").setup({
+  auto_integrations = true,
+  no_italic = true,
+  custom_highlights = function(colors)
+    return {
+      ["@type"] = { fg = colors.text },
+      ["@type.builtin"] = { fg = colors.text },
+      ["@module"] = { fg = colors.text },
+    }
+  end,
+})
 vim.cmd.colorscheme("catppuccin-macchiato")
 
 require("mini.icons").setup()
