@@ -57,10 +57,6 @@ vim.o.tabstop = 2
 vim.o.shiftwidth = 2
 vim.o.smartindent = true
 
--- completion
-vim.o.autocomplete = true
-vim.o.completeopt = "menuone,noselect,fuzzy"
-
 -- timing
 vim.o.updatetime = 250
 vim.o.timeoutlen = 400
@@ -110,6 +106,7 @@ vim.pack.add({
   "https://github.com/stevearc/conform.nvim",
   "https://github.com/MunifTanjim/nui.nvim",
   "https://github.com/nvim-neo-tree/neo-tree.nvim",
+  { src = "https://github.com/saghen/blink.cmp", version = vim.version.range("^1") },
 })
 
 vim.cmd("packadd nvim.undotree")
@@ -237,6 +234,17 @@ require("neo-tree").setup({
   },
 })
 
+-- blink
+require("blink.cmp").setup({
+  completion = {
+    documentation = { auto_show = true, auto_show_delay_ms = 1250 },
+  },
+  signature = { enabled = true },
+  sources = {
+    default = { "lsp", "path", "snippets" },
+  },
+})
+
 ---------------------
 ------ Keymaps ------
 ---------------------
@@ -326,18 +334,6 @@ vim.keymap.set("n", "<leader>ud", function() vim.pack.update() end, { desc = "Up
 vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function() vim.highlight.on_yank() end,
 })
-
--- autocomplete
-vim.schedule(function()
-  vim.api.nvim_create_autocmd("LspAttach", {
-    callback = function(args)
-      local client = vim.lsp.get_client_by_id(args.data.client_id)
-      if client and client:supports_method("textDocument/completion") then
-        vim.lsp.completion.enable(true, args.data.client_id, args.buf, { autotrigger = true })
-      end
-    end,
-  })
-end)
 
 vim.api.nvim_create_autocmd("FileType", {
   callback = function() pcall(vim.treesitter.start) end,
