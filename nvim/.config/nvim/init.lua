@@ -74,6 +74,10 @@ vim.o.pumblend = 5
 vim.o.winblend = 5
 vim.o.winborder = "single"
 
+-- disable netrw
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 require("vim._core.ui2").enable()
 
 vim.diagnostic.config({
@@ -198,7 +202,9 @@ require("conform").setup({
 })
 
 -- # fuzzy finder
-require("fzf-lua").setup()
+require("fzf-lua").setup({
+  open_files_do_not_replace_types = { "neo-tree", "notify", "terminal", "qf" },
+})
 
 -- # git
 require("gitsigns").setup()
