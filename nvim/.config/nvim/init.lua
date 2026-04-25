@@ -35,15 +35,9 @@ vim.schedule(function()
     return icons.get("filetype", vim.bo.filetype) or ""
   end
 
-  function _G.GitBranch()
-    local branch = vim.b.gitsigns_head
-    if not branch or branch == "" then
-      return ""
-    end
-    return "[" .. branch .. "]"
-  end
+  function _G.GitBranch() return vim.b.gitsigns_head or "" end
 
-  vim.o.statusline = "%{v:lua.FileIcon()} %f %m %= %{v:lua.GitBranch()} %l:%c"
+  vim.o.statusline = "%{v:lua.FileIcon()} %f %m %= %{v:lua.GitBranch()}  %l,%c"
 end)
 
 -- search
@@ -270,7 +264,7 @@ vim.keymap.set("n", "<leader>gb", function() require("gitsigns").blame() end, { 
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Definition" })
 vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Declaration" })
 vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "References" })
-vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Implementation" })
+vim.keymap.set("n", "gI", vim.lsp.buf.implementation, { desc = "Implementation" })
 vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, { desc = "Type definition" })
 vim.keymap.set({ "n", "v" }, "<leader>cf", function() vim.lsp.buf.format({ async = true }) end, { desc = "Format" })
 
