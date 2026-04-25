@@ -180,7 +180,7 @@ require("nvim-treesitter-textobjects").setup({
 -- # LSPs
 require("mason").setup()
 require("mason-lspconfig").setup({
-  ensure_installed = { "cssls", "gopls", "jsonls", "pyrefly", "lua_ls", "ts_ls", "yamlls" },
+  ensure_installed = { "cssls", "gopls", "jsonls", "ty", "lua_ls", "ts_ls", "yamlls" },
 })
 require("mason-tool-installer").setup({
   ensure_installed = {
