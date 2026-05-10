@@ -1,188 +1,185 @@
 // -*- mode: jsonc -*-
 {
-    "layer": "top",
-    "position": "top",
-    "height": 26,
-    "spacing": 0,
-
-    "modules-left": [
-        "hyprland/workspaces"
-    ],
-
-    "modules-center": [
-        "hyprland/window",
-        "clock"
-    ],
-
-    "modules-right": [
-        "tray",
-        "privacy",
-        "custom/btop",
-        "custom/nightlight",
-        "idle_inhibitor",
-        "bluetooth",
-        "network",
-        "pulseaudio",
-        "battery",
-        "custom/power"
-    ],
-
-    // =========================================================================
-    // LEFT — workspaces
-    // =========================================================================
-
-    "hyprland/workspaces": {
-        "disable-scroll": true,
-        "on-click": "activate",
-        "show-special": false,
-        "sort-by": "number",
-        "format": "{id}",
-        // Always show workspaces 1-5 regardless of whether they are open
-        "persistent-workspaces": {
-            "1": [],
-            "2": [],
-            "3": [],
-            "4": [],
-            "5": []
-        }
-    },
-
-    // =========================================================================
-    // CENTER — window title + clock
-    // Window title only shows when a window is focused.
-    // When no window: clock sits centered alone, no dangling separator.
-    // =========================================================================
-
-    "hyprland/window": {
-        "max-length": 50,
-        "separate-outputs": true,
-        // format is empty by default — rewrite adds "| " only when title has content
-        // This means: no window open → module outputs nothing → clock sits centered alone
-        "format": "{title}",
-        "rewrite": {
-            "(.+) — Mozilla Firefox": "$1 |",
-            "(.+) - Brave": "$1 |",
-            "(.+) - Google Chrome": "$1 |",
-            // Catch-all: any other title gets the separator appended
-            "(.+)": "$1 |"
-        }
-    },
-
-    "clock": {
-        "format": " {:%H:%M}",
-        // Click to toggle between time and full date
-        "format-alt": " {:%A, %d %B %Y}",
-        "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"
-    },
-
-    // =========================================================================
-    // RIGHT — all modules always visible
-    // =========================================================================
-
-    "privacy": {
-        "icon-spacing": 4,
-        "icon-size": 14,
-        "transition-duration": 250,
-        "modules": [
-            { "type": "screenshare" },
-            { "type": "audio-in" }
-        ]
-    },
-
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "󰒳",
-            "deactivated": "󰒲"
-        },
-        "tooltip-format-activated": "Idle inhibitor ON — screen will not sleep",
-        "tooltip-format-deactivated": "Idle inhibitor OFF"
-    },
-
-    "tray": {
-        "icon-size": 14,
-        "spacing": 8
-    },
-
-    // Always visible: network, volume, battery, power
-
-    "bluetooth": {
-        "format": "󰂯",
-        "format-connected": "󰂱",
-        "format-disabled": "󰂲",
-        "format-off": "󰂲",
-        "tooltip-format": "Bluetooth: {status}",
-        "tooltip-format-connected": "{device_alias}",
-        "tooltip-format-connected-battery": "{device_alias} — {device_battery_percentage}%",
-        "on-click": "foot --title bluetui bluetui"
-    },
-
-    // Always visible: network, volume, battery, power
-
-    "network": {
-        "format-wifi": "󰤨",
-        "format-ethernet": "󱘖",   // simple plug/ethernet icon
-        "format-disconnected": "󰤭",
-        "format-linked": "󰤫",
-        "tooltip-format-wifi": "{essid}  {signalStrength}%\n{ipaddr}",
-        "tooltip-format-ethernet": "{ifname}  {ipaddr}/{cidr}",
-        "tooltip-format-disconnected": "Disconnected",
-        // Opens gazelle in a small floating foot window
-        // Window rule in hyprland.conf matches title "gazelle"
-        "on-click": "foot --title gazelle gazelle"
-    },
-
-    "pulseaudio": {
-        "format": "{icon}",
-        "format-muted": "󰝟",
-        "format-icons": {
-            "headphone": "󰋋",
-            "headset": "󰋎",
-            "default": ["󰕿", "󰖀", "󰕾"]
-        },
-        "tooltip-format": "{volume}% — {desc}",
-        // Opens wiremix in a small floating foot window
-        // Window rule in hyprland.conf matches title "wiremix"
-        "on-click": "foot --title wiremix wiremix",
-        "scroll-step": 5
-    },
-
-    "battery": {
-        "states": {
-            "warning": 30,
-            "critical": 15
-        },
-        // On battery: icon only
-        // Charging: plug icon + percentage (so you can track progress)
-        // Plugged but full/not charging: plug icon only
-        "format": "{icon}",
-        "format-charging": "󰂄 {capacity}%",
-        "format-plugged": "󰚥",
-        "format-full": "󰁹",
-        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-        "tooltip-format": "{capacity}% — {timeTo}\n{power}W",
-        "on-click": "~/.local/bin/waybar-battery-threshold.sh"
-    },
-
-    "custom/btop": {
-        "format": "󰍛",
-        "tooltip": true,
-        "tooltip-format": "System monitor",
-        "on-click": "sh -c 'pgrep -x btop || (foot -T btop -e btop &); hyprctl dispatch togglespecialworkspace btop'"
-    },
-
-    "custom/nightlight": {
-        "format": "{}",
-        "exec": "pgrep -x hyprsunset >/dev/null && echo '󰖔' || echo '󰖕'",
-        "interval": 2,
-        "tooltip-format": "Night light toggle",
-        "on-click": "pgrep -x hyprsunset && killall hyprsunset || hyprsunset -t 3500"
-    },
-
-    "custom/power": {
-        "format": "󰐥",
-        "tooltip": false,
-        "on-click": "~/.local/bin/waybar-power-menu.sh"
+  "layer": "top",
+  "position": "top",
+  "height": 26,
+  "spacing": 0,
+  "modules-left": [
+    "hyprland/workspaces"
+  ],
+  "modules-center": [
+    "hyprland/window",
+    "clock"
+  ],
+  "modules-right": [
+    "tray",
+    "privacy",
+    "custom/btop",
+    "custom/nightlight",
+    "idle_inhibitor",
+    "bluetooth",
+    "network",
+    "pulseaudio",
+    "battery",
+    "custom/power"
+  ],
+  // =========================================================================
+  // LEFT — workspaces
+  // =========================================================================
+  "hyprland/workspaces": {
+    "disable-scroll": true,
+    "on-click": "activate",
+    "show-special": false,
+    "sort-by": "number",
+    "format": "{id}",
+    // Always show workspaces 1-5 regardless of whether they are open
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
     }
+  },
+  // =========================================================================
+  // CENTER — window title + clock
+  // Window title only shows when a window is focused.
+  // When no window: clock sits centered alone, no dangling separator.
+  // =========================================================================
+  "hyprland/window": {
+    "max-length": 50,
+    "separate-outputs": true,
+    // format is empty by default — rewrite adds "| " only when title has content
+    // This means: no window open → module outputs nothing → clock sits centered alone
+    "format": "{title}",
+    "rewrite": {
+      "(.+) — Mozilla Firefox": "$1",
+      "(.+) - Brave": "$1",
+      "(.+) - Google Chrome": "$1",
+      // Catch-all: any other title gets the separator appended
+      "(.+)": "$1 •"
+    }
+  },
+  "clock": {
+    "format": " {:%H:%M}",
+    // Click to toggle between time and full date
+    "format-alt": " {:%A, %d %B %Y}",
+    "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"
+  },
+  // =========================================================================
+  // RIGHT — all modules always visible
+  // =========================================================================
+  "privacy": {
+    "icon-spacing": 4,
+    "icon-size": 14,
+    "transition-duration": 250,
+    "modules": [
+      {
+        "type": "screenshare"
+      },
+      {
+        "type": "audio-in"
+      }
+    ]
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "󰒳",
+      "deactivated": "󰒲"
+    },
+    "tooltip-format-activated": "Idle inhibitor ON — screen will not sleep",
+    "tooltip-format-deactivated": "Idle inhibitor OFF"
+  },
+  "tray": {
+    "icon-size": 14,
+    "spacing": 8
+  },
+  // Always visible: network, volume, battery, power
+  "bluetooth": {
+    "format": "󰂯",
+    "format-connected": "󰂱",
+    "format-disabled": "󰂲",
+    "format-off": "󰂲",
+    "tooltip-format": "Bluetooth: {status}",
+    "tooltip-format-connected": "{device_alias}",
+    "tooltip-format-connected-battery": "{device_alias} — {device_battery_percentage}%",
+    "on-click": "foot --title bluetui bluetui"
+  },
+  // Always visible: network, volume, battery, power
+  "network": {
+    "format-wifi": "󰤨",
+    "format-ethernet": "󱘖", // simple plug/ethernet icon
+    "format-disconnected": "󰤭",
+    "format-linked": "󰤫",
+    "tooltip-format-wifi": "{essid}  {signalStrength}%\n{ipaddr}",
+    "tooltip-format-ethernet": "{ifname}  {ipaddr}/{cidr}",
+    "tooltip-format-disconnected": "Disconnected",
+    // Opens gazelle in a small floating foot window
+    // Window rule in hyprland.conf matches title "gazelle"
+    "on-click": "foot --title gazelle gazelle"
+  },
+  "pulseaudio": {
+    "format": "{icon}",
+    "format-muted": "󰝟",
+    "format-icons": {
+      "headphone": "󰋋",
+      "headset": "󰋎",
+      "default": [
+        "󰕿",
+        "󰖀",
+        "󰕾"
+      ]
+    },
+    "tooltip-format": "{volume}% — {desc}",
+    // Opens wiremix in a small floating foot window
+    // Window rule in hyprland.conf matches title "wiremix"
+    "on-click": "foot --title wiremix wiremix",
+    "scroll-step": 5
+  },
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    // On battery: icon only
+    // Charging: plug icon + percentage (so you can track progress)
+    // Plugged but full/not charging: plug icon only
+    "format": "{icon}",
+    "format-charging": "󰂄 {capacity}%",
+    "format-plugged": "󰚥",
+    "format-full": "󰁹",
+    "format-icons": [
+      "󰁺",
+      "󰁻",
+      "󰁼",
+      "󰁽",
+      "󰁾",
+      "󰁿",
+      "󰂀",
+      "󰂁",
+      "󰂂",
+      "󰁹"
+    ],
+    "tooltip-format": "{capacity}% — {timeTo}\n{power}W",
+    "on-click": "~/.local/bin/waybar-battery-threshold.sh"
+  },
+  "custom/btop": {
+    "format": "󰍛",
+    "tooltip": true,
+    "tooltip-format": "System monitor",
+    "on-click": "sh -c 'pgrep -x btop || (foot -T btop -e btop &); hyprctl dispatch togglespecialworkspace btop'"
+  },
+  "custom/nightlight": {
+    "format": "{}",
+    "exec": "pgrep -x hyprsunset >/dev/null && echo '󰖔' || echo '󰖕'",
+    "interval": 2,
+    "tooltip-format": "Night light toggle",
+    "on-click": "pgrep -x hyprsunset && killall hyprsunset || hyprsunset -t 3500"
+  },
+  "custom/power": {
+    "format": "󰐥",
+    "tooltip": false,
+    "on-click": "~/.local/bin/waybar-power-menu.sh"
+  }
 }
-
