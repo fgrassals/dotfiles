@@ -114,6 +114,7 @@ vim.cmd("packadd nvim.undotree")
 require("catppuccin").setup({
   auto_integrations = true,
   no_italic = true,
+  term_colors = true,
   custom_highlights = function(colors)
     return {
       ["@type"] = { fg = colors.text },
@@ -205,6 +206,7 @@ require("conform").setup({
 
 -- # fuzzy finder
 require("fzf-lua").setup({
+  treesitter = { enabled = true },
   open_files_do_not_replace_types = { "neo-tree", "notify", "terminal", "qf" },
 })
 
