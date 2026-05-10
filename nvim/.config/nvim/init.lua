@@ -24,6 +24,8 @@ vim.o.list = true
 vim.o.listchars = "tab:» ,trail:·,extends:…,precedes:…"
 vim.o.fillchars = "eob: "
 vim.o.mouse = "a"
+vim.opt.list = true
+vim.opt.listchars:append({ leadmultispace = "▏   " })
 
 -- status line
 vim.schedule(function()
