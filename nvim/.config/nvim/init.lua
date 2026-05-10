@@ -39,7 +39,7 @@ vim.schedule(function()
 
   function _G.GitBranch() return vim.b.gitsigns_head or "" end
 
-  vim.o.statusline = "%{v:lua.FileIcon()} %f %m %= %{v:lua.GitBranch()}  %l,%c"
+  vim.o.statusline = "%{v:lua.FileIcon()} %f %m %= %{v:lua.GitBranch()}  %{%v:lua.vim.diagnostic.status()%}  %l,%c"
 end)
 
 -- search
