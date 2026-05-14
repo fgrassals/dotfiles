@@ -218,8 +218,8 @@ hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = 10 }))
 hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
--- btop scratchpad — launch if not running, then toggle visibility
-hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("pgrep -x btop || foot -T btop -e btop"))
+-- btop scratchpad — launch if not running, toggle visibility
+hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("pgrep -x btop > /dev/null || foot -T btop -e btop"))
 hl.bind(mainMod .. " + B", hl.dsp.workspace.toggle_special("btop"))
 
 -- Scroll through workspaces with Super+scroll
