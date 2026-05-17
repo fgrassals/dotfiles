@@ -128,7 +128,7 @@ sudo pacman -S --noconfirm --needed \
     hyprland \
     hyprlock \
     hypridle \
-    hyprpaper \
+    swaybg \
     hyprsunset \
     xdg-desktop-portal-hyprland \
     xdg-desktop-portal-gtk \
@@ -362,7 +362,24 @@ xdg-user-dirs-update
 success "Done"
 
 # =============================================================================
-# 29. SNAPPER — Btrfs snapshots (snap-pac only, no timeline)
+# 29. BOOTLOADER — GRUB
+# archinstall installs GRUB to EFI/BOOT (removable fallback) instead of
+# EFI/arch, which causes fwupd to fail with "cannot find EFI/arch in ESP".
+# Re-running grub-install with --bootloader-id=arch fixes this without
+# removing the fallback path.
+# =============================================================================
+info "Ensuring GRUB is installed to EFI/arch..."
+sudo pacman -S --noconfirm --needed grub efibootmgr
+ESP=$(bootctl --print-esp-path 2>/dev/null || echo /boot)
+if [[ ! -f "$ESP/EFI/arch/grubx64.efi" ]]; then
+    sudo grub-install --target=x86_64-efi --efi-directory="$ESP" --bootloader-id=arch
+    success "GRUB installed to EFI/arch"
+else
+    success "GRUB already at EFI/arch"
+fi
+
+# =============================================================================
+# 30. SNAPPER — Btrfs snapshots (snap-pac only, no timeline)
 # =============================================================================
 info "Installing and configuring snapper..."
 
@@ -386,7 +403,7 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 success "Done"
 
 # =============================================================================
-# 30. PRINTING AND SCANNING — CUPS + HPLIP
+# 31. PRINTING AND SCANNING — CUPS + HPLIP
 # hplip-plugin (AUR) is required for this model — printing and scanning both
 # depend on it. hp-setup must be run interactively after reboot to add the
 # printer. The hpaio SANE backend is uncommented here for scanner detection.
@@ -405,14 +422,14 @@ note "Run 'hp-setup' after reboot to add the HP printer to CUPS"
 note "Verify scanner with: scanimage -L"
 
 # =============================================================================
-# 31. FIRMWARE UPDATES
+# 32. FIRMWARE UPDATES
 # =============================================================================
 info "Installing fwupd..."
 sudo pacman -S --noconfirm --needed fwupd
 success "Done"
 
 # =============================================================================
-# 32. FINGERPRINT — fprintd + PAM configuration
+# 33. FINGERPRINT — fprintd + PAM configuration
 # =============================================================================
 info "Installing fprintd and configuring PAM..."
 sudo pacman -S --noconfirm --needed fprintd
@@ -457,7 +474,7 @@ success "fprintd installed and PAM configured"
 note "Run 'fprintd-enroll' after reboot to register your fingerprint"
 
 # =============================================================================
-# 33. SUDO RULES
+# 34. SUDO RULES
 # =============================================================================
 info "Adding sudo rules..."
 
@@ -467,7 +484,7 @@ sudo chmod 440 /etc/sudoers.d/waybar-battery
 success "Done"
 
 # =============================================================================
-# 34. NEOVIM — bob + mise + prerequisites
+# 35. NEOVIM — bob + mise + prerequisites
 # =============================================================================
 info "Installing bob, mise, and neovim prerequisites..."
 sudo pacman -S --noconfirm --needed \
@@ -482,7 +499,7 @@ note "Run 'bob install stable' after reboot to install neovim"
 note "For node/python via mise: run 'mise use --global node@lts python@latest'"
 
 # =============================================================================
-# 35. NVME TWEAKS
+# 36. NVME TWEAKS
 # =============================================================================
 info "Enabling fstrim.timer..."
 sudo systemctl enable fstrim.timer
@@ -491,7 +508,7 @@ note "Add 'noatime' to your NVMe root partition in /etc/fstab"
 note "  Example: UUID=xxxx / btrfs subvol=@,noatime,compress=zstd 0 0"
 
 # =============================================================================
-# 36. POWER MANAGEMENT — TLP
+# 37. POWER MANAGEMENT — TLP
 # =============================================================================
 info "Installing TLP..."
 sudo pacman -S --noconfirm --needed tlp tlp-rdw
@@ -499,7 +516,7 @@ sudo systemctl enable tlp
 success "Done"
 
 # =============================================================================
-# 37. SHELL — zsh
+# 38. SHELL — zsh
 # =============================================================================
 info "Installing zsh..."
 sudo pacman -S --noconfirm --needed zsh zsh-completions
@@ -510,7 +527,7 @@ fi
 success "Done"
 
 # =============================================================================
-# 38. DISPLAY MANAGER — ly
+# 39. DISPLAY MANAGER — ly
 # =============================================================================
 info "Installing ly..."
 sudo pacman -S --noconfirm --needed ly
@@ -532,7 +549,7 @@ success "Done"
 note "At first login, select 'hyprland' as the session in ly"
 
 # =============================================================================
-# 39. DOTFILES — Stow + permissions
+# 40. DOTFILES — Stow + permissions
 # Assumes dotfiles repo is at ~/dotfiles.
 # Stows every package (subdirectory) found there.
 # Makes all scripts in ~/.local/bin executable.
