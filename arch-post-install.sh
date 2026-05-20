@@ -61,32 +61,17 @@ success "Done"
 
 # =============================================================================
 # 4. KERNEL PARAMETERS
-# amdgpu.dcdebugmask=0x10  — fixes screen flickering on AMD iGPU
-# mem_sleep_default=s2idle  — S3 not supported, enforce s2idle
-#
-# Handles both traditional systemd-boot entries and UKI setups.
+# mem_sleep_default=s2idle  — S3 not supported on this hardware, enforce s2idle
 # =============================================================================
 info "Patching kernel parameters..."
-PARAMS="amdgpu.dcdebugmask=0x10 mem_sleep_default=s2idle"
+PARAMS="mem_sleep_default=s2idle"
+GRUB_CONF="/etc/default/grub"
 
-ENTRY=$(ls /boot/loader/entries/*.conf 2>/dev/null | grep -v fallback | head -n1 || true)
-if [[ -n "$ENTRY" ]]; then
-    if ! grep -q "amdgpu.dcdebugmask" "$ENTRY"; then
-        sudo sed -i '/^options/ s/$/ '"$PARAMS"'/' "$ENTRY"
-        success "Kernel params added to: $(basename "$ENTRY")"
-    else
-        success "Kernel params already in systemd-boot entry"
-    fi
-fi
-
-if [[ ! -f /etc/kernel/cmdline ]] || ! grep -q "amdgpu.dcdebugmask" /etc/kernel/cmdline; then
-    echo "$PARAMS" | sudo tee -a /etc/kernel/cmdline > /dev/null
-    success "Kernel params written to /etc/kernel/cmdline"
-    if [[ -z "$ENTRY" ]]; then
-        note "UKI setup detected — run 'sudo mkinitcpio -P' to embed params into the image"
-    fi
+if grep -q "mem_sleep_default" "$GRUB_CONF"; then
+    success "Kernel params already in $GRUB_CONF"
 else
-    success "Kernel params already in /etc/kernel/cmdline"
+    sudo sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$PARAMS /" "$GRUB_CONF"
+    success "Kernel params added to GRUB_CMDLINE_LINUX_DEFAULT"
 fi
 
 # =============================================================================
