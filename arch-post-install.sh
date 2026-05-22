@@ -197,7 +197,7 @@ success "Done"
 # 17. DOCKER
 # =============================================================================
 info "Installing Docker..."
-sudo pacman -S --noconfirm --needed docker docker-compose
+sudo pacman -S --noconfirm --needed docker docker-compose docker-buildx
 sudo usermod -aG docker "$USER"
 success "Done"
 note "Log out and back in for Docker group membership to take effect"
@@ -491,6 +491,19 @@ sudo systemctl enable fstrim.timer
 success "Done"
 note "Add 'noatime' to your NVMe root partition in /etc/fstab"
 note "  Example: UUID=xxxx / btrfs subvol=@,noatime,compress=zstd 0 0"
+
+# =============================================================================
+# 36.5 ZRAM SWAP
+# =============================================================================
+info "Configuring zram..."
+sudo pacman -S --noconfirm --needed zram-generator
+sudo tee /etc/systemd/zram-generator.conf > /dev/null << 'EOF'
+[zram0]
+zram-size = 8192
+compression-algorithm = zstd
+EOF
+echo "vm.swappiness=10" | sudo tee /etc/sysctl.d/99-swappiness.conf > /dev/null
+success "Done"
 
 # =============================================================================
 # 37. POWER MANAGEMENT — TLP
