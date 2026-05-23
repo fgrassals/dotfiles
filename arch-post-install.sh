@@ -45,7 +45,7 @@ success "System updated"
 # BASE TOOLS
 # =============================================================================
 info "Installing base tools..."
-sudo pacman -S --noconfirm --needed git base-devel openssh
+sudo pacman -S --noconfirm --needed openssh
 success "Done"
 
 # =============================================================================
@@ -58,21 +58,6 @@ if ! command -v paru &>/dev/null; then
     rm -rf /tmp/paru-build
 fi
 success "Done"
-
-# =============================================================================
-# KERNEL PARAMETERS
-# mem_sleep_default=s2idle  — S3 not supported on this hardware, enforce s2idle
-# =============================================================================
-info "Patching kernel parameters..."
-PARAMS="mem_sleep_default=s2idle"
-GRUB_CONF="/etc/default/grub"
-
-if grep -q "mem_sleep_default" "$GRUB_CONF"; then
-    success "Kernel params already in $GRUB_CONF"
-else
-    sudo sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$PARAMS /" "$GRUB_CONF"
-    success "Kernel params added to GRUB_CMDLINE_LINUX_DEFAULT"
-fi
 
 # =============================================================================
 # AMD GPU — Mesa, Vulkan, VA-API
@@ -157,14 +142,6 @@ success "Done"
 # =============================================================================
 info "Installing swayosd..."
 sudo pacman -S --noconfirm --needed swayosd
-success "Done"
-
-# =============================================================================
-# NETWORK
-# =============================================================================
-info "Installing NetworkManager..."
-sudo pacman -S --noconfirm --needed networkmanager
-sudo systemctl enable --now NetworkManager
 success "Done"
 
 # =============================================================================
@@ -365,7 +342,6 @@ sudo sed -i 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE=no/' /etc/snapper/configs/roo
 sudo systemctl enable --now grub-btrfsd.service
 sudo systemctl enable --now snapper-cleanup.timer
 
-# Populate GRUB with existing snapshots
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 success "Done"
@@ -497,12 +473,8 @@ success "Done"
 # =============================================================================
 # SHELL — zsh
 # =============================================================================
-info "Installing zsh..."
-sudo pacman -S --noconfirm --needed zsh zsh-completions
-ZSH_PATH="$(grep '^/.*zsh$' /etc/shells | head -1)"
-if [[ -n "$ZSH_PATH" && "$SHELL" != "$ZSH_PATH" ]]; then
-    sudo chsh -s "$ZSH_PATH" "$USER"
-fi
+info "Installing zsh extras..."
+sudo pacman -S --noconfirm --needed zsh-completions
 success "Done"
 
 # =============================================================================
