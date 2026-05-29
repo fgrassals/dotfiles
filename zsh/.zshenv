@@ -12,3 +12,5 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_STATE_HOME="$HOME/.local/state"
 
 export PATH="$HOME/.local/bin:$PATH"
+
+export SSH_AUTH_SOCK=~/.1password/agent.sock

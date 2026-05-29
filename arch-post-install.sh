@@ -513,6 +513,7 @@ if [[ ! -d "$DOTFILES_DIR" ]]; then
     warn "~/dotfiles not found — skipping Stow. Run manually when ready:"
     note "cd ~/dotfiles && stow *"
 else
+    mkdir -p "$HOME/.config/git"
     cd "$DOTFILES_DIR"
     for pkg in */; do
         pkg="${pkg%/}"

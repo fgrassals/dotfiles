@@ -1,0 +1,24 @@
+[core]
+  editor = nvim
+
+[push]
+  autoSetupRemote = true
+
+[merge]
+  conflictstyle = zdiff3
+
+[diff]
+  colorMoved = default
+
+[commit]
+  gpgsign = true
+
+[tag]
+  gpgsign = true
+  forceSignAnnotated = true
+
+[gpg]
+  format = ssh
+
+[include]
+  path = ~/.config/git/config.local
