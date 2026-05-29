@@ -328,7 +328,7 @@ success "Done"
 # =============================================================================
 info "Installing and configuring snapper..."
 
-sudo pacman -S --noconfirm --needed snapper grub-btrfs snap-pac
+sudo pacman -S --noconfirm --needed snapper grub-btrfs snap-pac inotify-tools
 
 # Create root snapper config if it doesn't exist yet
 if [[ ! -f /etc/snapper/configs/root ]]; then
