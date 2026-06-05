@@ -40,7 +40,7 @@ timedatectl set-timezone "$TIMEZONE"
 # =============================================================================
 sgdisk --zap-all "$DISK"
 sgdisk -n 1:0:+1G  -t 1:EF00 "$DISK"
-sgdisk -n 2:0:0    -t 2:8300 "$DISK"
+sgdisk -n 2:0:0    -t 2:8300 -c 2:cryptroot "$DISK"
 partprobe "$DISK"
 
 # =============================================================================
