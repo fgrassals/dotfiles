@@ -66,7 +66,6 @@ info "Installing AMD GPU stack..."
 sudo pacman -S --noconfirm --needed \
     mesa \
     vulkan-radeon \
-    libva-mesa-driver \
     libva-utils \
     vulkan-icd-loader \
     libdrm
@@ -167,7 +166,8 @@ success "Done"
 # BROWSERS + AUR TOOLS
 # =============================================================================
 info "Installing browsers..."
-paru -S --needed brave-bin google-chrome gazelle-tui
+sudo pacman -S --noconfirm --needed firefox
+paru -S --needed google-chrome gazelle-tui
 success "Done"
 
 # =============================================================================
@@ -324,29 +324,6 @@ xdg-user-dirs-update
 success "Done"
 
 # =============================================================================
-# SNAPPER — Btrfs snapshots (snap-pac only, no timeline)
-# =============================================================================
-info "Installing and configuring snapper..."
-
-sudo pacman -S --noconfirm --needed snapper grub-btrfs snap-pac inotify-tools
-
-# Create root snapper config if it doesn't exist yet
-if [[ ! -f /etc/snapper/configs/root ]]; then
-    sudo snapper -c root create-config /
-fi
-
-# Disable timeline creation
-sudo sed -i 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE=no/' /etc/snapper/configs/root
-
-# Enable GRUB snapshot entries and cleanup — skip timeline timer
-sudo systemctl enable --now grub-btrfsd.service
-sudo systemctl enable --now snapper-cleanup.timer
-
-sudo grub-mkconfig -o /boot/grub/grub.cfg
-
-success "Done"
-
-# =============================================================================
 # PRINTING AND SCANNING — CUPS + HPLIP
 # hplip-plugin (AUR) is required for this model — printing and scanning both
 # depend on it. hp-setup must be run interactively after reboot to add the
@@ -478,12 +455,26 @@ sudo pacman -S --noconfirm --needed zsh-completions
 success "Done"
 
 # =============================================================================
-# DISPLAY MANAGER — ly
+# DISPLAY MANAGER — greetd + nwg-hello
+# greetd ships its own greeter user (sysusers) and /etc/pam.d/greetd; we add
+# gnome-keyring on top and put the greeter in the video group for GPU access.
+# nwg-hello runs under Hyprland via its shipped /etc/nwg-hello/hyprland.conf.
 # =============================================================================
-info "Installing ly..."
-sudo pacman -S --noconfirm --needed ly
+info "Installing greetd + nwg-hello..."
+sudo pacman -S --noconfirm --needed greetd nwg-hello
 
-sudo tee /etc/pam.d/ly > /dev/null << 'EOF'
+sudo usermod -aG video greeter
+
+sudo tee /etc/greetd/config.toml > /dev/null << 'EOF'
+[terminal]
+vt = 1
+
+[default_session]
+command = "Hyprland -c /etc/nwg-hello/hyprland.conf"
+user = "greeter"
+EOF
+
+sudo tee /etc/pam.d/greetd > /dev/null << 'EOF'
 #%PAM-1.0
 auth       include      system-login
 auth       optional     pam_gnome_keyring.so
@@ -494,10 +485,8 @@ session    optional     pam_gnome_keyring.so auto_start
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl enable ly@tty2.service
-sudo systemctl disable getty@tty2.service
+sudo systemctl enable greetd.service
 success "Done"
-note "At first login, select 'hyprland' as the session in ly"
 
 # =============================================================================
 # DOTFILES — Stow + permissions

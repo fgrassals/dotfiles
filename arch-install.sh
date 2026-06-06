@@ -18,7 +18,6 @@ TIMEZONE="Region/City"   # e.g. America/New_York
 # =============================================================================
 PART_BOOT="${DISK}p1"
 PART_LUKS="${DISK}p2"
-BTRFS_OPTS="noatime,compress=zstd:1"
 
 # =============================================================================
 # PRE-FLIGHT
@@ -51,35 +50,13 @@ mkfs.fat -F32 "$PART_BOOT"
 cryptsetup luksFormat --type luks2 "$PART_LUKS"
 cryptsetup open "$PART_LUKS" cryptroot
 
-mkfs.btrfs -L arch /dev/mapper/cryptroot
-
-# =============================================================================
-# BTRFS SUBVOLUMES
-# =============================================================================
-mount /dev/mapper/cryptroot /mnt
-
-btrfs subvolume create /mnt/@
-btrfs subvolume create /mnt/@home
-btrfs subvolume create /mnt/@var_log
-btrfs subvolume create /mnt/@var_cache
-btrfs subvolume create /mnt/@var_tmp
-btrfs subvolume create /mnt/@var_lib_docker
-
-umount /mnt
+mkfs.ext4 -L arch /dev/mapper/cryptroot
 
 # =============================================================================
 # MOUNT
 # =============================================================================
-mount -o "${BTRFS_OPTS},subvol=@" /dev/mapper/cryptroot /mnt
-
-mkdir -p /mnt/{boot,home,var/log,var/cache,var/tmp,var/lib/docker}
-
-mount -o "${BTRFS_OPTS},subvol=@home"           /dev/mapper/cryptroot /mnt/home
-mount -o "${BTRFS_OPTS},subvol=@var_log"        /dev/mapper/cryptroot /mnt/var/log
-mount -o "${BTRFS_OPTS},subvol=@var_cache"      /dev/mapper/cryptroot /mnt/var/cache
-mount -o "${BTRFS_OPTS},subvol=@var_tmp"        /dev/mapper/cryptroot /mnt/var/tmp
-mount -o "${BTRFS_OPTS},subvol=@var_lib_docker" /dev/mapper/cryptroot /mnt/var/lib/docker
-
+mount /dev/mapper/cryptroot /mnt
+mkdir -p /mnt/boot
 mount "$PART_BOOT" /mnt/boot
 
 # =============================================================================
@@ -87,11 +64,12 @@ mount "$PART_BOOT" /mnt/boot
 # =============================================================================
 pacstrap -K /mnt \
     base base-devel \
-    linux linux-firmware linux-headers \
+    linux linux-headers \
+    linux-lts linux-lts-headers \
+    linux-firmware \
     amd-ucode \
-    btrfs-progs \
-    grub efibootmgr \
     cryptsetup \
+    plymouth \
     networkmanager \
     sudo \
     git \
@@ -121,8 +99,10 @@ echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
 echo "${HOSTNAME}" > /etc/hostname
 
-sed -i 's/^MODULES=.*/MODULES=(btrfs)/' /etc/mkinitcpio.conf
-sed -i 's/^HOOKS=.*/HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
+sed -i 's/^MODULES=.*/MODULES=()/' /etc/mkinitcpio.conf
+sed -i 's/^HOOKS=.*/HOOKS=(base systemd plymouth autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
+
+plymouth-set-default-theme spinner
 mkinitcpio -P
 
 useradd -m -G wheel -s /bin/zsh "$USERNAME"
@@ -130,10 +110,47 @@ echo "%wheel ALL=(ALL:ALL) ALL" > /etc/sudoers.d/wheel
 
 systemctl enable NetworkManager
 
-sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"rd.luks.name=${LUKS_UUID}=cryptroot root=/dev/mapper/cryptroot\"|" /etc/default/grub
-sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="mem_sleep_default=s2idle /' /etc/default/grub
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
-grub-mkconfig -o /boot/grub/grub.cfg
+# --- systemd-boot ---
+bootctl install
+
+cat > /boot/loader/loader.conf <<LOADER
+default  arch.conf
+timeout  3
+console-mode keep
+editor   yes
+LOADER
+
+CMDLINE="rd.luks.name=${LUKS_UUID}=cryptroot root=/dev/mapper/cryptroot rw mem_sleep_default=s2idle quiet splash loglevel=3"
+
+cat > /boot/loader/entries/arch.conf <<ENTRY
+title   Arch Linux
+linux   /vmlinuz-linux
+initrd  /initramfs-linux.img
+options ${CMDLINE}
+ENTRY
+
+cat > /boot/loader/entries/arch-fallback.conf <<ENTRY
+title   Arch Linux (fallback initramfs)
+linux   /vmlinuz-linux
+initrd  /initramfs-linux-fallback.img
+options ${CMDLINE}
+ENTRY
+
+cat > /boot/loader/entries/arch-lts.conf <<ENTRY
+title   Arch Linux (linux-lts)
+linux   /vmlinuz-linux-lts
+initrd  /initramfs-linux-lts.img
+options ${CMDLINE}
+ENTRY
+
+cat > /boot/loader/entries/arch-lts-fallback.conf <<ENTRY
+title   Arch Linux (linux-lts, fallback initramfs)
+linux   /vmlinuz-linux-lts
+initrd  /initramfs-linux-lts-fallback.img
+options ${CMDLINE}
+ENTRY
+
+systemctl enable systemd-boot-update.service
 EOF
 
 echo "Set root password:"
