@@ -54,7 +54,6 @@
     "format": "{title}",
     "rewrite": {
       "(.+) — Mozilla Firefox": "$1",
-      "(.+) - Brave": "$1",
       "(.+) - Google Chrome": "$1",
       // Catch-all: any other title gets the separator appended
       "(.+)": "$1 •"
