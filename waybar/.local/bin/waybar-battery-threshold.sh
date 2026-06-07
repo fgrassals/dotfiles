@@ -3,8 +3,6 @@
 # 80%  — start 50, stop 80  (daily use, protects battery health)
 # 100% — start 95, stop 100 (full charge when needed)
 
-THRESH_FILE="/etc/tlp.d/10-battery-threshold.conf"
-
 current_stop=$(cat /sys/class/power_supply/BAT0/charge_control_end_threshold 2>/dev/null || echo "?")
 
 if [[ "$current_stop" -le 80 ]] 2>/dev/null; then
@@ -25,15 +23,11 @@ chosen=$(printf "%s\n%s" "$option1" "$option2" | rofi -dmenu -p "Battery" -theme
 
 case "$chosen" in
     *"Limit to 80%"*)
-        echo "START_CHARGE_THRESH_BAT0=50
-STOP_CHARGE_THRESH_BAT0=80" | sudo tee "$THRESH_FILE" > /dev/null
-        sudo tlp start > /dev/null
+        sudo set-charge-threshold 80
         notify-send "Battery" "Threshold set to 80% (start: 50%)" --icon=battery
         ;;
     *"Charge to 100%"*)
-        echo "START_CHARGE_THRESH_BAT0=95
-STOP_CHARGE_THRESH_BAT0=100" | sudo tee "$THRESH_FILE" > /dev/null
-        sudo tlp start > /dev/null
+        sudo set-charge-threshold 100
         notify-send "Battery" "Threshold set to 100% (start: 95%)" --icon=battery
         ;;
 esac

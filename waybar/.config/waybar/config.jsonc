@@ -8,7 +8,6 @@
     "hyprland/workspaces"
   ],
   "modules-center": [
-    "hyprland/window",
     "clock"
   ],
   "modules-right": [
@@ -42,27 +41,12 @@
     }
   },
   // =========================================================================
-  // CENTER — window title + clock
-  // Window title only shows when a window is focused.
-  // When no window: clock sits centered alone, no dangling separator.
+  // CENTER — clock
   // =========================================================================
-  "hyprland/window": {
-    "max-length": 50,
-    "separate-outputs": true,
-    // format is empty by default — rewrite adds "| " only when title has content
-    // This means: no window open → module outputs nothing → clock sits centered alone
-    "format": "{title}",
-    "rewrite": {
-      "(.+) — Mozilla Firefox": "$1",
-      "(.+) - Google Chrome": "$1",
-      // Catch-all: any other title gets the separator appended
-      "(.+)": "$1 •"
-    }
-  },
   "clock": {
-    "format": " {:%H:%M}",
+    "format": "{:%H:%M}",
     // Click to toggle between time and full date
-    "format-alt": " {:%A, %d %B %Y}",
+    "format-alt": "{:%A, %d %B %Y}",
     "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"
   },
   // =========================================================================

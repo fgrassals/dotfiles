@@ -399,9 +399,22 @@ note "Run 'fprintd-enroll' after reboot to register your fingerprint"
 # =============================================================================
 info "Adding sudo rules..."
 
-# Battery threshold script — allows writing TLP config and restarting TLP
-echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/tlp.d/10-battery-threshold.conf, /usr/bin/tlp" | sudo tee /etc/sudoers.d/waybar-battery > /dev/null
-sudo chmod 440 /etc/sudoers.d/waybar-battery
+# Battery threshold helper — validated root script; NOPASSWD scoped to it only.
+sudo tee /usr/local/bin/set-charge-threshold > /dev/null << 'EOF'
+#!/usr/bin/env bash
+case "$1" in
+    80)  start=50; stop=80  ;;
+    100) start=95; stop=100 ;;
+    *) echo "usage: set-charge-threshold 80|100" >&2; exit 1 ;;
+esac
+printf 'START_CHARGE_THRESH_BAT0=%s\nSTOP_CHARGE_THRESH_BAT0=%s\n' "$start" "$stop" > /etc/tlp.d/10-battery-threshold.conf
+tlp start >/dev/null
+EOF
+sudo chmod 755 /usr/local/bin/set-charge-threshold
+
+# Name sorts after wheel so this NOPASSWD rule is sudo's last match.
+echo "$USER ALL=(ALL) NOPASSWD: /usr/local/bin/set-charge-threshold" | sudo tee /etc/sudoers.d/zz-waybar-battery > /dev/null
+sudo chmod 440 /etc/sudoers.d/zz-waybar-battery
 success "Done"
 
 # =============================================================================
@@ -470,7 +483,7 @@ sudo tee /etc/greetd/config.toml > /dev/null << 'EOF'
 vt = 1
 
 [default_session]
-command = "Hyprland -c /etc/nwg-hello/hyprland.conf"
+command = "start-hyprland -- -c /etc/nwg-hello/hyprland.conf"
 user = "greeter"
 EOF
 
@@ -482,6 +495,126 @@ account    include      system-login
 password   include      system-login
 session    include      system-login
 session    optional     pam_gnome_keyring.so auto_start
+EOF
+
+# Login background dir — owned by the user so set-wallpaper writes it without sudo
+sudo mkdir -p /usr/local/share/login-bg
+sudo chown "$USER:$USER" /usr/local/share/login-bg
+
+# nwg-hello theme (override files take precedence over *-default)
+sudo tee /etc/nwg-hello/nwg-hello.css > /dev/null << 'EOF'
+window {
+    background-color: #1a1b26;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)), url("/usr/local/share/login-bg/bg-blur.jpg");
+    background-size: cover;
+    background-position: center;
+    color: #c0caf5;
+    font-family: "CaskaydiaMono Nerd Font", monospace;
+}
+
+/* Frosted panel behind the form */
+#form-wrapper {
+    background-color: rgba(26, 27, 38, 0.7);
+    border-radius: 20px;
+    padding: 40px;
+    margin: 50px;
+}
+
+#welcome-label {
+    font-size: 24px;
+    color: #c0caf5;
+}
+
+#clock-label {
+    font-family: "CaskaydiaMono Nerd Font", monospace;
+    font-size: 90px;
+    color: #c0caf5;
+}
+
+#date-label {
+    font-size: 22px;
+    color: #8f8f8f;
+}
+
+/* Password entry */
+entry {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: #c0caf5;
+    border: 2px solid #7aa2f7;
+    border-radius: 15px;
+    padding: 12px;
+}
+
+entry:focus {
+    border-color: #bb9af7;
+}
+
+/* Session combo + login button */
+button {
+    background: rgba(255, 255, 255, 0.04) none;
+    color: #c0caf5;
+    border: 2px solid #7aa2f7;
+    border-radius: 15px;
+    padding: 12px;
+}
+
+button:hover {
+    background-color: rgba(122, 162, 247, 0.18);
+}
+
+/* Power buttons */
+#power-button {
+    background: none;
+    border: none;
+    border-radius: 15px;
+    color: #c0caf5;
+}
+
+#power-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#power-button:active {
+    background-color: rgba(187, 154, 247, 0.2);
+}
+EOF
+
+sudo tee /etc/nwg-hello/nwg-hello.json > /dev/null << 'EOF'
+{
+  "session_dirs": [
+    "/usr/share/wayland-sessions",
+    "/usr/share/xsessions"
+  ],
+  "custom_sessions": [
+    {
+      "name": "Shell",
+      "exec": "/usr/bin/bash"
+    }
+  ],
+  "monitor_nums": [],
+  "form_on_monitors": [],
+  "delay_secs": 1,
+  "cmd-sleep": "systemctl suspend",
+  "cmd-reboot": "systemctl reboot",
+  "cmd-poweroff": "systemctl poweroff",
+  "gtk-theme": "Adwaita",
+  "gtk-icon-theme": "",
+  "gtk-cursor-theme": "",
+  "prefer-dark-theme": true,
+  "template-name": "",
+  "time-format": "%H:%M",
+  "date-format": "%A, %d %B %Y",
+  "layer": "overlay",
+  "keyboard-mode": "on_demand",
+  "lang": "",
+  "avatar-show": false,
+  "avatar-size": 100,
+  "avatar-border-width": 1,
+  "avatar-border-color": "#eee",
+  "avatar-corner-radius": 15,
+  "avatar-circle": false,
+  "env-vars": []
+}
 EOF
 
 sudo systemctl daemon-reload

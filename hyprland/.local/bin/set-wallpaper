@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Set IMAGE as the swaybg wallpaper and the nwg-hello login background.
+set -euo pipefail
+
+img="${1:?usage: set-wallpaper IMAGE}"
+dest="$HOME/.local/share/wallpaper.jpg"
+
+[[ "$img" -ef "$dest" ]] || cp -f -- "$img" "$dest"
+
+pkill -x swaybg 2>/dev/null || true
+swaybg -i "$dest" -m fill >/dev/null 2>&1 &
+disown
+
+# nwg-hello login background
+bg_dir="/usr/local/share/login-bg"
+if command -v magick &>/dev/null && [[ -w "$bg_dir" ]]; then
+    magick "$dest" -resize 1920x1080^ -gravity center -extent 1920x1080 -blur 0x16 "$bg_dir/bg-blur.jpg"
+fi

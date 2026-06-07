@@ -107,6 +107,7 @@ mkinitcpio -P
 
 useradd -m -G wheel -s /bin/zsh "$USERNAME"
 echo "%wheel ALL=(ALL:ALL) ALL" > /etc/sudoers.d/wheel
+chmod 0440 /etc/sudoers.d/wheel
 
 systemctl enable NetworkManager
 
