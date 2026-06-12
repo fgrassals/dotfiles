@@ -37,7 +37,7 @@ foundation() {
 
     # rank mirrors
     pac reflector
-    sudo reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist || warn "reflector failed; keeping mirrors"
+    sudo reflector --country US,CA --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist || warn "reflector failed; keeping mirrors"
 
     sudo pacman -Syu --noconfirm
 
@@ -186,8 +186,8 @@ media() {
 # =============================================================================
 apps() {
     msg "apps"
-    pac firefox yazi zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie slurp papirus-icon-theme nwg-look docker docker-compose docker-buildx
-    aur 1password 1password-cli google-chrome wl-screenrec catppuccin-gtk-theme-macchiato
+    pac firefox yazi zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie slurp wf-recorder papirus-icon-theme nwg-look docker docker-compose docker-buildx
+    aur 1password 1password-cli google-chrome catppuccin-gtk-theme-macchiato
 
     # docker group applies on next login
     sudo systemctl enable docker.socket

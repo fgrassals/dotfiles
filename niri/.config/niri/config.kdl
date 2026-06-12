@@ -666,7 +666,7 @@ binds {
     Mod+Ctrl+S { screenshot-screen; }
     Mod+Shift+S { screenshot-window; }
 
-    // Screen recording: toggle region recording (wl-screenrec -> ~/Videos).
+    // Screen recording: toggle region recording (wf-recorder -> ~/Videos).
     Mod+Alt+R { spawn-sh "~/.local/bin/screenrecord"; }
 
     // Applications such as remote-desktop clients and software KVM switches may
