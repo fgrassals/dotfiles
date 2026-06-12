@@ -282,6 +282,7 @@ spawn-at-startup "swaybg" "-c" "24273a"
 spawn-at-startup "mako"
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 spawn-sh-at-startup "wl-paste --watch cliphist store"
+spawn-sh-at-startup "wl-clip-persist --clipboard regular"
 spawn-sh-at-startup "swayidle -w timeout 300 'loginctl lock-session' timeout 600 'niri msg action power-off-monitors' before-sleep 'loginctl lock-session' lock 'gtklock -d -s ~/.config/gtklock/style.css'"
 spawn-at-startup "swayosd-server"
 spawn-at-startup "udiskie" "--no-tray"
@@ -666,8 +667,8 @@ binds {
     Mod+Ctrl+S { screenshot-screen; }
     Mod+Shift+S { screenshot-window; }
 
-    // Screen recording: toggle region recording (wf-recorder -> ~/Videos).
-    Mod+Alt+R { spawn-sh "~/.local/bin/screenrecord"; }
+    // Screen recording: kooha (portal-based GUI).
+    Mod+Alt+R { spawn "kooha"; }
 
     // Applications such as remote-desktop clients and software KVM switches may
     // request that niri stops processing the keyboard shortcuts defined here

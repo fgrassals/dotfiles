@@ -25,6 +25,9 @@ window#waybar { background:rgba(24,25,38,0.97); color:#cad3f5; }
 #custom-nightlight.on { color:#eed49f; }
 #custom-power { color:#6e738d; }
 #custom-power:hover { color:#ed8796; }
+#privacy,#privacy-item { padding:0 4px; }
+#privacy-item.screenshare { color:#ed8796; }
+#privacy-item.audio-in { color:#f5a97f; }
 #cpu:hover,#memory:hover,#temperature:hover,#bluetooth:hover,#network:hover,#wireplumber:hover,#battery:hover,#idle_inhibitor:hover,#custom-nightlight:hover { color:#8aadf4; }
 /* pills */
 #stats,#status { background:#1e2030; border-radius:0; margin:0 4px; padding:0 4px; }

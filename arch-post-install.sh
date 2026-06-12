@@ -186,7 +186,7 @@ media() {
 # =============================================================================
 apps() {
     msg "apps"
-    pac firefox yazi zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie slurp wf-recorder papirus-icon-theme nwg-look docker docker-compose docker-buildx
+    pac firefox yazi zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie kooha papirus-icon-theme nwg-look docker docker-compose docker-buildx
     aur 1password 1password-cli google-chrome catppuccin-gtk-theme-macchiato
 
     # docker group applies on next login
@@ -237,7 +237,7 @@ ${c_blue}==>${c_reset} Done. Manual steps that can't be scripted:
      ROCm enumerating the Radeon 860M APU.
 
   Notes: battery is capped at 80% (click the waybar battery for profiles + 80/100
-  toggle). Screen-record a region with Mod+Alt+R. Keyring auto-unlocks at login.
+  toggle). Screen-record with kooha (Mod+Alt+R). Keyring auto-unlocks at login.
 EOF
 }
 

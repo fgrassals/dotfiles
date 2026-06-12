@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Toggle / report wlsunset night light for waybar. Times are local; tweak to taste.
+# wlsunset night light toggle
 set -euo pipefail
 
 case "${1:-status}" in
@@ -7,8 +7,9 @@ case "${1:-status}" in
         if pgrep -x wlsunset >/dev/null; then
             pkill -x wlsunset
         else
-            wlsunset -S 06:30 -s 19:00 &>/dev/null &
+            wlsunset -t 3500 -T 3501 &>/dev/null &
         fi
+        pkill -RTMIN+8 waybar || true
         ;;
     status)
         if pgrep -x wlsunset >/dev/null; then

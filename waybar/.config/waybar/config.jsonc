@@ -43,10 +43,23 @@
         "format": "󰔏 {temperatureC}°C",
         "critical-threshold": 80
     },
+    "privacy": {
+        "icon-spacing": 4,
+        "icon-size": 14,
+        "transition-duration": 250,
+        "modules": [
+            {
+                "type": "screenshare"
+            },
+            {
+                "type": "audio-in"
+            }
+        ]
+    },
     "custom/nightlight": {
         "exec": "~/.config/waybar/scripts/nightlight.sh status",
         "return-type": "json",
-        "interval": 5,
+        "signal": 8,
         "on-click": "~/.config/waybar/scripts/nightlight.sh toggle",
         "tooltip": true
     },
@@ -145,6 +158,7 @@
         "orientation": "horizontal",
         "modules": [
             "tray",
+            "privacy",
             "custom/nightlight",
             "idle_inhibitor",
             "bluetooth",
