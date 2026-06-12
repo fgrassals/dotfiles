@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Toggle region recording (wl-screenrec, VAAPI) -> ~/Videos.
+set -euo pipefail
+
+dir="$HOME/Videos"; mkdir -p "$dir"
+
+if pgrep -x wl-screenrec >/dev/null; then
+    pkill -INT -x wl-screenrec
+    notify-send "Recording stopped" "Saved to ~/Videos"
+else
+    region=$(slurp) || exit 0
+    file="$dir/rec-$(date +%Y%m%d-%H%M%S).mp4"
+    wl-screenrec -g "$region" -f "$file" >/dev/null 2>&1 &
+    notify-send "Recording started" "Region -> ~/Videos"
+fi

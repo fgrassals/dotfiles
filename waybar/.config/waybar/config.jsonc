@@ -1,168 +1,157 @@
-// -*- mode: jsonc -*-
 {
-  "layer": "top",
-  "position": "top",
-  "height": 26,
-  "spacing": 0,
-  "modules-left": [
-    "hyprland/workspaces"
-  ],
-  "modules-center": [
-    "clock"
-  ],
-  "modules-right": [
-    "tray",
-    "privacy",
-    "custom/btop",
-    "custom/nightlight",
-    "idle_inhibitor",
-    "bluetooth",
-    "network",
-    "pulseaudio",
-    "battery",
-    "custom/power"
-  ],
-  // =========================================================================
-  // LEFT — workspaces
-  // =========================================================================
-  "hyprland/workspaces": {
-    "disable-scroll": true,
-    "on-click": "activate",
-    "show-special": false,
-    "sort-by": "number",
-    "format": "{id}",
-    // Always show workspaces 1-5 regardless of whether they are open
-    "persistent-workspaces": {
-      "1": [],
-      "2": [],
-      "3": [],
-      "4": [],
-      "5": []
-    }
-  },
-  // =========================================================================
-  // CENTER — clock
-  // =========================================================================
-  "clock": {
-    "format": "{:%H:%M}",
-    // Click to toggle between time and full date
-    "format-alt": "{:%A, %d %B %Y}",
-    "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"
-  },
-  // =========================================================================
-  // RIGHT — all modules always visible
-  // =========================================================================
-  "privacy": {
-    "icon-spacing": 4,
-    "icon-size": 14,
-    "transition-duration": 250,
-    "modules": [
-      {
-        "type": "screenshare"
-      },
-      {
-        "type": "audio-in"
-      }
-    ]
-  },
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "format-icons": {
-      "activated": "󰒳",
-      "deactivated": "󰒲"
-    },
-    "tooltip-format-activated": "Idle inhibitor ON — screen will not sleep",
-    "tooltip-format-deactivated": "Idle inhibitor OFF"
-  },
-  "tray": {
-    "icon-size": 14,
-    "spacing": 8
-  },
-  // Always visible: network, volume, battery, power
-  "bluetooth": {
-    "format": "󰂯",
-    "format-connected": "󰂱",
-    "format-disabled": "󰂲",
-    "format-off": "󰂲",
-    "tooltip-format": "Bluetooth: {status}",
-    "tooltip-format-connected": "{device_alias}",
-    "tooltip-format-connected-battery": "{device_alias} — {device_battery_percentage}%",
-    "on-click": "foot --title bluetui bluetui"
-  },
-  // Always visible: network, volume, battery, power
-  "network": {
-    "format-wifi": "󰤨",
-    "format-ethernet": "󱘖", // simple plug/ethernet icon
-    "format-disconnected": "󰤭",
-    "format-linked": "󰤫",
-    "tooltip-format-wifi": "{essid}  {signalStrength}%\n{ipaddr}",
-    "tooltip-format-ethernet": "{ifname}  {ipaddr}/{cidr}",
-    "tooltip-format-disconnected": "Disconnected",
-    // Opens gazelle in a small floating foot window
-    // Window rule in hyprland.conf matches title "gazelle"
-    "on-click": "foot --title gazelle gazelle"
-  },
-  "pulseaudio": {
-    "format": "{icon}",
-    "format-muted": "󰝟",
-    "format-icons": {
-      "headphone": "󰋋",
-      "headset": "󰋎",
-      "default": [
-        "󰕿",
-        "󰖀",
-        "󰕾"
-      ]
-    },
-    "tooltip-format": "{volume}% — {desc}",
-    // Opens wiremix in a small floating foot window
-    // Window rule in hyprland.conf matches title "wiremix"
-    "on-click": "foot --title wiremix wiremix",
-    "scroll-step": 5
-  },
-  "battery": {
-    "states": {
-      "warning": 30,
-      "critical": 15
-    },
-    // On battery: icon only
-    // Charging: plug icon + percentage (so you can track progress)
-    // Plugged but full/not charging: plug icon only
-    "format": "{icon}",
-    "format-charging": "󰂄 {capacity}%",
-    "format-plugged": "󰚥",
-    "format-full": "󰁹",
-    "format-icons": [
-      "󰁺",
-      "󰁻",
-      "󰁼",
-      "󰁽",
-      "󰁾",
-      "󰁿",
-      "󰂀",
-      "󰂁",
-      "󰂂",
-      "󰁹"
+    "layer": "top",
+    "position": "top",
+    "height": 26,
+    "spacing": 0,
+    "modules-left": [
+        "clock",
+        "group/stats"
     ],
-    "tooltip-format": "{capacity}% — {timeTo}\n{power}W",
-    "on-click": "~/.local/bin/waybar-battery-threshold.sh"
-  },
-  "custom/btop": {
-    "format": "󰍛",
-    "tooltip": true,
-    "tooltip-format": "System monitor",
-    "on-click": "sh -c 'pgrep -x btop || (foot -T btop -e btop &); hyprctl dispatch togglespecialworkspace btop'"
-  },
-  "custom/nightlight": {
-    "format": "{}",
-    "exec": "pgrep -x hyprsunset >/dev/null && echo '󰖔' || echo '󰖕'",
-    "interval": 2,
-    "tooltip-format": "Night light toggle",
-    "on-click": "pgrep -x hyprsunset && killall hyprsunset || hyprsunset -t 3500"
-  },
-  "custom/power": {
-    "format": "󰐥",
-    "tooltip": false,
-    "on-click": "~/.local/bin/waybar-power-menu.sh"
-  }
+    "modules-center": [
+        "niri/workspaces"
+    ],
+    "modules-right": [
+        "group/status"
+    ],
+    "niri/workspaces": {
+        "format": "{index}"
+    },
+    "niri/window": {
+        "format": "{title}",
+        "max-length": 50,
+        "separate-outputs": true
+    },
+    "cpu": {
+        "format": "󰻠 {usage}%",
+        "interval": 2,
+        "states": {
+            "warning": 70,
+            "critical": 90
+        },
+        "on-click": "kitty --class=floating-tui -e btop"
+    },
+    "memory": {
+        "format": "󰍛 {used:0.1f}G",
+        "interval": 2,
+        "states": {
+            "warning": 80,
+            "critical": 90
+        },
+        "on-click": "kitty --class=floating-tui -e btop"
+    },
+    "temperature": {
+        "format": "󰔏 {temperatureC}°C",
+        "critical-threshold": 80
+    },
+    "custom/nightlight": {
+        "exec": "~/.config/waybar/scripts/nightlight.sh status",
+        "return-type": "json",
+        "interval": 5,
+        "on-click": "~/.config/waybar/scripts/nightlight.sh toggle",
+        "tooltip": true
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "󰒳",
+            "deactivated": "󰒲"
+        },
+        "tooltip-format-activated": "Idle inhibitor on — screen will not sleep",
+        "tooltip-format-deactivated": "Idle inhibitor off"
+    },
+    "bluetooth": {
+        "format": "󰂯",
+        "format-connected": "󰂱",
+        "format-disabled": "󰂲",
+        "format-off": "󰂲",
+        "tooltip-format": "Bluetooth: {status}",
+        "tooltip-format-connected": "{device_alias}",
+        "on-click": "kitty --class=floating-tui -e bluetui"
+    },
+    "network": {
+        "format-wifi": "󰤨",
+        "format-ethernet": "󱘖",
+        "format-disconnected": "󰤭",
+        "format-linked": "󰤫",
+        "tooltip-format-wifi": "{essid}  {signalStrength}%\n{ipaddr}",
+        "tooltip-format-ethernet": "{ifname}  {ipaddr}",
+        "tooltip-format-disconnected": "Disconnected",
+        "on-click": "kitty --class=floating-tui -e gazelle"
+    },
+    "wireplumber": {
+        "format": "{icon}",
+        "format-muted": "󰝟",
+        "format-icons": [
+            "󰕿",
+            "󰖀",
+            "󰕾"
+        ],
+        "tooltip-format": "{volume}%  —  {node_name}",
+        "on-click": "kitty --class=floating-tui -e wiremix",
+        "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+    },
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon}",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": "󰚥",
+        "format-full": "󰁹",
+        "format-icons": [
+            "󰁺",
+            "󰁻",
+            "󰁼",
+            "󰁽",
+            "󰁾",
+            "󰁿",
+            "󰂀",
+            "󰂁",
+            "󰂂",
+            "󰁹"
+        ],
+        "tooltip-format": "{capacity}%  —  {timeTo}\n{power}W",
+        "on-click": "~/.local/bin/power-tuning"
+    },
+    "tray": {
+        "icon-size": 14,
+        "spacing": 8
+    },
+    "custom/power": {
+        "format": "󰐥",
+        "tooltip": false,
+        "on-click": "~/.config/waybar/scripts/power.sh"
+    },
+    "clock": {
+        "format": "󰅐 {:%H:%M}",
+        "format-alt": "󰅐 {:%a %d %b}",
+        "tooltip-format": "<big>{:%A, %d %B %Y}</big>\n<tt>{calendar}</tt>",
+        "calendar": {
+            "mode": "month"
+        }
+    },
+    "group/stats": {
+        "orientation": "horizontal",
+        "modules": [
+            "cpu",
+            "memory",
+            "temperature"
+        ]
+    },
+    "group/status": {
+        "orientation": "horizontal",
+        "modules": [
+            "tray",
+            "custom/nightlight",
+            "idle_inhibitor",
+            "bluetooth",
+            "network",
+            "wireplumber",
+            "battery",
+            "custom/power"
+        ]
+    }
 }

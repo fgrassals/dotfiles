@@ -1,5 +1,6 @@
 [core]
   editor = nvim
+  pager = delta
 
 [push]
   autoSetupRemote = true
@@ -9,6 +10,14 @@
 
 [diff]
   colorMoved = default
+
+[interactive]
+  diffFilter = delta --color-only
+
+[delta]
+  navigate = true
+  line-numbers = true
+  syntax-theme = Catppuccin Macchiato
 
 [commit]
   gpgsign = true

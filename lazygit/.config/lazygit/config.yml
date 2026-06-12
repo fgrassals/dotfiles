@@ -1,0 +1,20 @@
+gui:
+  # ANSI color names → inherit the terminal's Catppuccin palette
+  theme:
+    activeBorderColor:
+      - blue
+      - bold
+    inactiveBorderColor:
+      - white
+    optionsTextColor:
+      - blue
+    selectedLineBgColor:
+      - black
+    cherryPickedCommitFgColor:
+      - blue
+    cherryPickedCommitBgColor:
+      - black
+    unstagedChangesColor:
+      - red
+    defaultFgColor:
+      - default

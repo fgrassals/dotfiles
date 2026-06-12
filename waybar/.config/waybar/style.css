@@ -1,194 +1,31 @@
-/* =============================================================================
-   Waybar style.css — dark minimal full-width bar
-   ============================================================================= */
-
-* {
-    font-family: "Noto Sans", sans-serif;
-    /* font-size: 12px; */
-    font-weight: normal;
-    min-height: 0;
-    border: none;
-    border-radius: 0;
-}
-
-window#waybar {
-    background-color: rgba(15, 15, 20, 0.95);
-    color: #cdd6f4;
-}
-
-.modules-left   { padding: 0 4px; }
-.modules-center { padding: 0; }
-.modules-right  { padding: 0 4px; }
-
-/* ── Generic module padding — right side modules only ────────── */
-#idle_inhibitor,
-#bluetooth,
-#network,
-#pulseaudio,
-#battery {
-    padding: 0 8px;
-    color: #cdd6f4;
-}
-
-/* ── Workspaces ─────────────────────────────────────────────── */
-#workspaces button {
-    padding: 0 3px;
-    color: #585b70;
-    background: transparent;
-    font-weight: normal;
-}
-
-#workspaces button:hover {
-    color: #cdd6f4;
-    background: rgba(255, 255, 255, 0.05);
-}
-
-/* Active workspace: bold, no underline */
-#workspaces button.active {
-    color: #89b4fa;
-    font-weight: bold;
-}
-
-#workspaces button.urgent {
-    color: #f38ba8;
-    font-weight: bold;
-}
-
-/* ── Window title ───────────────────────────────────────────── */
-#window {
-    color: #cdd6f4;
-    font-weight: normal;
-    padding: 0;
-}
-
-/* ── Clock — centered ───────────────────────────────────────── */
-#clock {
-    color: #cdd6f4;
-    font-weight: normal;
-    padding: 0;
-}
-
-/* ── Idle inhibitor ─────────────────────────────────────────── */
-#idle_inhibitor:hover { color: #8aadf4; }
-
-#idle_inhibitor.activated {
-    color: #f9e2af;
-}
-
-#idle_inhibitor.deactivated {
-    color: #585b70;
-}
-
-/* ── Bluetooth ───────────────────────────────────────────────── */
-#bluetooth.connected {
-    color: #89b4fa;
-}
-
-#bluetooth.disabled,
-#bluetooth.off {
-    color: #585b70;
-}
-
-#bluetooth {
-    margin-right: -4px;
-}
-
-#bluetooth:hover { color: #8aadf4; }
-
-/* ── System tray ─────────────────────────────────────────────── */
-#tray {
-    padding: 0 8px;
-}
-
-#tray > .passive {
-    -gtk-icon-effect: dim;
-}
-
-#tray > .needs-attention {
-    -gtk-icon-effect: highlight;
-    background-color: rgba(243, 139, 168, 0.2);
-}
-
-/* ── Network ─────────────────────────────────────────────────── */
-#network:hover { color: #8aadf4; }
-
-#network.disconnected {
-    color: #f38ba8;
-}
-
-/* ── Volume ─────────────────────────────────────────────────── */
-#pulseaudio:hover { color: #8aadf4; }
-
-#pulseaudio.muted {
-    color: #585b70;
-}
-
-/* ── Battery ─────────────────────────────────────────────────── */
-#battery:hover { color: #8aadf4; }
-
-#battery.charging,
-#battery.plugged {
-    color: #a6e3a1;
-}
-
-#battery.warning:not(.charging) {
-    color: #f9e2af;
-}
-
-#battery.critical:not(.charging) {
-    color: #f38ba8;
-    animation: blink 1s step-start infinite;
-}
-
-@keyframes blink {
-    50% { opacity: 0.5; }
-}
-
-/* ── Privacy indicators ─────────────────────────────────────── */
-#privacy {
-    padding: 0 4px;
-}
-
-#privacy-item {
-    padding: 0 4px;
-}
-
-#privacy-item.screenshare {
-    color: #ed8796;
-}
-
-#privacy-item.audio-in {
-    color: #f5a97f;
-}
-
-/* ── btop ────────────────────────────────────────────────────── */
-#custom-btop {
-    color: #cdd6f4;
-    padding: 0 8px;
-}
-
-#custom-btop:hover {
-    color: #8aadf4;
-}
-
-/* ── Night light ─────────────────────────────────────────────── */
-#custom-nightlight {
-    color: #585b70;
-    padding: 0 8px;
-}
-
-#custom-nightlight:hover {
-    color: #f9e2af;
-}
-
-/* ── Power button ────────────────────────────────────────────── */
-#custom-power {
-    color: #585b70;
-    padding: 0 8px;
-    font-size: 13px;
-    margin-left: -3px;
-}
-
-#custom-power:hover {
-    color: #f38ba8;
-}
+* { font-family:"CaskaydiaMono Nerd Font"; font-size:13px; min-height:0; }
+window#waybar { background:rgba(24,25,38,0.97); color:#cad3f5; }
+/* single workspaces pill, tight uniform numbers */
+#workspaces { background:#1e2030; border-radius:0; margin:0 4px; padding:0 2px; }
+#workspaces button { background:transparent; padding:0 5px; color:#6e738d; border:none; }
+#workspaces button:hover { color:#cad3f5; background:rgba(255,255,255,0.06); border-radius:0; }
+#workspaces button.active, #workspaces button.focused { color:#8aadf4; font-weight:bold; }
+#workspaces button.urgent { color:#ed8796; font-weight:bold; }
+/* uniform leaf spacing */
+#cpu,#memory,#temperature,#custom-nightlight,#idle_inhibitor,#bluetooth,#network,#wireplumber,#battery,#custom-power { padding:0 5px; color:#cad3f5; }
+/* stats: default white, threshold-colored */
+#cpu.warning,#memory.warning,#temperature.warning { color:#eed49f; }
+#cpu.critical,#memory.critical,#temperature.critical { color:#ed8796; }
+/* indicator state colors (matching your current scheme) */
+#idle_inhibitor.activated { color:#eed49f; }
+#idle_inhibitor.deactivated { color:#6e738d; }
+#bluetooth.connected { color:#8aadf4; }
+#bluetooth.disabled,#bluetooth.off { color:#6e738d; }
+#network.disconnected { color:#ed8796; }
+#wireplumber.muted { color:#6e738d; }
+#battery.charging,#battery.plugged { color:#a6da95; }
+#battery.warning:not(.charging) { color:#eed49f; }
+#battery.critical:not(.charging) { color:#ed8796; }
+#custom-nightlight { color:#6e738d; }
+#custom-nightlight.on { color:#eed49f; }
+#custom-power { color:#6e738d; }
+#custom-power:hover { color:#ed8796; }
+#cpu:hover,#memory:hover,#temperature:hover,#bluetooth:hover,#network:hover,#wireplumber:hover,#battery:hover,#idle_inhibitor:hover,#custom-nightlight:hover { color:#8aadf4; }
+/* pills */
+#stats,#status { background:#1e2030; border-radius:0; margin:0 4px; padding:0 4px; }
+#clock { background:#1e2030; border-radius:0; margin:0 4px; padding:0 12px; color:#cad3f5; font-weight:bold; }

@@ -71,6 +71,7 @@ pacstrap -K /mnt \
     cryptsetup \
     plymouth \
     networkmanager \
+    zram-generator \
     sudo \
     git \
     vim nano less \
@@ -102,7 +103,7 @@ echo "${HOSTNAME}" > /etc/hostname
 sed -i 's/^MODULES=.*/MODULES=()/' /etc/mkinitcpio.conf
 sed -i 's/^HOOKS=.*/HOOKS=(base systemd plymouth autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
 
-plymouth-set-default-theme spinner
+plymouth-set-default-theme spinfinity
 mkinitcpio -P
 
 useradd -m -G wheel -s /bin/zsh "$USERNAME"
@@ -110,6 +111,13 @@ echo "%wheel ALL=(ALL:ALL) ALL" > /etc/sudoers.d/wheel
 chmod 0440 /etc/sudoers.d/wheel
 
 systemctl enable NetworkManager
+
+# zram swap (compressed RAM swap; no swap partition)
+cat > /etc/systemd/zram-generator.conf <<ZRAM
+[zram0]
+zram-size = min(ram / 2, 8192)
+compression-algorithm = zstd
+ZRAM
 
 # --- systemd-boot ---
 bootctl install

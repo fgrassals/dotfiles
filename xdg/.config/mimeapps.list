@@ -1,15 +1,15 @@
 [Default Applications]
-image/jpeg=imv.desktop
-image/png=imv.desktop
-image/gif=imv.desktop
-image/webp=imv.desktop
-image/bmp=imv.desktop
-image/tiff=imv.desktop
-image/svg+xml=imv.desktop
-image/avif=imv.desktop
-image/heic=imv.desktop
-image/x-portable-pixmap=imv.desktop
-image/vnd.microsoft.icon=imv.desktop
+image/jpeg=swayimg.desktop
+image/png=swayimg.desktop
+image/gif=swayimg.desktop
+image/webp=swayimg.desktop
+image/bmp=swayimg.desktop
+image/tiff=swayimg.desktop
+image/svg+xml=swayimg.desktop
+image/avif=swayimg.desktop
+image/heic=swayimg.desktop
+image/x-portable-pixmap=swayimg.desktop
+image/vnd.microsoft.icon=swayimg.desktop
 video/mp4=mpv.desktop
 video/x-matroska=mpv.desktop
 video/webm=mpv.desktop

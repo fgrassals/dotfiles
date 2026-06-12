@@ -1,0 +1,40 @@
+/* Catppuccin Macchiato — gtklock (no live blur; solid base background) */
+
+window {
+    background-color: #24273a;
+}
+
+label {
+    color: #cad3f5;
+    font-family: "CaskaydiaMono Nerd Font";
+}
+
+#clock-label {
+    font-size: 64px;
+    font-weight: bold;
+    color: #cad3f5;
+}
+
+#date-label {
+    font-size: 18px;
+    color: #b8c0e0;
+}
+
+entry {
+    min-width: 320px;
+    padding: 10px 14px;
+    background-color: #363a4f;
+    color: #cad3f5;
+    caret-color: #cad3f5;
+    border: 2px solid #6e738d;
+    border-radius: 0;
+}
+
+entry:focus {
+    border-color: #8aadf4;
+}
+
+/* wrong password */
+entry.error {
+    border-color: #ed8796;
+}
