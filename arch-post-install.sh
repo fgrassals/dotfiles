@@ -42,11 +42,12 @@ foundation() {
     sudo pacman -Syu --noconfirm
 
     # paru
-    if ! command -v paru >/dev/null; then
+    if ! paru -V >/dev/null 2>&1; then
         msg "bootstrapping paru"
+        pacman -Q paru-bin >/dev/null 2>&1 && sudo pacman -R --noconfirm paru-bin
         tmp=$(mktemp -d)
-        git clone --depth=1 https://aur.archlinux.org/paru-bin.git "$tmp/paru-bin"
-        ( cd "$tmp/paru-bin" && makepkg -si --noconfirm )
+        git clone --depth=1 https://aur.archlinux.org/paru.git "$tmp/paru"
+        ( cd "$tmp/paru" && makepkg -si --noconfirm )
         rm -rf "$tmp"
     fi
 
