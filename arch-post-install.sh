@@ -195,28 +195,16 @@ apps() {
 }
 
 # =============================================================================
-# LOGIN — greetd + nwg-hello (hosted by cage), niri session auto-discovered
+# LOGIN — ly, niri session auto-discovered
 # =============================================================================
 login() {
     msg "login"
-    pac greetd nwg-hello cage
-
-    sudo install -Dm644 /dev/stdin /etc/greetd/config.toml <<'EOF'
-[terminal]
-vt = 1
-
-[default_session]
-command = "cage -s -- nwg-hello"
-user = "greeter"
-EOF
-
-    [[ -f /etc/nwg-hello/nwg-hello.json ]] || sudo cp /etc/nwg-hello/nwg-hello-default.json /etc/nwg-hello/nwg-hello.json
-    [[ -f /etc/nwg-hello/nwg-hello.css ]]  || sudo cp /etc/nwg-hello/nwg-hello-default.css  /etc/nwg-hello/nwg-hello.css
+    pac ly
+    sudo systemctl disable getty@tty2.service
+    sudo systemctl enable ly@tty2.service
 
     # auto-unlock gnome-keyring (SSH stays with 1Password)
-    grep -q pam_gnome_keyring /etc/pam.d/greetd || printf 'auth       optional     pam_gnome_keyring.so\nsession    optional     pam_gnome_keyring.so auto_start\n' | sudo tee -a /etc/pam.d/greetd >/dev/null
-
-    sudo systemctl enable greetd.service
+    grep -q pam_gnome_keyring /etc/pam.d/ly || printf 'auth       optional     pam_gnome_keyring.so\nsession    optional     pam_gnome_keyring.so auto_start\n' | sudo tee -a /etc/pam.d/ly >/dev/null
 }
 
 # =============================================================================
@@ -247,7 +235,6 @@ ${c_blue}==>${c_reset} Done. Manual steps that can't be scripted:
   5. Set a wallpaper:        set-wallpaper ~/Pictures/<image>   (default is solid colour)
   6. Verify btop's GPU box populates ('rocm-smi' or launch btop) -- depends on
      ROCm enumerating the Radeon 860M APU.
-  7. Reboot, then pick the 'Niri' session in the greetd/nwg-hello greeter.
 
   Notes: battery is capped at 80% (click the waybar battery for profiles + 80/100
   toggle). Screen-record a region with Mod+Alt+R. Keyring auto-unlocks at login.
