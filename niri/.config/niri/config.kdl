@@ -668,7 +668,7 @@ binds {
     Mod+Shift+S { screenshot-window; }
 
     // Screen recording: kooha (portal-based GUI).
-    Mod+Alt+R { spawn "kooha"; }
+    Mod+Z { spawn "kooha"; }
 
     // Applications such as remote-desktop clients and software KVM switches may
     // request that niri stops processing the keyboard shortcuts defined here

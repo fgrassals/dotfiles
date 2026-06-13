@@ -13,7 +13,7 @@ warn() { printf '%s::%s  %s\n'  "$c_yellow" "$c_reset" "$*"; }
 die()  { printf '%serror:%s %s\n' "$c_red"  "$c_reset" "$*" >&2; exit 1; }
 
 pac() { sudo pacman -S --needed --noconfirm "$@"; }
-aur() { paru -S --needed --noconfirm "$@"; }
+aur() { paru -S --needed "$@"; }
 
 # =============================================================================
 # PRE-FLIGHT
@@ -26,7 +26,7 @@ sudo -v
 while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done &
 
 # =============================================================================
-# FOUNDATION — pacman, AUR helper, core CLI/dev tools
+# FOUNDATION — pacman, paru (1Password only), core CLI/dev tools
 # =============================================================================
 foundation() {
     msg "foundation"
@@ -41,6 +41,8 @@ foundation() {
 
     sudo pacman -Syu --noconfirm
 
+    pac git base-devel openssh man-db wl-clipboard eza fzf ripgrep fd mise stow bat git-delta jq yq glow unzip 7zip unrar tree-sitter-cli neovim
+
     # paru
     if ! paru -V >/dev/null 2>&1; then
         msg "bootstrapping paru"
@@ -50,11 +52,6 @@ foundation() {
         ( cd "$tmp/paru" && makepkg -si --noconfirm )
         rm -rf "$tmp"
     fi
-
-    pac git base-devel openssh man-db wl-clipboard eza fzf ripgrep fd mise stow bat git-delta jq yq glow unzip 7zip unrar tree-sitter-cli
-
-    aur bob   # neovim version manager
-    bob use stable   # install neovim (creates bob env)
 }
 
 # =============================================================================
@@ -63,7 +60,20 @@ foundation() {
 system() {
     msg "system"
     pac fwupd ufw gnome-keyring libsecret seahorse power-profiles-daemon lm_sensors upower xdg-user-dirs xdg-utils
-    aur poweralertd
+
+    # low-battery notifier
+    install -Dm644 /dev/stdin "$HOME/.config/systemd/user/battery-alert.service" <<'EOF'
+[Unit]
+Description=Low battery notifier
+
+[Service]
+ExecStart=%h/.local/bin/battery-alert
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+EOF
+    systemctl --user enable battery-alert.service
 
     # firewall: deny incoming, allow outgoing
     sudo ufw default deny incoming
@@ -145,7 +155,6 @@ terminal() {
 shell() {
     msg "shell"
     pac waybar fuzzel mako btop rocm-smi-lib wlsunset swayosd libnotify
-    aur gazelle-tui   # NetworkManager TUI (network module click)
 }
 
 # =============================================================================
@@ -186,8 +195,8 @@ media() {
 # =============================================================================
 apps() {
     msg "apps"
-    pac firefox yazi zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie kooha papirus-icon-theme nwg-look docker docker-compose docker-buildx
-    aur 1password 1password-cli google-chrome catppuccin-gtk-theme-macchiato
+    pac firefox chromium yazi zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie kooha papirus-icon-theme materia-gtk-theme nwg-look docker docker-compose docker-buildx
+    aur 1password 1password-cli
 
     # docker group applies on next login
     sudo systemctl enable docker.socket
@@ -213,8 +222,10 @@ login() {
 dotfiles() {
     msg "dotfiles"
     cd "$(dirname "$(readlink -f "$0")")"
-    stow -R -t "$HOME" kitty waybar fuzzel mako gtklock lazygit zathura btop bat yazi gtk xdg gazelle bin mpv niri zsh git mise nvim
+    stow -R -t "$HOME" kitty waybar fuzzel mako gtklock lazygit zathura btop bat yazi gtk xdg bin mpv niri zsh git mise nvim
     mkdir -p "$HOME/Pictures/Screenshots"
+
+    command -v mise >/dev/null && mise install
 
     # build bat theme cache (delta uses it too)
     command -v bat >/dev/null && bat cache --build
@@ -226,18 +237,11 @@ dotfiles() {
 final_notes() {
     cat <<EOF
 
-${c_blue}==>${c_reset} Done. Manual steps that can't be scripted:
+${c_blue}==>${c_reset} Done. Manual first-boot steps:
   1. 1Password: sign in, then Settings -> Developer -> enable 'Use the SSH agent'
      and 'Sign Git commits' (your ~/.zshenv socket + ~/.gitconfig SSH signing need it).
   2. Enroll a fingerprint:   fprintd-enroll
   3. Log out/in (or 'newgrp docker') so docker group membership applies.
-  4. Firmware updates:       fwupdmgr refresh && fwupdmgr update
-  5. Set a wallpaper:        set-wallpaper ~/Pictures/<image>   (default is solid colour)
-  6. Verify btop's GPU box populates ('rocm-smi' or launch btop) -- depends on
-     ROCm enumerating the Radeon 860M APU.
-
-  Notes: battery is capped at 80% (click the waybar battery for profiles + 80/100
-  toggle). Screen-record with kooha (Mod+Alt+R). Keyring auto-unlocks at login.
 EOF
 }
 

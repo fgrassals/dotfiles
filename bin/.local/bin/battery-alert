@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Low-battery notifier: notify once per threshold while discharging.
+set -euo pipefail
+
+low=15 crit=5 interval=60
+warned_low=0 warned_crit=0
+
+while :; do
+    for bat in /sys/class/power_supply/BAT*; do
+        [ -r "$bat/capacity" ] && [ -r "$bat/status" ] || continue
+        cap=$(< "$bat/capacity")
+        status=$(< "$bat/status")
+
+        if [ "$status" = Discharging ]; then
+            if [ "$cap" -le "$crit" ] && [ "$warned_crit" -eq 0 ]; then
+                notify-send -u critical -i battery-caution "Battery critical" "${cap}% — plug in now"
+                warned_crit=1 warned_low=1
+            elif [ "$cap" -le "$low" ] && [ "$warned_low" -eq 0 ]; then
+                notify-send -u normal -i battery-low "Battery low" "${cap}% remaining"
+                warned_low=1
+            fi
+        else
+            warned_low=0 warned_crit=0
+        fi
+    done
+    sleep "$interval"
+done

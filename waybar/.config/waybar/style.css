@@ -8,6 +8,8 @@ window#waybar { background:rgba(24,25,38,0.97); color:#cad3f5; }
 #workspaces button.urgent { color:#ed8796; font-weight:bold; }
 /* uniform leaf spacing */
 #cpu,#memory,#temperature,#custom-nightlight,#idle_inhibitor,#bluetooth,#network,#wireplumber,#battery,#custom-power { padding:0 5px; color:#cad3f5; }
+/* tray: same edge padding as leaves; icon gap set via config spacing */
+#tray { padding:0 5px; }
 /* stats: default white, threshold-colored */
 #cpu.warning,#memory.warning,#temperature.warning { color:#eed49f; }
 #cpu.critical,#memory.critical,#temperature.critical { color:#ed8796; }

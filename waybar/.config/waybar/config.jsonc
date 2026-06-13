@@ -89,7 +89,7 @@
         "tooltip-format-wifi": "{essid}  {signalStrength}%\n{ipaddr}",
         "tooltip-format-ethernet": "{ifname}  {ipaddr}",
         "tooltip-format-disconnected": "Disconnected",
-        "on-click": "kitty --class=floating-tui -e gazelle"
+        "on-click": "~/.config/waybar/scripts/network.sh"
     },
     "wireplumber": {
         "format": "{icon}",
@@ -131,7 +131,7 @@
     },
     "tray": {
         "icon-size": 14,
-        "spacing": 8
+        "spacing": 10
     },
     "custom/power": {
         "format": "󰐥",
