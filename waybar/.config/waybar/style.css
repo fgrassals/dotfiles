@@ -1,15 +1,17 @@
 * { font-family:"CaskaydiaMono Nerd Font"; font-size:13px; min-height:0; }
 window#waybar { background:rgba(24,25,38,0.97); color:#cad3f5; }
+tooltip { background:#000000; border:1px solid #363a4f; }
+tooltip label { color:#cad3f5; }
 /* single workspaces pill, tight uniform numbers */
 #workspaces { background:#1e2030; border-radius:0; margin:0 4px; padding:0 2px; }
-#workspaces button { background:transparent; padding:0 5px; color:#6e738d; border:none; }
+#workspaces button { background:transparent; padding:0 6px; min-width:0; color:#6e738d; border:none; }
 #workspaces button:hover { color:#cad3f5; background:rgba(255,255,255,0.06); border-radius:0; }
 #workspaces button.active, #workspaces button.focused { color:#8aadf4; font-weight:bold; }
 #workspaces button.urgent { color:#ed8796; font-weight:bold; }
 /* uniform leaf spacing */
-#cpu,#memory,#temperature,#custom-nightlight,#idle_inhibitor,#bluetooth,#network,#wireplumber,#battery,#custom-power { padding:0 5px; color:#cad3f5; }
+#cpu,#memory,#temperature,#custom-nightlight,#idle_inhibitor,#bluetooth,#network,#wireplumber,#battery,#custom-power { padding:0 6px; color:#cad3f5; }
 /* tray: same edge padding as leaves; icon gap set via config spacing */
-#tray { padding:0 5px; }
+#tray { padding:0 6px; }
 /* stats: default white, threshold-colored */
 #cpu.warning,#memory.warning,#temperature.warning { color:#eed49f; }
 #cpu.critical,#memory.critical,#temperature.critical { color:#ed8796; }

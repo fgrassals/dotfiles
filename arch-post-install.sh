@@ -146,7 +146,7 @@ niri() {
 # =============================================================================
 terminal() {
     msg "terminal"
-    pac kitty ttf-cascadia-mono-nerd noto-fonts noto-fonts-emoji ttf-nerd-fonts-symbols-mono
+    pac kitty ttf-cascadia-mono-nerd inter-font noto-fonts noto-fonts-emoji ttf-nerd-fonts-symbols-mono
 }
 
 # =============================================================================
@@ -177,8 +177,8 @@ EOF
         f="/etc/pam.d/$svc"
         [[ -f "$f" ]] || printf '#%%PAM-1.0\nauth  include  system-auth\naccount include system-auth\nsession include system-auth\n' | sudo tee "$f" >/dev/null
         grep -q pam_fprintd "$f" && continue
-        sudo sed -i -e '1a auth  [success=ignore default=1]  pam_exec.so quiet /usr/local/bin/lid-open' \
-                    -e '1a auth  sufficient                   pam_fprintd.so' "$f"
+        sudo sed -i -e '1i auth  [success=ignore default=1]  pam_exec.so quiet /usr/local/bin/lid-open' \
+                    -e '1i auth  sufficient                   pam_fprintd.so' "$f"
     done
 }
 
@@ -195,7 +195,7 @@ media() {
 # =============================================================================
 apps() {
     msg "apps"
-    pac firefox chromium yazi zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie kooha papirus-icon-theme materia-gtk-theme nwg-look docker docker-compose docker-buildx
+    pac firefox chromium yazi zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie wf-recorder slurp papirus-icon-theme materia-gtk-theme nwg-look docker docker-compose docker-buildx
     aur 1password 1password-cli
 
     # docker group applies on next login
@@ -222,7 +222,7 @@ login() {
 dotfiles() {
     msg "dotfiles"
     cd "$(dirname "$(readlink -f "$0")")"
-    stow -R -t "$HOME" kitty waybar fuzzel mako gtklock lazygit zathura btop bat yazi gtk xdg bin mpv niri zsh git mise nvim
+    stow -R -t "$HOME" kitty waybar fuzzel mako gtklock lazygit zathura btop bat yazi gtk xdg bin mpv niri zsh git mise nvim fontconfig
     mkdir -p "$HOME/Pictures/Screenshots"
 
     command -v mise >/dev/null && mise install

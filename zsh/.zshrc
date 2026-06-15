@@ -21,12 +21,6 @@ fi
 source "$ZIM_HOME/init.zsh"
 
 # =============================================================================
-# PATH
-# =============================================================================
-# bob-managed neovim binary
-export PATH="$XDG_DATA_HOME/bob/nvim-bin:$PATH"
-
-# =============================================================================
 # MISE — runtime version manager (node, python, etc.)
 # Activation must come after zimfw so completions register correctly.
 # =============================================================================

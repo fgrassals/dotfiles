@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Toggle screen recording with wf-recorder. Arg: region (default) | screen.
+set -uo pipefail
+
+if pgrep -x wf-recorder >/dev/null; then
+    pkill -INT -x wf-recorder
+    exit 0
+fi
+
+mkdir -p "$HOME/Videos"
+out="$HOME/Videos/recording-$(date +%Y%m%d-%H%M%S).mp4"
+
+if [ "${1:-region}" = region ]; then
+    geom=$(slurp) || exit 0
+    set -- -g "$geom"
+else
+    set --
+fi
+
+notify-send -t 1500 "Recording started" "$(basename "$out")"
+wf-recorder "$@" -f "$out"
+notify-send "Recording saved" "$out"

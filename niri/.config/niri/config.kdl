@@ -286,7 +286,6 @@ spawn-sh-at-startup "wl-clip-persist --clipboard regular"
 spawn-sh-at-startup "swayidle -w timeout 300 'loginctl lock-session' timeout 600 'niri msg action power-off-monitors' before-sleep 'loginctl lock-session' lock 'gtklock -d -s ~/.config/gtklock/style.css'"
 spawn-at-startup "swayosd-server"
 spawn-at-startup "udiskie" "--no-tray"
-spawn-at-startup "poweralertd"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
@@ -361,6 +360,15 @@ window-rule {
 window-rule {
     match app-id=r#"^floating-tui$"#
     open-floating true
+    default-column-width { proportion 0.5; }
+    default-window-height { proportion 0.55; }
+}
+
+window-rule {
+    match app-id=r#"^floating-btop$"#
+    open-floating true
+    default-column-width { proportion 0.85; }
+    default-window-height { proportion 0.85; }
 }
 
 // Example: block out two password managers from screen capture.
@@ -409,8 +417,8 @@ binds {
     Mod+Shift+Q { spawn-sh "~/.config/waybar/scripts/power.sh"; }
 
     // Utility TUIs (Mod+Shift namespace).
-    Mod+Shift+Escape { spawn "kitty" "--class=floating-tui" "-e" "btop"; }
-    Mod+Shift+N { spawn "kitty" "--class=floating-tui" "-e" "gazelle"; }
+    Mod+Shift+Escape { spawn "kitty" "--class=floating-btop" "-e" "btop"; }
+    Mod+Shift+N { spawn-sh "~/.config/waybar/scripts/network.sh"; }
     Mod+Shift+B { spawn "kitty" "--class=floating-tui" "-e" "bluetui"; }
     Mod+Shift+A { spawn "kitty" "--class=floating-tui" "-e" "wiremix"; }
     Mod+Shift+M { spawn-sh "~/.local/bin/power-tuning"; }
@@ -427,7 +435,7 @@ binds {
     XF86AudioRaiseVolume allow-when-locked=true { spawn "swayosd-client" "--output-volume" "raise"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "swayosd-client" "--output-volume" "lower"; }
     XF86AudioMute        allow-when-locked=true { spawn "swayosd-client" "--output-volume" "mute-toggle"; }
-    XF86AudioMicMute     allow-when-locked=true { spawn "swayosd-client" "--input-volume" "mute-toggle"; }
+    XF86AudioMicMute     allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
 
     // Example media keys mapping using playerctl.
     // This will work with any MPRIS-enabled media player.
@@ -667,8 +675,9 @@ binds {
     Mod+Ctrl+S { screenshot-screen; }
     Mod+Shift+S { screenshot-window; }
 
-    // Screen recording: kooha (portal-based GUI).
-    Mod+Z { spawn "kooha"; }
+    // Screen recording: wf-recorder. Mod+Z region, Mod+Shift+Z whole screen.
+    Mod+Z { spawn "record" "region"; }
+    Mod+Shift+Z { spawn "record" "screen"; }
 
     // Applications such as remote-desktop clients and software KVM switches may
     // request that niri stops processing the keyboard shortcuts defined here

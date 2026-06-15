@@ -14,6 +14,3 @@ export XDG_STATE_HOME="$HOME/.local/state"
 export PATH="$HOME/.local/bin:$PATH"
 
 export SSH_AUTH_SOCK=~/.1password/agent.sock
-
-# Bob
-. "$HOME/.local/share/bob/env/env.sh"
