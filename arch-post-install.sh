@@ -173,6 +173,14 @@ done
 exit 1
 EOF
 
+    # niri's disable-power-key-handling hands the power key to logind, whose default
+    # (poweroff) would shut down on the phantom power-key wake event. ignore breaks the
+    # suspend/resume loop (niri-wm/niri#2233); hold-to-force-off (firmware) is unaffected.
+    sudo install -Dm644 /dev/stdin /etc/systemd/logind.conf.d/power-key.conf <<'EOF'
+[Login]
+HandlePowerKey=ignore
+EOF
+
     for svc in sudo polkit-1; do
         f="/etc/pam.d/$svc"
         [[ -f "$f" ]] || printf '#%%PAM-1.0\nauth  include  system-auth\naccount include system-auth\nsession include system-auth\n' | sudo tee "$f" >/dev/null
