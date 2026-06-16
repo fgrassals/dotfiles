@@ -162,7 +162,7 @@ shell() {
 # =============================================================================
 session() {
     msg "session"
-    pac gtklock swayidle swaybg cliphist wl-clip-persist brightnessctl fprintd
+    pac swaylock imagemagick swayidle swaybg cliphist wl-clip-persist brightnessctl fprintd
 
     # lid-aware: skip fprintd when lid closed
     sudo install -Dm755 /dev/stdin /usr/local/bin/lid-open <<'EOF'
@@ -173,13 +173,22 @@ done
 exit 1
 EOF
 
-    for svc in sudo gtklock polkit-1; do
+    for svc in sudo polkit-1; do
         f="/etc/pam.d/$svc"
         [[ -f "$f" ]] || printf '#%%PAM-1.0\nauth  include  system-auth\naccount include system-auth\nsession include system-auth\n' | sudo tee "$f" >/dev/null
         grep -q pam_fprintd "$f" && continue
         sudo sed -i -e '1i auth  [success=ignore default=1]  pam_exec.so quiet /usr/local/bin/lid-open' \
                     -e '1i auth  sufficient                   pam_fprintd.so' "$f"
     done
+
+    f="/etc/pam.d/swaylock"
+    if ! grep -q pam_fprintd "$f" 2>/dev/null; then
+        printf '%s\n' \
+            'auth  sufficient                  pam_unix.so try_first_pass nullok' \
+            'auth  [success=ignore default=1]  pam_exec.so quiet /usr/local/bin/lid-open' \
+            'auth  sufficient                  pam_fprintd.so' \
+            'auth  include                     login' | sudo tee "$f" >/dev/null
+    fi
 }
 
 # =============================================================================
@@ -222,8 +231,10 @@ login() {
 dotfiles() {
     msg "dotfiles"
     cd "$(dirname "$(readlink -f "$0")")"
-    stow -R -t "$HOME" kitty waybar fuzzel mako gtklock lazygit zathura btop bat yazi gtk xdg bin mpv niri zsh git mise nvim fontconfig
+    stow -R -t "$HOME" kitty waybar fuzzel mako swaylock lazygit zathura btop bat yazi gtk xdg bin mpv niri zsh git mise nvim fontconfig
     mkdir -p "$HOME/Pictures/Screenshots"
+
+    [ -f "$HOME/.local/share/wallpaper.jpg" ] && magick "$HOME/.local/share/wallpaper.jpg" -resize 1280x -blur 0x18 -brightness-contrast -32x0 "$HOME/.local/share/wallpaper-blur.jpg"
 
     command -v mise >/dev/null && mise install
 

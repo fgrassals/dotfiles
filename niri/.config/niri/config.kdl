@@ -31,6 +31,8 @@ input {
     touchpad {
         // off
         tap
+        tap-button-map "left-right-middle"
+        click-method "clickfinger"
         dwt
         // dwtp
         // drag false
@@ -119,7 +121,7 @@ output "eDP-1" {
 // https://niri-wm.github.io/niri/Configuration:-Layout
 layout {
     // Set gaps around windows in logical pixels.
-    gaps 10
+    gaps 8
 
     // When to center a column when changing focus, options are:
     // - "never", default behavior, focusing an off-screen column will keep at the left
@@ -176,13 +178,13 @@ layout {
 
         // Color of the ring on the active monitor.
         active-color "#8aadf4"
-        active-gradient from="#7aa2f7" to="#bb9af7" angle=45
+        active-gradient from="#7aa2f7" to="#bb9af7" angle=135
 
         // Color of the ring on inactive monitors.
         //
         // The focus ring only draws around the active window, so the only place
         // where you can see its inactive-color is on other monitors.
-        inactive-color "#6e738d"
+        inactive-color "#595959aa"
 
         // You can also use gradients. They take precedence over solid colors.
         // Gradients are rendered the same as CSS linear-gradient(angle, from, to).
@@ -206,9 +208,10 @@ layout {
         // If you enable the border, you probably want to disable the focus ring.
         off
 
-        width 4
-        active-color "#ffc87f"
-        inactive-color "#6e738d"
+        width 2
+        active-color "#8aadf4"
+        active-gradient from="#7aa2f7" to="#bb9af7" angle=135
+        inactive-color "#595959aa"
 
         // Color of the border around windows that request your attention.
         urgent-color "#9b0000"
@@ -278,12 +281,13 @@ layout {
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "waybar"
-spawn-at-startup "swaybg" "-c" "24273a"
+spawn-sh-at-startup "gdbus wait --session --timeout 30 org.kde.StatusNotifierWatcher; 1password --silent"
+spawn-sh-at-startup "swaybg -i ~/.local/share/wallpaper.jpg -m fill"
 spawn-at-startup "mako"
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 spawn-sh-at-startup "wl-paste --watch cliphist store"
 spawn-sh-at-startup "wl-clip-persist --clipboard regular"
-spawn-sh-at-startup "swayidle -w timeout 300 'loginctl lock-session' timeout 600 'niri msg action power-off-monitors' before-sleep 'loginctl lock-session' lock 'gtklock -d -s ~/.config/gtklock/style.css'"
+spawn-sh-at-startup "swayidle -w timeout 300 'swaylock -f -i ~/.local/share/wallpaper-blur.jpg' timeout 600 'niri msg action power-off-monitors' before-sleep 'swaylock -f -i ~/.local/share/wallpaper-blur.jpg' lock 'swaylock -f -i ~/.local/share/wallpaper-blur.jpg'"
 spawn-at-startup "swayosd-server"
 spawn-at-startup "udiskie" "--no-tray"
 
