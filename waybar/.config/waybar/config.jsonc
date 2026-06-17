@@ -8,15 +8,15 @@
         "group/stats"
     ],
     "modules-center": [
-        "niri/workspaces"
+        "hyprland/workspaces"
     ],
     "modules-right": [
         "group/status"
     ],
-    "niri/workspaces": {
-        "format": "{index}"
+    "hyprland/workspaces": {
+        "format": "{id}"
     },
-    "niri/window": {
+    "hyprland/window": {
         "format": "{title}",
         "max-length": 50,
         "separate-outputs": true
@@ -57,10 +57,10 @@
         ]
     },
     "custom/nightlight": {
-        "exec": "~/.config/waybar/scripts/nightlight.sh status",
+        "exec": "nightlight status",
         "return-type": "json",
         "signal": 8,
-        "on-click": "~/.config/waybar/scripts/nightlight.sh toggle",
+        "on-click": "nightlight toggle",
         "tooltip": true
     },
     "idle_inhibitor": {
@@ -130,7 +130,7 @@
             "󰁹"
         ],
         "tooltip-format": "{capacity}%  —  {timeTo}\n{power}W",
-        "on-click": "~/.local/bin/power-tuning"
+        "on-click": "power-tuning"
     },
     "tray": {
         "icon-size": 14,
@@ -139,7 +139,7 @@
     "custom/power": {
         "format": "󰐥",
         "tooltip": false,
-        "on-click": "~/.config/waybar/scripts/power.sh"
+        "on-click": "power-menu"
     },
     "clock": {
         "format": "󰅐 {:%H:%M}",

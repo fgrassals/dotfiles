@@ -1,23 +1,27 @@
 #!/usr/bin/env bash
 # Power profiles + battery charge limit (fuzzel menu).
 set -euo pipefail
-prof=$(powerprofilesctl get 2>/dev/null || echo "?")
+
+# Force system python; a mise/pyenv python on PATH lacks the `gi` module.
+ppctl() { /usr/bin/python3 /usr/bin/powerprofilesctl "$@"; }
+
+prof=$(ppctl get 2>/dev/null || echo "?")
 end=$(cat /sys/class/power_supply/BAT0/charge_control_end_threshold 2>/dev/null || echo 100)
 mark() { [ "$1" = "$prof" ] && printf '  ●'; }
 if [ "${end:-100}" -le 80 ] 2>/dev/null; then c80='  ●'; c100=''; else c80=''; c100='  ●'; fi
 
 chosen=$(printf '%s\n' \
-  "  Performance$(mark performance)" \
-  "  Balanced$(mark balanced)" \
-  "  Power Saver$(mark power-saver)" \
-  "  Limit to 80%$c80" \
-  "  Charge to 100%$c100" \
+  "󰓅  Performance$(mark performance)" \
+  "󰊚  Balanced$(mark balanced)" \
+  "󰌪  Power Saver$(mark power-saver)" \
+  "󰂃  Limit to 80%$c80" \
+  "󰂄  Charge to 100%$c100" \
   | fuzzel --dmenu --prompt 'power: ')
 
 case "$chosen" in
-  *Performance*)   powerprofilesctl set performance ;;
-  *Balanced*)      powerprofilesctl set balanced ;;
-  *"Power Saver"*) powerprofilesctl set power-saver ;;
+  *Performance*)   ppctl set performance;  notify-send "Power profile" "Performance" ;;
+  *Balanced*)      ppctl set balanced;     notify-send "Power profile" "Balanced" ;;
+  *"Power Saver"*) ppctl set power-saver;  notify-send "Power profile" "Power Saver" ;;
   *"80%"*)  sudo set-charge-threshold 80;  notify-send "Battery" "Charge limit 80%" ;;
   *"100%"*) sudo set-charge-threshold 100; notify-send "Battery" "Charge to 100%" ;;
 esac

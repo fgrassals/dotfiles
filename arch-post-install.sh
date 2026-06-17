@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Arch post-install — niri Wayland desktop. Run as your normal user after first
+# Arch post-install — Hyprland Wayland desktop. Run as your normal user after first
 # boot. Idempotent: safe to re-run. Comment out sections you're not ready for.
 
 set -euo pipefail
@@ -88,15 +88,23 @@ EOF
     sudo install -Dm755 /dev/stdin /usr/local/bin/set-charge-threshold <<'EOF'
 #!/usr/bin/env bash
 # set ThinkPad charge start/stop thresholds: set-charge-threshold <80|100>
+set -euo pipefail
 end="${1:-80}"
 [[ "$end" == "100" ]] && start=95 || start=$(( end - 30 ))
 for bat in /sys/class/power_supply/BAT*; do
-    [[ -w "$bat/charge_control_start_threshold" ]] && echo "$start" > "$bat/charge_control_start_threshold"
-    [[ -w "$bat/charge_control_end_threshold" ]]   && echo "$end"   > "$bat/charge_control_end_threshold"
+    sf="$bat/charge_control_start_threshold"; ef="$bat/charge_control_end_threshold"
+    [[ -w "$sf" && -w "$ef" ]] || continue
+    if (( end >= $(< "$ef") )); then
+        echo "$end" > "$ef"; echo "$start" > "$sf"   # raising: end first
+    else
+        echo "$start" > "$sf"; echo "$end" > "$ef"   # lowering: start first
+    fi
 done
 EOF
-    echo '%wheel ALL=(root) NOPASSWD: /usr/local/bin/set-charge-threshold' | sudo tee /etc/sudoers.d/charge-threshold >/dev/null
-    sudo chmod 0440 /etc/sudoers.d/charge-threshold
+    # zz- prefix so this sorts after /etc/sudoers.d/wheel; sudo's last match wins,
+    # otherwise the broad "%wheel ALL=(ALL:ALL) ALL" rule overrides NOPASSWD.
+    echo '%wheel ALL=(root) NOPASSWD: /usr/local/bin/set-charge-threshold' | sudo tee /etc/sudoers.d/zz-charge-threshold >/dev/null
+    sudo chmod 0440 /etc/sudoers.d/zz-charge-threshold
 
     # apply 80% cap at boot and after resume
     sudo install -Dm644 /dev/stdin /etc/systemd/system/charge-threshold.service <<'EOF'
@@ -134,11 +142,11 @@ audio() {
 }
 
 # =============================================================================
-# NIRI — compositor, xwayland, portals, polkit agent
+# HYPRLAND — compositor, lock, idle, portals, polkit agent
 # =============================================================================
-niri() {
-    msg "niri"
-    pac niri xwayland-satellite xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-gnome mate-polkit
+hyprland() {
+    msg "hyprland"
+    pac hyprland hyprlock hypridle xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-desktop-portal qt5-wayland qt6-wayland mate-polkit
 }
 
 # =============================================================================
@@ -162,7 +170,7 @@ shell() {
 # =============================================================================
 session() {
     msg "session"
-    pac swaylock imagemagick swayidle swaybg cliphist wl-clip-persist brightnessctl fprintd
+    pac imagemagick swaybg cliphist wl-clip-persist brightnessctl fprintd
 
     # lid-aware: skip fprintd when lid closed
     sudo install -Dm755 /dev/stdin /usr/local/bin/lid-open <<'EOF'
@@ -173,14 +181,6 @@ done
 exit 1
 EOF
 
-    # niri's disable-power-key-handling hands the power key to logind, whose default
-    # (poweroff) would shut down on the phantom power-key wake event. ignore breaks the
-    # suspend/resume loop (niri-wm/niri#2233); hold-to-force-off (firmware) is unaffected.
-    sudo install -Dm644 /dev/stdin /etc/systemd/logind.conf.d/power-key.conf <<'EOF'
-[Login]
-HandlePowerKey=ignore
-EOF
-
     for svc in sudo polkit-1; do
         f="/etc/pam.d/$svc"
         [[ -f "$f" ]] || printf '#%%PAM-1.0\nauth  include  system-auth\naccount include system-auth\nsession include system-auth\n' | sudo tee "$f" >/dev/null
@@ -189,7 +189,7 @@ EOF
                     -e '1i auth  sufficient                   pam_fprintd.so' "$f"
     done
 
-    f="/etc/pam.d/swaylock"
+    f="/etc/pam.d/hyprlock"
     if ! grep -q pam_fprintd "$f" 2>/dev/null; then
         printf '%s\n' \
             'auth  sufficient                  pam_unix.so try_first_pass nullok' \
@@ -212,8 +212,22 @@ media() {
 # =============================================================================
 apps() {
     msg "apps"
-    pac firefox chromium yazi zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie wf-recorder slurp papirus-icon-theme materia-gtk-theme nwg-look docker docker-compose docker-buildx
+    pac firefox chromium yazi zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie wf-recorder grim slurp satty papirus-icon-theme nwg-look docker docker-compose docker-buildx
     aur 1password 1password-cli
+
+    # Catppuccin GTK theme from GitHub release (avoids AUR); folder name matches gtk settings.ini
+    theme="catppuccin-macchiato-blue-standard+default"
+    if [[ ! -d "$HOME/.local/share/themes/$theme" ]]; then
+        msg "catppuccin-gtk"
+        mkdir -p "$HOME/.local/share/themes"
+        tmp=$(mktemp -d)
+        if curl -fsSL "https://github.com/catppuccin/gtk/releases/download/v1.0.3/${theme//+/%2B}.zip" -o "$tmp/theme.zip"; then
+            bsdtar -xf "$tmp/theme.zip" -C "$HOME/.local/share/themes"
+        else
+            warn "catppuccin-gtk download failed; theme not installed"
+        fi
+        rm -rf "$tmp"
+    fi
 
     # docker group applies on next login
     sudo systemctl enable docker.socket
@@ -221,7 +235,7 @@ apps() {
 }
 
 # =============================================================================
-# LOGIN — ly, niri session auto-discovered
+# LOGIN — ly, Hyprland session auto-discovered
 # =============================================================================
 login() {
     msg "login"
@@ -239,10 +253,8 @@ login() {
 dotfiles() {
     msg "dotfiles"
     cd "$(dirname "$(readlink -f "$0")")"
-    stow -R -t "$HOME" kitty waybar fuzzel mako swaylock lazygit zathura btop bat yazi gtk xdg bin mpv niri zsh git mise nvim fontconfig
+    stow -R -t "$HOME" kitty waybar fuzzel mako hyprland lazygit zathura btop bat yazi gtk xdg bin mpv thunar zsh git mise nvim fontconfig
     mkdir -p "$HOME/Pictures/Screenshots"
-
-    [ -f "$HOME/.local/share/wallpaper.jpg" ] && magick "$HOME/.local/share/wallpaper.jpg" -resize 1280x -blur 0x18 -brightness-contrast -32x0 "$HOME/.local/share/wallpaper-blur.jpg"
 
     command -v mise >/dev/null && mise install
 
@@ -270,7 +282,7 @@ EOF
 foundation
 system
 audio
-niri
+hyprland
 terminal
 shell
 session
