@@ -9,7 +9,7 @@ tooltip label { color:#cad3f5; }
 #workspaces button.active, #workspaces button.focused { color:#8aadf4; font-weight:bold; }
 #workspaces button.urgent { color:#ed8796; font-weight:bold; }
 /* uniform leaf spacing */
-#cpu,#memory,#temperature,#custom-nightlight,#idle_inhibitor,#bluetooth,#network,#wireplumber,#battery,#custom-power { padding:0 6px; color:#cad3f5; }
+#cpu,#memory,#temperature,#custom-nightlight,#custom-gtk-theme,#idle_inhibitor,#bluetooth,#network,#wireplumber,#battery,#custom-power { padding:0 6px; color:#cad3f5; }
 /* tray: same edge padding as leaves; icon gap set via config spacing */
 #tray { padding:0 6px; }
 /* stats: default white, threshold-colored */
@@ -27,12 +27,14 @@ tooltip label { color:#cad3f5; }
 #battery.critical:not(.charging) { color:#ed8796; }
 #custom-nightlight { color:#6e738d; }
 #custom-nightlight.on { color:#eed49f; }
+#custom-gtk-theme.off { color:#eed49f; }
+#custom-gtk-theme.on { color:#8aadf4; }
 #custom-power { color:#6e738d; }
 #custom-power:hover { color:#ed8796; }
 #privacy,#privacy-item { padding:0 4px; }
 #privacy-item.screenshare { color:#ed8796; }
 #privacy-item.audio-in { color:#f5a97f; }
-#cpu:hover,#memory:hover,#temperature:hover,#bluetooth:hover,#network:hover,#wireplumber:hover,#battery:hover,#idle_inhibitor:hover,#custom-nightlight:hover { color:#8aadf4; }
+#cpu:hover,#memory:hover,#temperature:hover,#bluetooth:hover,#network:hover,#wireplumber:hover,#battery:hover,#idle_inhibitor:hover,#custom-nightlight:hover,#custom-gtk-theme:hover { color:#8aadf4; }
 /* pills */
 #stats,#status { background:#1e2030; border-radius:0; margin:0 4px; padding:0 4px; }
 #clock { background:#1e2030; border-radius:0; margin:0 4px; padding:0 12px; color:#cad3f5; font-weight:bold; }

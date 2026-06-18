@@ -229,6 +229,47 @@ apps() {
         rm -rf "$tmp"
     fi
 
+    # GTK light/dark switch (prefer-dark-theme only) — light at 07:00, dark at 19:00
+    install -Dm644 /dev/stdin "$HOME/.config/systemd/user/gtk-theme-light.service" <<'EOF'
+[Unit]
+Description=Switch GTK to light mode
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/gtk-theme-mode light
+EOF
+    install -Dm644 /dev/stdin "$HOME/.config/systemd/user/gtk-theme-light.timer" <<'EOF'
+[Unit]
+Description=Switch GTK to light mode at 07:00
+
+[Timer]
+OnCalendar=*-*-* 07:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+    install -Dm644 /dev/stdin "$HOME/.config/systemd/user/gtk-theme-dark.service" <<'EOF'
+[Unit]
+Description=Switch GTK to dark mode
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/gtk-theme-mode dark
+EOF
+    install -Dm644 /dev/stdin "$HOME/.config/systemd/user/gtk-theme-dark.timer" <<'EOF'
+[Unit]
+Description=Switch GTK to dark mode at 19:00
+
+[Timer]
+OnCalendar=*-*-* 19:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+    systemctl --user enable gtk-theme-light.timer gtk-theme-dark.timer
+
     # docker group applies on next login
     sudo systemctl enable docker.socket
     sudo usermod -aG docker "$USER"

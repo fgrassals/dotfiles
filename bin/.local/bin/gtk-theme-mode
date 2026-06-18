@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# flip gtk-application-prefer-dark-theme in gtk-3.0/gtk-4.0 settings.ini
+set -euo pipefail
+
+ini="$HOME/.config/gtk-3.0/settings.ini"
+
+current() {
+    grep -m1 '^gtk-application-prefer-dark-theme=' "$ini" | cut -d= -f2
+}
+
+set_mode() {
+    local value
+    case "$1" in
+        light) value=0 ;;
+        dark) value=1 ;;
+    esac
+    sed -i "s/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=$value/" \
+        "$ini" "$HOME/.config/gtk-4.0/settings.ini"
+    pkill -RTMIN+9 waybar || true
+}
+
+case "${1:?usage: gtk-theme-mode light|dark|toggle|status}" in
+    light|dark)
+        set_mode "$1"
+        ;;
+    toggle)
+        if [[ "$(current)" == "1" ]]; then set_mode light; else set_mode dark; fi
+        ;;
+    status)
+        if [[ "$(current)" == "1" ]]; then
+            printf '{"text":"󰽥","tooltip":"GTK theme: dark","class":"on"}\n'
+        else
+            printf '{"text":"󰖨","tooltip":"GTK theme: light","class":"off"}\n'
+        fi
+        ;;
+    *)
+        echo "usage: gtk-theme-mode light|dark|toggle|status" >&2
+        exit 1
+        ;;
+esac
