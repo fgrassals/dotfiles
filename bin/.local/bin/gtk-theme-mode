@@ -19,12 +19,16 @@ set_mode() {
     pkill -RTMIN+9 waybar || true
 }
 
-case "${1:?usage: gtk-theme-mode light|dark|toggle|status}" in
+case "${1:?usage: gtk-theme-mode light|dark|toggle|auto|status}" in
     light|dark)
         set_mode "$1"
         ;;
     toggle)
         if [[ "$(current)" == "1" ]]; then set_mode light; else set_mode dark; fi
+        ;;
+    auto)
+        hour=$((10#$(date +%H)))
+        if (( hour >= 7 && hour < 19 )); then set_mode light; else set_mode dark; fi
         ;;
     status)
         if [[ "$(current)" == "1" ]]; then
@@ -34,7 +38,7 @@ case "${1:?usage: gtk-theme-mode light|dark|toggle|status}" in
         fi
         ;;
     *)
-        echo "usage: gtk-theme-mode light|dark|toggle|status" >&2
+        echo "usage: gtk-theme-mode light|dark|toggle|auto|status" >&2
         exit 1
         ;;
 esac
