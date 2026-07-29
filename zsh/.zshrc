@@ -55,4 +55,13 @@ alias grep='grep --color=auto'
 # =============================================================================
 if command -v fzf &>/dev/null; then
     source <(fzf --zsh)
+
+    # ff    → fuzzy-find a file with a preview (image preview in Kitty, bat elsewhere)
+    # eff   → fuzzy-find a file and open it in $EDITOR
+    if [[ "$TERM" == "xterm-kitty" ]]; then
+        alias ff="fzf --preview 'case \$(file --mime-type -b {}) in image/*) kitty icat --clear --transfer-mode=memory --stdin=no --place=\${FZF_PREVIEW_COLUMNS}x\${FZF_PREVIEW_LINES}@0x0 {} ;; *) bat --style=numbers --color=always {} ;; esac'"
+    else
+        alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+    fi
+    alias eff='$EDITOR "$(ff)"'
 fi
