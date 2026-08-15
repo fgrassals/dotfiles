@@ -6,6 +6,7 @@ import qs
 import qs.widgets
 
 ShellRoot {
+    Wallpaper {}
     Notifications {}
     Osd {}
     Polkit {}

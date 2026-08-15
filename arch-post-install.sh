@@ -170,7 +170,7 @@ shell() {
 # =============================================================================
 session() {
     msg "session"
-    pac imagemagick swaybg cliphist wl-clip-persist brightnessctl fprintd
+    pac imagemagick cliphist wl-clip-persist brightnessctl fprintd
 
     # lid-aware: skip fprintd when lid closed
     sudo install -Dm755 /dev/stdin /usr/local/bin/lid-open <<'EOF'
