@@ -142,11 +142,11 @@ audio() {
 }
 
 # =============================================================================
-# HYPRLAND — compositor, lock, idle, portals, polkit agent
+# HYPRLAND — compositor, lock, idle, portals
 # =============================================================================
 hyprland() {
     msg "hyprland"
-    pac hyprland hyprlock hypridle xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-desktop-portal qt5-wayland qt6-wayland mate-polkit
+    pac hyprland hyprlock hypridle xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-desktop-portal qt5-wayland qt6-wayland
 }
 
 # =============================================================================
@@ -158,11 +158,11 @@ terminal() {
 }
 
 # =============================================================================
-# SHELL — waybar + launcher + notifications
+# SHELL — quickshell (bar, notifications, OSD, polkit) + launcher
 # =============================================================================
 shell() {
     msg "shell"
-    pac waybar fuzzel mako btop rocm-smi-lib wlsunset swayosd libnotify
+    pac quickshell fuzzel btop rocm-smi-lib wlsunset libnotify
 }
 
 # =============================================================================
@@ -279,7 +279,7 @@ login() {
 dotfiles() {
     msg "dotfiles"
     cd "$(dirname "$(readlink -f "$0")")"
-    stow -R -t "$HOME" kitty waybar fuzzel mako hyprland lazygit zathura btop bat yazi gtk xdg bin mpv thunar zsh git mise nvim fontconfig
+    stow -R -t "$HOME" kitty quickshell fuzzel hyprland lazygit zathura btop bat yazi gtk xdg bin mpv thunar zsh git mise nvim fontconfig
     mkdir -p "$HOME/Pictures/Screenshots"
 
     command -v mise >/dev/null && mise install

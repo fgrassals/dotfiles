@@ -16,10 +16,9 @@ set_mode() {
     esac
     sed -i "s/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=$value/" \
         "$ini" "$HOME/.config/gtk-4.0/settings.ini"
-    pkill -RTMIN+9 waybar || true
 }
 
-case "${1:?usage: gtk-theme-mode light|dark|toggle|auto|status}" in
+case "${1:?usage: gtk-theme-mode light|dark|toggle|auto}" in
     light|dark)
         set_mode "$1"
         ;;
@@ -30,15 +29,8 @@ case "${1:?usage: gtk-theme-mode light|dark|toggle|auto|status}" in
         hour=$((10#$(date +%H)))
         if (( hour >= 7 && hour < 19 )); then set_mode light; else set_mode dark; fi
         ;;
-    status)
-        if [[ "$(current)" == "1" ]]; then
-            printf '{"text":"󰽥","tooltip":"GTK theme: dark","class":"on"}\n'
-        else
-            printf '{"text":"󰖨","tooltip":"GTK theme: light","class":"off"}\n'
-        fi
-        ;;
     *)
-        echo "usage: gtk-theme-mode light|dark|toggle|auto|status" >&2
+        echo "usage: gtk-theme-mode light|dark|toggle|auto" >&2
         exit 1
         ;;
 esac
