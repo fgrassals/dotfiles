@@ -8,7 +8,6 @@ Text {
 
     property bool active: false
 
-    // wlsunset exposes no state anywhere, so its presence is the state.
     Process {
         id: probe
         command: ["pgrep", "-x", "wlsunset"]

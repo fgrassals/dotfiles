@@ -47,4 +47,19 @@ Singleton {
     readonly property int notifMaxVisible: 5
     readonly property int notifIconSize: 48
     readonly property int notifFontPointSize: 11
+
+    // ---[ OSD ]---------------------------------------------------------------
+    readonly property int osdWidth: 340
+    readonly property int osdHeight: 52
+    readonly property int osdBarHeight: 8
+
+    // ---[ Dialogs ]-----------------------------------------------------------
+    readonly property color scrim: "#a0000000"
+    readonly property int dialogWidth: 420
+    readonly property int dialogPadding: 20
+    readonly property int dialogSpacing: 14
+    readonly property int fieldHeight: 38
+    readonly property int dialogTitlePointSize: 13
+    readonly property int dialogSmallPointSize: 10
+    readonly property int polkitCardWidth: 320
 }

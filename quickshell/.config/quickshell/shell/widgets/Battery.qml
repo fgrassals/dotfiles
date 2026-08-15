@@ -38,7 +38,6 @@ Text {
         return dischargeIcons[step];
     }
 
-    // warning/critical outrank hover; hover outranks charging.
     color: {
         if (!charging && percent <= 15) return Theme.red;
         if (!charging && percent <= 30) return Theme.yellow;

@@ -8,8 +8,6 @@ Item {
 
     readonly property var nodes: Pipewire.nodes?.values ?? []
 
-    // Requiring the Stream flag excludes idle hardware devices, leaving only
-    // applications actively capturing.
     readonly property bool micActive: nodes.some(n => (n.type & PwNodeType.Audio) && (n.type & PwNodeType.Source) && (n.type & PwNodeType.Stream))
     readonly property bool screenActive: nodes.some(n => (n.type & PwNodeType.Video) && (n.type & PwNodeType.Stream))
 

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Backlight step + OSD
+set -euo pipefail
+
+case "${1:-}" in
+    up)   brightnessctl -q set 5%+ ;;
+    down) brightnessctl -q set 5%- ;;
+    *)    echo "usage: brightness up|down" >&2; exit 1 ;;
+esac
+
+percent=$(brightnessctl -m | awk -F, '{ gsub("%", "", $4); print $4 }')
+qs -c shell ipc call osd brightness "$percent" &>/dev/null || true

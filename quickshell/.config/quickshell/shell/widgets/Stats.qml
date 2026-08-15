@@ -14,7 +14,6 @@ Rectangle {
     implicitHeight: Theme.barHeight
     color: Theme.pill
 
-    // Hover takes precedence over the threshold colour.
     component StatItem: Text {
         id: item
 
@@ -46,7 +45,6 @@ Rectangle {
         }
     }
 
-    // /proc does not emit inotify events, so these are reloaded on a timer.
     Timer {
         interval: 2000
         running: true

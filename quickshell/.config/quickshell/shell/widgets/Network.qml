@@ -15,7 +15,6 @@ Text {
     readonly property var activeDevice: devices.find(d => d.connected && (d.type === DeviceType.Wired || d.type === DeviceType.Wifi)) ?? null
     readonly property var activeNetwork: activeDevice?.networks?.values?.find(n => n.connected) ?? null
 
-    // Networking exposes no address, so it is read on demand while hovering.
     property string ipAddress: ""
 
     Process {

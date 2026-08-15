@@ -7,6 +7,8 @@ import qs.widgets
 
 ShellRoot {
     Notifications {}
+    Osd {}
+    Polkit {}
 
     Variants {
         model: Quickshell.screens
