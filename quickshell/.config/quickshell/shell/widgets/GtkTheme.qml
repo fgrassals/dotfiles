@@ -8,7 +8,6 @@ Text {
 
     readonly property bool dark: /gtk-application-prefer-dark-theme\s*=\s*1/.test(settings.text())
 
-    // gtk-theme-mode writes this file; watching it replaces waybar's RTMIN signal.
     FileView {
         id: settings
         path: Quickshell.env("HOME") + "/.config/gtk-3.0/settings.ini"

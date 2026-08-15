@@ -35,4 +35,16 @@ Singleton {
     readonly property color tooltipBg: "#000000"
     readonly property int tooltipPadding: 8
     readonly property int tooltipDelay: 400
+
+    // ---[ Notifications ]-----------------------------------------------------
+    readonly property color notifBg: "#24273a"
+    readonly property int notifWidth: 380
+    readonly property int notifMaxHeight: 120
+    readonly property int notifPadding: 12
+    readonly property int notifMargin: 12
+    readonly property int notifBorderSize: 2
+    readonly property int notifTimeout: 5000
+    readonly property int notifMaxVisible: 5
+    readonly property int notifIconSize: 48
+    readonly property int notifFontPointSize: 11
 }

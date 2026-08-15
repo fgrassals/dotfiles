@@ -10,7 +10,6 @@ Text {
     readonly property real volume: sink?.audio?.volume ?? 0
     readonly property bool muted: sink?.audio?.muted ?? false
 
-    // Node properties are invalid until the node is bound.
     PwObjectTracker {
         objects: [Pipewire.defaultAudioSink]
     }

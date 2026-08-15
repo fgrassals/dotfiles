@@ -7,7 +7,6 @@ import qs
 Item {
     id: root
 
-    // Needed to anchor an item's context menu.
     required property var bar
 
     implicitWidth: row.implicitWidth + Theme.itemPadding * 2

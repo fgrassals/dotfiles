@@ -6,6 +6,8 @@ import qs
 import qs.widgets
 
 ShellRoot {
+    Notifications {}
+
     Variants {
         model: Quickshell.screens
 
