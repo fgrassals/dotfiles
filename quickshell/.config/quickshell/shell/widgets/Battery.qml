@@ -51,7 +51,7 @@ Text {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: Quickshell.execDetached(["power-tuning"])
+        onClicked: Quickshell.execDetached(["qs", "-c", "shell", "ipc", "call", "powertuning", "toggle"])
     }
 
     Tooltip {

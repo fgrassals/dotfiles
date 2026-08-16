@@ -45,7 +45,7 @@ Text {
                 if (root.sink?.audio)
                     root.sink.audio.muted = !root.sink.audio.muted;
             } else {
-                Quickshell.execDetached(["kitty", "--class=floating-tui", "-e", "wiremix"]);
+                Quickshell.execDetached(["qs", "-c", "shell", "ipc", "call", "audio", "toggle"]);
             }
         }
 

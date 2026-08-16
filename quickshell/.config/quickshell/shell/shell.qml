@@ -10,6 +10,10 @@ ShellRoot {
     Notifications {}
     Osd {}
     Polkit {}
+    PowerMenu {}
+    PowerTuning {}
+    AudioPanel {}
+    BluetoothPanel {}
 
     Variants {
         model: Quickshell.screens

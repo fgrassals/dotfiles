@@ -28,12 +28,12 @@ Scope {
         target: Pipewire.defaultAudioSink?.audio ?? null
 
         function onVolumeChanged() {
-            if (root.primed)
+            if (root.primed && !ShellState.audioPanelOpen)
                 root.show(volumeIcon(), Pipewire.defaultAudioSink.audio.volume);
         }
 
         function onMutedChanged() {
-            if (root.primed)
+            if (root.primed && !ShellState.audioPanelOpen)
                 root.show(volumeIcon(), Pipewire.defaultAudioSink.audio.volume);
         }
     }
@@ -42,7 +42,7 @@ Scope {
         target: Pipewire.defaultAudioSource?.audio ?? null
 
         function onMutedChanged() {
-            if (root.primed)
+            if (root.primed && !ShellState.audioPanelOpen)
                 root.show(Pipewire.defaultAudioSource.audio.muted ? "󰍭" : "󰍬", Pipewire.defaultAudioSource.audio.volume);
         }
     }

@@ -147,14 +147,14 @@ hl.bind(mainMod .. " + T", hl.dsp.layout("togglesplit"))
 
 -- Session
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
-hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("power-menu"))
-hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("power-tuning"))
+hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("qs -c shell ipc call powermenu toggle"))
+hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("qs -c shell ipc call powertuning toggle"))
 
 -- Night light — toggle wlsunset at 3500K
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("nightlight toggle"))
 
 -- TUI tools
-hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("kitty --class=floating-tui -e wiremix"))
+hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("qs -c shell ipc call audio toggle"))
 hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("kitty --class=floating-tui -e bluetui"))
 
 -- Fullscreen / maximize

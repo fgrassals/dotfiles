@@ -19,6 +19,6 @@ Text {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: Quickshell.execDetached(["power-menu"])
+        onClicked: Quickshell.execDetached(["qs", "-c", "shell", "ipc", "call", "powermenu", "toggle"])
     }
 }

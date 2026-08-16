@@ -53,8 +53,20 @@ Singleton {
     readonly property int osdHeight: 52
     readonly property int osdBarHeight: 8
 
+    // ---[ Menu ]---------------------------------------------------------------
+    readonly property int menuWidth: 300
+    readonly property int menuRowHeight: 40
+    readonly property int menuIconColumn: 28
+    readonly property int menuFontPointSize: 11
+    readonly property int tuningWidth: 340
+    readonly property int segmentHeight: 52
+    readonly property int audioWidth: 380
+    readonly property int audioRowHeight: 52
+    readonly property int bluetoothRowHeight: 36
+
     // ---[ Dialogs ]-----------------------------------------------------------
     readonly property color scrim: "#a0000000"
+    readonly property color scrimLight: "#40000000"
     readonly property int fieldHeight: 38
     readonly property int dialogSmallPointSize: 10
 }
