@@ -137,10 +137,10 @@ EOF
 # =============================================================================
 audio() {
     msg "audio"
-    pac pipewire wireplumber pipewire-pulse pipewire-alsa wiremix
+    pac pipewire wireplumber pipewire-pulse pipewire-alsa
     systemctl --user enable pipewire.socket pipewire-pulse.socket wireplumber.service
 
-    pac bluez bluez-utils bluetui
+    pac bluez bluez-utils
     sudo systemctl enable bluetooth.service
 }
 

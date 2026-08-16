@@ -63,6 +63,7 @@ Singleton {
     readonly property int audioWidth: 380
     readonly property int audioRowHeight: 52
     readonly property int bluetoothRowHeight: 36
+    readonly property int networkMaxRows: 8
 
     // ---[ Dialogs ]-----------------------------------------------------------
     readonly property color scrim: "#a0000000"

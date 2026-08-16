@@ -51,8 +51,18 @@ Text {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+
         onEntered: if (root.activeDevice) ipProbe.running = true
-        onClicked: Networking.wifiEnabled = !Networking.wifiEnabled
+
+        onClicked: event => {
+            if (event.button === Qt.RightButton) {
+                if (Networking.wifiHardwareEnabled)
+                    Networking.wifiEnabled = !Networking.wifiEnabled;
+            } else {
+                Quickshell.execDetached(["qs", "-c", "shell", "ipc", "call", "network", "toggle"]);
+            }
+        }
     }
 
     Tooltip {

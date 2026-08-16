@@ -153,9 +153,10 @@ hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("qs -c shell ipc call powertu
 -- Night light — toggle wlsunset at 3500K
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("nightlight toggle"))
 
--- TUI tools
+-- Shell panels
 hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("qs -c shell ipc call audio toggle"))
-hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("kitty --class=floating-tui -e bluetui"))
+hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("qs -c shell ipc call bluetooth toggle"))
+hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("qs -c shell ipc call network toggle"))
 
 -- Fullscreen / maximize
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
@@ -369,14 +370,6 @@ hl.window_rule({
 	float = true,
 	center = true,
 	size = "1200 800",
-})
-
--- Floating TUI tools (wiremix, bluetui)
-hl.window_rule({
-	match = { class = "^(floating-tui)$" },
-	float = true,
-	center = true,
-	size = "900 550",
 })
 
 -- Thunar file operation dialogs

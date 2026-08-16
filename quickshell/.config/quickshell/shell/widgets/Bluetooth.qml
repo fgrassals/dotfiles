@@ -38,7 +38,7 @@ Text {
                 if (root.adapter)
                     root.adapter.enabled = !root.adapter.enabled;
             } else {
-                Quickshell.execDetached(["kitty", "--class=floating-tui", "-e", "bluetui"]);
+                Quickshell.execDetached(["qs", "-c", "shell", "ipc", "call", "bluetooth", "toggle"]);
             }
         }
     }
