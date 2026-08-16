@@ -17,9 +17,10 @@ Rectangle {
     border.width: Theme.notifBorderSize
     border.color: critical ? Theme.peach : Theme.blue
 
+    // expireTimeout is milliseconds: -1 means server default, 0 means never expire
     Timer {
-        running: !root.critical
-        interval: root.notification.expireTimeout > 0 ? root.notification.expireTimeout * 1000 : Theme.notifTimeout
+        running: !root.critical && root.notification.expireTimeout !== 0
+        interval: root.notification.expireTimeout > 0 ? root.notification.expireTimeout : Theme.notifTimeout
         onTriggered: root.notification.expire()
     }
 

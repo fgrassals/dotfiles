@@ -46,6 +46,9 @@ Scope {
                     anchors.fill: parent
                     source: root.source
                     fillMode: Image.PreserveAspectCrop
+                    // decode at panel resolution, not the source file's
+                    sourceSize.width: Math.round(modelData.width * modelData.devicePixelRatio)
+                    sourceSize.height: Math.round(modelData.height * modelData.devicePixelRatio)
                     cache: false
                     asynchronous: true
                     smooth: true

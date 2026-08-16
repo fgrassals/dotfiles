@@ -7,7 +7,7 @@ Text {
     id: root
 
     readonly property var battery: UPower.displayDevice
-    readonly property real percent: battery?.percentage * 100 ?? 0
+    readonly property real percent: (battery?.percentage ?? 0) * 100
     readonly property int state: battery?.state ?? UPowerDeviceState.Unknown
     readonly property bool charging: state === UPowerDeviceState.Charging || state === UPowerDeviceState.PendingCharge
 
