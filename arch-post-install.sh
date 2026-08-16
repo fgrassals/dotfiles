@@ -126,6 +126,9 @@ EOF
 exit 0
 EOF
 
+    # weekly TRIM; needs rd.luks.options=discard on the kernel cmdline to reach the disk
+    sudo systemctl enable fstrim.timer
+
     xdg-user-dirs-update
 }
 

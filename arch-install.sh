@@ -129,7 +129,7 @@ console-mode keep
 editor   yes
 LOADER
 
-CMDLINE="rd.luks.name=${LUKS_UUID}=cryptroot root=/dev/mapper/cryptroot rw mem_sleep_default=s2idle quiet splash loglevel=3"
+CMDLINE="rd.luks.name=${LUKS_UUID}=cryptroot rd.luks.options=discard root=/dev/mapper/cryptroot rw mem_sleep_default=s2idle quiet splash loglevel=3"
 
 cat > /boot/loader/entries/arch.conf <<ENTRY
 title   Arch Linux
