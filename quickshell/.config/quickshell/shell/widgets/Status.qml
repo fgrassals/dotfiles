@@ -22,8 +22,6 @@ Rectangle {
             Layout.fillHeight: true
         }
 
-        Privacy { Layout.fillHeight: true }
-
         GtkTheme { Layout.fillHeight: true }
         Nightlight { Layout.fillHeight: true }
         IdleToggle { Layout.fillHeight: true }

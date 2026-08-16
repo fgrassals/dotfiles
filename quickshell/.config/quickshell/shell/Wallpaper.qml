@@ -10,7 +10,6 @@ Scope {
     readonly property string path: Quickshell.env("HOME") + "/.local/share/wallpaper.jpg"
     property int revision: 0
 
-    // Qt caches by URL, so the same path with new content renders stale.
     readonly property string source: "file://" + path + "?v=" + revision
 
     IpcHandler {

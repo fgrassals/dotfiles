@@ -31,7 +31,7 @@ Singleton {
     readonly property int trayIconSize: 14
     readonly property int traySpacing: 12
     readonly property int privacyPadding: 4
-    readonly property int privacySpacing: 4
+    readonly property int privacySpacing: 12
     readonly property color tooltipBg: "#000000"
     readonly property int tooltipPadding: 8
     readonly property int tooltipDelay: 400

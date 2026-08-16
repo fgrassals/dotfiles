@@ -1,19 +1,33 @@
+import Quickshell.Io
 import Quickshell.Services.Pipewire
 import QtQuick
 import QtQuick.Layouts
 import qs
 
-Item {
+Rectangle {
     id: root
 
     readonly property var nodes: Pipewire.nodes?.values ?? []
+    readonly property bool micActive: nodes.some(n => n.type === PwNodeType.AudioInStream)
 
-    readonly property bool micActive: nodes.some(n => (n.type & PwNodeType.Audio) && (n.type & PwNodeType.Source) && (n.type & PwNodeType.Stream))
-    readonly property bool screenActive: nodes.some(n => (n.type & PwNodeType.Video) && (n.type & PwNodeType.Stream))
+    property bool screenActive: false
+
+    Process {
+        id: videoProbe
+        command: ["sh", "-c", "pw-dump | jq '[.[] | select(.info.props.\"media.class\" == \"Stream/Input/Video\")] | length'"]
+        stdout: StdioCollector {
+            onStreamFinished: root.screenActive = parseInt(this.text.trim()) > 0
+        }
+    }
+
+    readonly property int nodeCount: nodes.length
+    onNodeCountChanged: videoProbe.running = true
+    Component.onCompleted: videoProbe.running = true
 
     visible: micActive || screenActive
     implicitWidth: visible ? row.implicitWidth + Theme.privacyPadding * 2 : 0
     implicitHeight: Theme.barHeight
+    color: Theme.pill
 
     RowLayout {
         id: row

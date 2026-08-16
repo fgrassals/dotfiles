@@ -51,6 +51,10 @@ ShellRoot {
                         Stats {
                             Layout.fillHeight: true
                         }
+
+                        Privacy {
+                            Layout.fillHeight: true
+                        }
                     }
 
                     RowLayout {
