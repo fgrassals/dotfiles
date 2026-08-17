@@ -157,16 +157,6 @@ Scope {
                         }
                     }
                 }
-
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.top: parent.verticalCenter
-                    anchors.topMargin: column.implicitHeight / 2 + Theme.notifPadding * 3
-                    text: "↑↓  ·  1-5  ·  Enter  ·  Esc"
-                    color: Theme.muted
-                    font.family: Theme.fontFamily
-                    font.pointSize: Theme.dialogSmallPointSize
-                }
             }
         }
     }

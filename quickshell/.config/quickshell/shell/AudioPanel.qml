@@ -184,7 +184,7 @@ Scope {
 
                         Text {
                             width: parent.width
-                            text: "↑↓ row  ·  ←→ volume  ·  m mute  ·  Enter default  ·  Esc"
+                            text: "↑↓ · ←→ volume · m mute · ⏎ default · Esc"
                             color: Theme.muted
                             font.family: Theme.fontFamily
                             font.pointSize: Theme.dialogSmallPointSize

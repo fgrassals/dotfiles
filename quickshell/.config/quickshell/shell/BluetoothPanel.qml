@@ -21,6 +21,15 @@ Scope {
     readonly property var known: devices.filter(d => d.paired || d.bonded || d.trusted)
     readonly property var discovered: devices.filter(d => !(d.paired || d.bonded || d.trusted))
 
+    readonly property string enterVerb: {
+        const device = root.rows[root.selectedIndex]?.device;
+        if (device?.connected)
+            return "disconnect";
+        if (device?.paired || device?.bonded || device?.trusted)
+            return "connect";
+        return "pair";
+    }
+
     readonly property var rows: {
         const list = [];
         for (const d of root.known)
@@ -226,7 +235,7 @@ Scope {
 
                         Text {
                             width: parent.width
-                            text: "↑↓ row  ·  Enter connect  ·  f forget  ·  p power  ·  Esc"
+                            text: "↑↓ · ⏎ " + root.enterVerb + " · f forget · p power · Esc"
                             color: Theme.muted
                             font.family: Theme.fontFamily
                             font.pointSize: Theme.dialogSmallPointSize

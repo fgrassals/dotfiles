@@ -242,7 +242,7 @@ Scope {
 
                         Text {
                             width: parent.width
-                            text: "↑↓ group  ·  ←→ pick  ·  Enter  ·  Esc"
+                            text: "↑↓ group · ←→ pick · ⏎ · Esc"
                             color: Theme.muted
                             font.family: Theme.fontFamily
                             font.pointSize: Theme.dialogSmallPointSize

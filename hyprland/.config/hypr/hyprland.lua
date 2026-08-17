@@ -372,6 +372,14 @@ hl.window_rule({
 	size = "1200 800",
 })
 
+-- nmtui, launched from the network panel
+hl.window_rule({
+	match = { class = "^(floating-tui)$" },
+	float = true,
+	center = true,
+	size = "900 550",
+})
+
 -- Thunar file operation dialogs
 hl.window_rule({
 	match = { title = "^(File Operation Progress)$" },

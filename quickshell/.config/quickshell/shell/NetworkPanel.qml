@@ -36,19 +36,26 @@ Scope {
 
     // The unplugged wired row is rendered but absent here, so arrows skip it.
     readonly property var wiredNetwork: (root.wiredDevice?.hasLink ?? false) ? root.wiredDevice.network : null
-    readonly property int wiredOffset: root.wiredNetwork ? 1 : 0
+    readonly property int wiredCount: root.wiredNetwork ? 1 : 0
+    readonly property int netOffset: root.wiredCount
 
     readonly property var rows: {
         const list = [];
         if (root.wiredNetwork)
-            list.push(root.wiredNetwork);
+            list.push({ kind: "net", network: root.wiredNetwork });
         for (const n of root.current)
-            list.push(n);
+            list.push({ kind: "net", network: n });
         for (const n of root.saved)
-            list.push(n);
+            list.push({ kind: "net", network: n });
         for (const n of root.available)
-            list.push(n);
+            list.push({ kind: "net", network: n });
         return list;
+    }
+
+    readonly property var selectedNetwork: root.rows[root.selectedIndex]?.network ?? null
+
+    readonly property string enterVerb: {
+        return root.selectedNetwork?.connected ? "disconnect" : "connect";
     }
 
     function bySignal(a, b): int {
@@ -64,28 +71,22 @@ Scope {
         return network?.security !== undefined && network.security !== WifiSecurityType.Open;
     }
 
-    function selected(): var {
-        return root.rows[root.selectedIndex] ?? null;
-    }
-
     function activate(): void {
-        const network = root.selected();
-        if (!network || network.connected)
+        const network = root.selectedNetwork;
+        if (!network)
             return;
+        if (network.connected) {
+            network.disconnect();
+            return;
+        }
         root.errorText = "";
         root.pskAttempted = false;
         root.pending = network;
         network.connect();
     }
 
-    function disconnectSelected(): void {
-        const network = root.selected();
-        if (network?.connected)
-            network.disconnect();
-    }
-
     function forgetSelected(): void {
-        const network = root.selected();
+        const network = root.selectedNetwork;
         if (network?.known)
             network.forget();
     }
@@ -93,6 +94,12 @@ Scope {
     function toggleWifi(): void {
         if (!root.hwBlocked)
             Networking.wifiEnabled = !Networking.wifiEnabled;
+    }
+
+    // Closes first; the panel holds exclusive keyboard focus.
+    function editConnections(): void {
+        root.open = false;
+        Quickshell.execDetached(["kitty", "--class=floating-tui", "-e", "nmtui"]);
     }
 
     function submitPsk(psk: string): void {
@@ -212,6 +219,8 @@ Scope {
                         root.open = false;
                     } else if (event.key === Qt.Key_W) {
                         root.toggleWifi();
+                    } else if (event.key === Qt.Key_E) {
+                        root.editConnections();
                     } else if (count === 0) {
                         return;
                     } else if (event.key === Qt.Key_Down || event.key === Qt.Key_J) {
@@ -220,8 +229,6 @@ Scope {
                         root.selectedIndex = (root.selectedIndex - 1 + count) % count;
                     } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                         root.activate();
-                    } else if (event.key === Qt.Key_D) {
-                        root.disconnectSelected();
                     } else if (event.key === Qt.Key_F) {
                         root.forgetSelected();
                     } else {
@@ -240,6 +247,7 @@ Scope {
                     anchors.horizontalCenterOffset: root.shakeOffset
                     implicitWidth: Theme.audioWidth
                     implicitHeight: layout.implicitHeight + Theme.notifPadding * 2
+                    clip: true
                     color: Theme.notifBg
                     border.width: Theme.notifBorderSize
                     border.color: Theme.blue
@@ -320,8 +328,8 @@ Scope {
                                 detail: Math.round((modelData.signalStrength ?? 0) * 100) + "%"
                                 secured: root.isSecured(modelData)
                                 active: true
-                                focused: (root.wiredOffset + index) === root.selectedIndex
-                                onPicked: root.selectedIndex = root.wiredOffset + index
+                                focused: (root.netOffset + index) === root.selectedIndex
+                                onPicked: root.selectedIndex = root.netOffset + index
                             }
                         }
 
@@ -338,7 +346,7 @@ Scope {
                                 required property int index
                                 required property var modelData
 
-                                readonly property int rowIndex: root.wiredOffset + root.current.length + index
+                                readonly property int rowIndex: root.netOffset + root.current.length + index
 
                                 width: layout.width
                                 icon: root.signalIcon(modelData.signalStrength)
@@ -373,7 +381,7 @@ Scope {
                                 required property int index
                                 required property var modelData
 
-                                readonly property int rowIndex: root.wiredOffset + root.current.length + root.saved.length + index
+                                readonly property int rowIndex: root.netOffset + root.current.length + root.saved.length + index
 
                                 width: layout.width
                                 icon: root.signalIcon(modelData.signalStrength)
@@ -441,7 +449,7 @@ Scope {
 
                         Text {
                             width: parent.width
-                            text: root.pskTarget ? "Enter connect  ·  Esc cancel" : "↑↓ row  ·  Enter connect  ·  d disconnect  ·  f forget  ·  w wi-fi  ·  Esc"
+                            text: root.pskTarget ? "⏎ connect · Esc cancel" : "↑↓ · ⏎ " + root.enterVerb + " · f forget · w wi-fi · Esc"
                             color: Theme.muted
                             font.family: Theme.fontFamily
                             font.pointSize: Theme.dialogSmallPointSize
