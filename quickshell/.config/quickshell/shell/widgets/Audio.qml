@@ -1,4 +1,3 @@
-import Quickshell
 import Quickshell.Services.Pipewire
 import QtQuick
 import qs
@@ -45,7 +44,7 @@ Text {
                 if (root.sink?.audio)
                     root.sink.audio.muted = !root.sink.audio.muted;
             } else {
-                Quickshell.execDetached(["qs", "-c", "shell", "ipc", "call", "audio", "toggle"]);
+                ShellState.toggle("audio");
             }
         }
 

@@ -7,7 +7,7 @@ import qs
 Scope {
     id: root
 
-    property bool open: false
+    readonly property bool open: ShellState.openPanel === "display"
     property int selectedIndex: 0
     property var outputs: []
 
@@ -53,16 +53,15 @@ Scope {
         settle.restart();
     }
 
-    function show(): void {
-        root.selectedIndex = 0;
-        root.refresh();
-        root.open = true;
-    }
-
     // Hotplug changes the monitor count; re-read rather than poll.
     readonly property int monitorCount: Hyprland.monitors?.values?.length ?? 0
 
-    onOpenChanged: if (root.open) root.refresh()
+    onOpenChanged: {
+        if (root.open) {
+            root.selectedIndex = 0;
+            root.refresh();
+        }
+    }
     onMonitorCountChanged: if (root.open) settle.restart()
 
     Timer {
@@ -75,10 +74,7 @@ Scope {
         target: "display"
 
         function toggle(): void {
-            if (root.open)
-                root.open = false;
-            else
-                root.show();
+            ShellState.toggle("display");
         }
     }
 
@@ -88,7 +84,7 @@ Scope {
         PanelFrame {
             namespace: "quickshell-display"
 
-            onCloseRequested: root.open = false
+            onCloseRequested: ShellState.close()
 
             onKeyPressed: event => {
                 const count = root.outputs.length;

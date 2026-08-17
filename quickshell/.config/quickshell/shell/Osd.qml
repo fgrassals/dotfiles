@@ -28,12 +28,12 @@ Scope {
         target: Pipewire.defaultAudioSink?.audio ?? null
 
         function onVolumeChanged() {
-            if (root.primed && !ShellState.audioPanelOpen)
+            if (root.primed && ShellState.openPanel !== "audio")
                 root.show(volumeIcon(), Pipewire.defaultAudioSink.audio.volume);
         }
 
         function onMutedChanged() {
-            if (root.primed && !ShellState.audioPanelOpen)
+            if (root.primed && ShellState.openPanel !== "audio")
                 root.show(volumeIcon(), Pipewire.defaultAudioSink.audio.volume);
         }
     }
@@ -42,7 +42,7 @@ Scope {
         target: Pipewire.defaultAudioSource?.audio ?? null
 
         function onMutedChanged() {
-            if (root.primed && !ShellState.audioPanelOpen)
+            if (root.primed && ShellState.openPanel !== "audio")
                 root.show(Pipewire.defaultAudioSource.audio.muted ? "󰍭" : "󰍬", Pipewire.defaultAudioSource.audio.volume);
         }
     }
@@ -83,6 +83,7 @@ Scope {
         active: root.active
 
         PanelWindow {
+            screen: ShellState.focusedScreen
             anchors.bottom: true
             margins.bottom: screen.height / 6
             exclusiveZone: 0

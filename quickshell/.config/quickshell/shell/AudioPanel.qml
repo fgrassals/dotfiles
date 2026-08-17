@@ -8,7 +8,7 @@ import qs
 Scope {
     id: root
 
-    property bool open: false
+    readonly property bool open: ShellState.openPanel === "audio"
 
     // Anchored to the node, not the index: stream rows come and go.
     property var selectedNode: null
@@ -17,13 +17,13 @@ Scope {
         return i >= 0 ? i : 0;
     }
 
-    onOpenChanged: ShellState.audioPanelOpen = open
+    onOpenChanged: if (root.open) root.selectedNode = null
 
     readonly property var allNodes: Pipewire.nodes?.values ?? []
     readonly property var sinks: allNodes.filter(n => n.type === PwNodeType.AudioSink && !n.isMonitor)
     readonly property var outStreams: allNodes.filter(n => n.type === PwNodeType.AudioOutStream)
     readonly property var sources: allNodes.filter(n => n.type === PwNodeType.AudioSource && !n.isMonitor)
-    readonly property var inStreams: allNodes.filter(n => n.type === PwNodeType.AudioInStream)
+    readonly property var inStreams: allNodes.filter(n => n.type === PwNodeType.AudioInStream && n.name !== "quickshell")
 
     readonly property var rows: {
         const list = [];
@@ -75,19 +75,11 @@ Scope {
         root.selectedNode = root.rows[(root.selectedIndex + delta + count) % count]?.node ?? null;
     }
 
-    function show(): void {
-        root.selectedNode = null;
-        root.open = true;
-    }
-
     IpcHandler {
         target: "audio"
 
         function toggle(): void {
-            if (root.open)
-                root.open = false;
-            else
-                root.show();
+            ShellState.toggle("audio");
         }
     }
 
@@ -97,7 +89,7 @@ Scope {
         PanelFrame {
             namespace: "quickshell-audio"
 
-            onCloseRequested: root.open = false
+            onCloseRequested: ShellState.close()
 
             onKeyPressed: event => {
                 const count = root.rows.length;
@@ -149,9 +141,12 @@ Scope {
                     }
 
                     AudioRow {
+                        id: audioRow
+
                         width: entry.width
                         node: entry.modelData.node
                         kind: entry.modelData.kind
+                        metering: entry.modelData.kind === "stream" || (entry.modelData.kind === "sink" && audioRow.isDefault)
                         title: root.label(entry.modelData.node)
                         isDefault: (entry.modelData.kind === "sink" && entry.modelData.node === Pipewire.defaultAudioSink)
                             || (entry.modelData.kind === "source" && entry.modelData.node === Pipewire.defaultAudioSource)

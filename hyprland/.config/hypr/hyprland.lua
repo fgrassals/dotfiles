@@ -158,6 +158,7 @@ hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("qs -c shell ipc call audio t
 hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("qs -c shell ipc call bluetooth toggle"))
 hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("qs -c shell ipc call network toggle"))
 hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("qs -c shell ipc call display toggle"))
+hl.bind(mainMod .. " + SHIFT + O", hl.dsp.exec_cmd("qs -c shell ipc call notifications toggle"))
 
 -- Fullscreen / maximize
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))

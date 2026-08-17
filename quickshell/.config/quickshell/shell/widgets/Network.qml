@@ -1,4 +1,3 @@
-import Quickshell
 import Quickshell.Io
 import Quickshell.Networking
 import QtQuick
@@ -60,7 +59,7 @@ Text {
                 if (Networking.wifiHardwareEnabled)
                     Networking.wifiEnabled = !Networking.wifiEnabled;
             } else {
-                Quickshell.execDetached(["qs", "-c", "shell", "ipc", "call", "network", "toggle"]);
+                ShellState.toggle("network");
             }
         }
     }

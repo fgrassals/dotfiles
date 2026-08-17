@@ -8,7 +8,7 @@ import qs
 Scope {
     id: root
 
-    property bool open: false
+    readonly property bool open: ShellState.openPanel === "bluetooth"
 
     // Anchored to the device, not the index: discovery adds and drops rows.
     property var selectedDevice: null
@@ -89,12 +89,11 @@ Scope {
             root.adapter.enabled = !root.adapter.enabled;
     }
 
-    function show(): void {
-        root.selectedDevice = null;
-        root.open = true;
+    onOpenChanged: {
+        if (root.open)
+            root.selectedDevice = null;
+        discoverySettle.restart();
     }
-
-    onOpenChanged: discoverySettle.restart()
 
     // BlueZ rejects overlapping StartDiscovery/StopDiscovery.
     Timer {
@@ -119,10 +118,7 @@ Scope {
         target: "bluetooth"
 
         function toggle(): void {
-            if (root.open)
-                root.open = false;
-            else
-                root.show();
+            ShellState.toggle("bluetooth");
         }
     }
 
@@ -132,7 +128,7 @@ Scope {
         PanelFrame {
             namespace: "quickshell-bluetooth"
 
-            onCloseRequested: root.open = false
+            onCloseRequested: ShellState.close()
 
             onKeyPressed: event => {
                 const count = root.rows.length;

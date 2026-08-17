@@ -1,3 +1,4 @@
+import Quickshell.Services.Pipewire
 import QtQuick
 import qs
 
@@ -9,6 +10,8 @@ Rectangle {
     property string kind: "sink"
     property bool isDefault: false
     property bool focused: false
+    // Gates a live PipeWire capture stream.
+    property bool metering: false
 
     readonly property bool capture: kind === "source" || kind === "instream"
 
@@ -16,6 +19,12 @@ Rectangle {
 
     readonly property real volume: node?.audio?.volume ?? 0
     readonly property bool muted: node?.audio?.muted ?? false
+
+    PwNodePeakMonitor {
+        id: peakMonitor
+        node: peakMonitor.enabled ? root.node : null
+        enabled: root.metering && !root.muted && (root.node?.ready ?? false)
+    }
 
     implicitHeight: Theme.audioRowHeight
     color: focused ? Theme.surface1 : "transparent"
@@ -76,6 +85,19 @@ Rectangle {
                 anchors.bottom: parent.bottom
                 width: parent.width * root.volume
                 color: root.muted ? Theme.muted : Theme.blue
+            }
+
+            Rectangle {
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                visible: peakMonitor.enabled
+                width: parent.width * root.volume * peakMonitor.peak
+                color: Theme.peak
+
+                Behavior on width {
+                    NumberAnimation { duration: 60 }
+                }
             }
         }
     }

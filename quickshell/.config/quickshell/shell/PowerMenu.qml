@@ -7,7 +7,7 @@ import qs
 Scope {
     id: root
 
-    property bool open: false
+    readonly property bool open: ShellState.openPanel === "powermenu"
     property int selectedIndex: 0
 
     readonly property var entries: [
@@ -18,14 +18,11 @@ Scope {
         { icon: "󰐥", label: "Shutdown", exec: ["systemctl", "poweroff"] }
     ]
 
-    function show(): void {
-        root.selectedIndex = 0;
-        root.open = true;
-    }
+    onOpenChanged: if (root.open) root.selectedIndex = 0
 
     function activate(index: int): void {
         const entry = root.entries[index];
-        root.open = false;
+        ShellState.close();
         if (entry)
             Quickshell.execDetached(entry.exec);
     }
@@ -34,10 +31,7 @@ Scope {
         target: "powermenu"
 
         function toggle(): void {
-            if (root.open)
-                root.open = false;
-            else
-                root.show();
+            ShellState.toggle("powermenu");
         }
     }
 
@@ -49,7 +43,7 @@ Scope {
             cardWidth: Theme.menuWidth
             scrim: Theme.scrim
 
-            onCloseRequested: root.open = false
+            onCloseRequested: ShellState.close()
 
             onKeyPressed: event => {
                 if (event.key === Qt.Key_Down || event.key === Qt.Key_J) {

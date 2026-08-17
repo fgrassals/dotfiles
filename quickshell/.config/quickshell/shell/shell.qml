@@ -7,7 +7,6 @@ import qs.widgets
 
 ShellRoot {
     Wallpaper {}
-    Notifications {}
     Osd {}
     Polkit {}
     PowerMenu {}
@@ -16,6 +15,7 @@ ShellRoot {
     BluetoothPanel {}
     NetworkPanel {}
     DisplayPanel {}
+    NotificationHistory {}
 
     Variants {
         model: Quickshell.screens
@@ -59,6 +59,10 @@ ShellRoot {
                         }
 
                         Privacy {
+                            Layout.fillHeight: true
+                        }
+
+                        NotificationBell {
                             Layout.fillHeight: true
                         }
                     }

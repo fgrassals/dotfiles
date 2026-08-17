@@ -1,4 +1,3 @@
-import Quickshell
 import Quickshell.Services.UPower
 import QtQuick
 import qs
@@ -51,7 +50,7 @@ Text {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: Quickshell.execDetached(["qs", "-c", "shell", "ipc", "call", "powertuning", "toggle"])
+        onClicked: ShellState.toggle("powertuning")
     }
 
     Tooltip {

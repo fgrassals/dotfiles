@@ -8,7 +8,7 @@ import qs
 Scope {
     id: root
 
-    property bool open: false
+    readonly property bool open: ShellState.openPanel === "network"
 
     // Anchored to the network, not the index: the scan adds and drops rows.
     property var selectedNetwork: null
@@ -122,7 +122,7 @@ Scope {
 
     // Closes first; the panel holds exclusive keyboard focus.
     function editConnections(): void {
-        root.open = false;
+        ShellState.close();
         Quickshell.execDetached(["kitty", "--class=floating-tui", "-e", "nmtui"]);
     }
 
@@ -149,14 +149,14 @@ Scope {
         root.selectedNetwork = root.rows[(root.selectedIndex + delta + count) % count]?.network ?? null;
     }
 
-    function show(): void {
-        root.selectedNetwork = null;
-        root.rank = ({});
-        root.cancelPsk();
-        root.open = true;
+    onOpenChanged: {
+        if (root.open) {
+            root.selectedNetwork = null;
+            root.rank = ({});
+            root.cancelPsk();
+        }
+        scanSettle.restart();
     }
-
-    onOpenChanged: scanSettle.restart()
     onMembershipChanged: if (root.open) root.captureOrder()
 
     Connections {
@@ -211,10 +211,7 @@ Scope {
         target: "network"
 
         function toggle(): void {
-            if (root.open)
-                root.open = false;
-            else
-                root.show();
+            ShellState.toggle("network");
         }
     }
 
@@ -226,7 +223,7 @@ Scope {
             offset: root.shakeOffset
             interceptEscape: root.pskTarget !== null
 
-            onCloseRequested: root.open = false
+            onCloseRequested: ShellState.close()
 
             onKeyPressed: event => {
                 const count = root.rows.length;

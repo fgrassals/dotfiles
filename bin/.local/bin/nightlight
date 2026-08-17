@@ -2,16 +2,33 @@
 # wlsunset night light toggle
 set -euo pipefail
 
-case "${1:?usage: nightlight toggle}" in
+STATE="${XDG_RUNTIME_DIR:-/tmp}/nightlight.state"
+
+write_state() {
+    if pgrep -x wlsunset >/dev/null; then
+        echo on >"$STATE"
+    else
+        echo off >"$STATE"
+    fi
+}
+
+case "${1:?usage: nightlight toggle|status}" in
     toggle)
         if pgrep -x wlsunset >/dev/null; then
             pkill -x wlsunset
         else
             wlsunset -t 3500 -T 3501 -S 00:00 -s 23:59 &>/dev/null &
         fi
+        # pkill/spawn are async; let the process table settle.
+        sleep 0.3
+        write_state
+        ;;
+    status)
+        write_state
+        cat "$STATE"
         ;;
     *)
-        echo "usage: nightlight toggle" >&2
+        echo "usage: nightlight toggle|status" >&2
         exit 1
         ;;
 esac

@@ -6,26 +6,30 @@ import qs
 Text {
     id: root
 
-    property bool active: false
+    readonly property bool active: /on/.test(state.text())
 
-    Process {
-        id: probe
-        command: ["pgrep", "-x", "wlsunset"]
-        onExited: code => root.active = code === 0
+    // Written by the `nightlight` script, so SUPER+N and the click both land here.
+    FileView {
+        id: state
+        path: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/nightlight.state"
+        watchChanges: true
+        printErrors: false
+        onFileChanged: reload()
     }
 
+    Process {
+        id: reconcile
+        command: ["nightlight", "status"]
+        onExited: state.reload()
+    }
+
+    // Catches wlsunset exiting on its own.
     Timer {
-        interval: 3000
+        interval: 30000
         running: true
         repeat: true
         triggeredOnStart: true
-        onTriggered: probe.running = true
-    }
-
-    Timer {
-        id: afterToggle
-        interval: 400
-        onTriggered: probe.running = true
+        onTriggered: reconcile.running = true
     }
 
     verticalAlignment: Text.AlignVCenter
@@ -42,10 +46,7 @@ Text {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            Quickshell.execDetached(["nightlight", "toggle"]);
-            afterToggle.restart();
-        }
+        onClicked: Quickshell.execDetached(["nightlight", "toggle"])
     }
 
     Tooltip {

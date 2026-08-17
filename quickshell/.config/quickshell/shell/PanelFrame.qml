@@ -19,6 +19,8 @@ PanelWindow {
     signal closeRequested
     signal keyPressed(var event)
 
+    screen: ShellState.focusedScreen
+
     anchors {
         top: true
         bottom: true
@@ -37,7 +39,8 @@ PanelWindow {
         focus: true
 
         Keys.onPressed: event => {
-            if (event.key === Qt.Key_Escape) {
+            const closes = event.key === Qt.Key_Escape || event.key === Qt.Key_Q;
+            if (closes && !root.interceptEscape) {
                 root.closeRequested();
                 event.accepted = true;
                 return;
@@ -59,6 +62,11 @@ PanelWindow {
             color: Theme.notifBg
             border.width: Theme.notifBorderSize
             border.color: Theme.blue
+
+            // Swallows clicks so they never reach the scrim.
+            MouseArea {
+                anchors.fill: parent
+            }
 
             Column {
                 id: card

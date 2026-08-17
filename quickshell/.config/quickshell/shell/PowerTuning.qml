@@ -8,7 +8,7 @@ import qs
 Scope {
     id: root
 
-    property bool open: false
+    readonly property bool open: ShellState.openPanel === "powertuning"
     property int groupIndex: 0
     property int profileIndex: 0
     property int limitIndex: 0
@@ -30,11 +30,15 @@ Scope {
 
     property int chargeLimit: 100
 
+    // reload() is async — limitIndex is set from onLoaded, not on open.
     FileView {
         id: thresholdFile
         path: "/sys/class/power_supply/BAT0/charge_control_end_threshold"
         printErrors: false
-        onLoaded: root.chargeLimit = parseInt(text().trim()) || 100
+        onLoaded: {
+            root.chargeLimit = parseInt(text().trim()) || 100;
+            root.limitIndex = root.chargeLimit <= 80 ? 0 : 1;
+        }
     }
 
     readonly property string timeText: {
@@ -55,14 +59,14 @@ Scope {
         return "";
     }
 
-    function show(): void {
+    onOpenChanged: {
+        if (!root.open)
+            return;
         thresholdFile.reload();
         root.groupIndex = 0;
         root.profileIndex = root.profiles.findIndex(p => p.value === PowerProfiles.profile);
         if (root.profileIndex < 0)
             root.profileIndex = 1;
-        root.limitIndex = root.chargeLimit <= 80 ? 0 : 1;
-        root.open = true;
     }
 
     function apply(): void {
@@ -71,17 +75,14 @@ Scope {
         } else {
             Quickshell.execDetached(["sudo", "set-charge-threshold", String(root.limits[root.limitIndex].value)]);
         }
-        root.open = false;
+        ShellState.close();
     }
 
     IpcHandler {
         target: "powertuning"
 
         function toggle(): void {
-            if (root.open)
-                root.open = false;
-            else
-                root.show();
+            ShellState.toggle("powertuning");
         }
     }
 
@@ -92,7 +93,7 @@ Scope {
             namespace: "quickshell-powertuning"
             cardWidth: Theme.tuningWidth
 
-            onCloseRequested: root.open = false
+            onCloseRequested: ShellState.close()
 
             onKeyPressed: event => {
                 const count = root.groupIndex === 0 ? root.profiles.length : root.limits.length;

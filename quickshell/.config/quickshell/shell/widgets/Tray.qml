@@ -44,12 +44,15 @@ Item {
                     acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
 
                     onClicked: event => {
-                        if (event.button === Qt.MiddleButton)
+                        if (event.button === Qt.MiddleButton) {
                             entry.modelData.secondaryActivate();
-                        else if (event.button === Qt.RightButton)
-                            entry.modelData.display(root.bar, entry.x, entry.y);
-                        else
+                        } else if (event.button === Qt.RightButton) {
+                            // display() wants coordinates relative to the bar window.
+                            const pos = entry.mapToItem(null, 0, entry.height);
+                            entry.modelData.display(root.bar, pos.x, pos.y);
+                        } else {
                             entry.modelData.activate();
+                        }
                     }
 
                     onWheel: event => entry.modelData.scroll(event.angleDelta.y, false)

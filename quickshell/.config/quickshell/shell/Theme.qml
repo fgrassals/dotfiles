@@ -17,6 +17,7 @@ Singleton {
     readonly property color peach: "#f5a97f"
     readonly property color surface1: "#363a4f"
     readonly property color hover: "#0fffffff"   // white @ 6% — hover wash
+    readonly property color peak: "#b7bdf8"      // lavender — meter overlay
 
     // ---[ Type ]--------------------------------------------------------------
     readonly property string fontFamily: "CaskaydiaMono Nerd Font"
@@ -47,6 +48,8 @@ Singleton {
     readonly property int notifMaxVisible: 5
     readonly property int notifIconSize: 48
     readonly property int notifFontPointSize: 11
+    readonly property int notifHistoryMax: 50
+    readonly property int historyMaxRows: 10
 
     // ---[ OSD ]---------------------------------------------------------------
     readonly property int osdWidth: 340

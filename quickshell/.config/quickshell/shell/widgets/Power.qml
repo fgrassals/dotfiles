@@ -1,4 +1,3 @@
-import Quickshell
 import QtQuick
 import qs
 
@@ -19,6 +18,6 @@ Text {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: Quickshell.execDetached(["qs", "-c", "shell", "ipc", "call", "powermenu", "toggle"])
+        onClicked: ShellState.toggle("powermenu")
     }
 }

@@ -21,7 +21,7 @@ Rectangle {
     Timer {
         running: !root.critical && root.notification.expireTimeout !== 0
         interval: root.notification.expireTimeout > 0 ? root.notification.expireTimeout : Theme.notifTimeout
-        onTriggered: root.notification.expire()
+        onTriggered: NotificationStore.hidePopup(root.notification.id)
     }
 
     readonly property string iconSource: notification.image || (notification.appIcon ? Quickshell.iconPath(notification.appIcon, true) : "")
@@ -75,12 +75,17 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+        onClicked: event => {
+            if (event.button === Qt.RightButton) {
+                NotificationStore.drop(root.notification);
+                return;
+            }
             const fallback = root.notification.actions.find(a => a.identifier === "default");
             if (fallback)
                 fallback.invoke();
-            else
-                root.notification.dismiss();
+            NotificationStore.drop(root.notification);
         }
     }
 }

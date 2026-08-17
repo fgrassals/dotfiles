@@ -128,6 +128,8 @@ Scope {
         PanelWindow {
             id: window
 
+            screen: ShellState.focusedScreen
+
             anchors {
                 top: true
                 bottom: true

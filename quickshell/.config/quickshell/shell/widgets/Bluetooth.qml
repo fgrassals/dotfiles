@@ -1,4 +1,3 @@
-import Quickshell
 import Quickshell.Bluetooth
 import QtQuick
 import qs
@@ -38,7 +37,7 @@ Text {
                 if (root.adapter)
                     root.adapter.enabled = !root.adapter.enabled;
             } else {
-                Quickshell.execDetached(["qs", "-c", "shell", "ipc", "call", "bluetooth", "toggle"]);
+                ShellState.toggle("bluetooth");
             }
         }
     }
