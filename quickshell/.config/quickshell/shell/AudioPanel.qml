@@ -9,7 +9,13 @@ Scope {
     id: root
 
     property bool open: false
-    property int selectedIndex: 0
+
+    // Anchored to the node, not the index: stream rows come and go.
+    property var selectedNode: null
+    readonly property int selectedIndex: {
+        const i = root.rows.findIndex(r => r.node === root.selectedNode);
+        return i >= 0 ? i : 0;
+    }
 
     onOpenChanged: ShellState.audioPanelOpen = open
 
@@ -62,8 +68,15 @@ Scope {
             Pipewire.preferredDefaultAudioSource = row.node;
     }
 
+    function moveSelection(delta: int): void {
+        const count = root.rows.length;
+        if (count === 0)
+            return;
+        root.selectedNode = root.rows[(root.selectedIndex + delta + count) % count]?.node ?? null;
+    }
+
     function show(): void {
-        root.selectedIndex = 0;
+        root.selectedNode = null;
         root.open = true;
     }
 
@@ -81,117 +94,80 @@ Scope {
     LazyLoader {
         active: root.open
 
-        PanelWindow {
-            anchors {
-                top: true
-                bottom: true
-                left: true
-                right: true
+        PanelFrame {
+            namespace: "quickshell-audio"
+
+            onCloseRequested: root.open = false
+
+            onKeyPressed: event => {
+                const count = root.rows.length;
+                if (count === 0) {
+                    return;
+                } else if (event.key === Qt.Key_Down || event.key === Qt.Key_J) {
+                    root.moveSelection(1);
+                } else if (event.key === Qt.Key_Up || event.key === Qt.Key_K) {
+                    root.moveSelection(-1);
+                } else if (event.key === Qt.Key_Right || event.key === Qt.Key_L) {
+                    root.adjust(0.05);
+                } else if (event.key === Qt.Key_Left || event.key === Qt.Key_H) {
+                    root.adjust(-0.05);
+                } else if (event.key === Qt.Key_M) {
+                    root.toggleMute();
+                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    root.makeDefault();
+                } else {
+                    return;
+                }
+                event.accepted = true;
             }
 
-            exclusiveZone: 0
-            WlrLayershell.namespace: "quickshell-audio"
-            WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-            color: Theme.scrimLight
+            PanelHeader {
+                icon: Pipewire.defaultAudioSink?.audio?.muted ? "󰝟" : "󰕾"
+                title: "Audio"
+                status: Pipewire.defaultAudioSink?.audio?.muted ? "Output muted" : ""
+            }
 
-            Item {
-                anchors.fill: parent
-                focus: true
+            Repeater {
+                model: root.rows
 
-                Keys.onPressed: event => {
-                    const count = root.rows.length;
-                    if (event.key === Qt.Key_Escape) {
-                        root.open = false;
-                    } else if (count === 0) {
-                        return;
-                    } else if (event.key === Qt.Key_Down || event.key === Qt.Key_J) {
-                        root.selectedIndex = (root.selectedIndex + 1) % count;
-                    } else if (event.key === Qt.Key_Up || event.key === Qt.Key_K) {
-                        root.selectedIndex = (root.selectedIndex - 1 + count) % count;
-                    } else if (event.key === Qt.Key_Right || event.key === Qt.Key_L) {
-                        root.adjust(0.05);
-                    } else if (event.key === Qt.Key_Left || event.key === Qt.Key_H) {
-                        root.adjust(-0.05);
-                    } else if (event.key === Qt.Key_M) {
-                        root.toggleMute();
-                    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                        root.makeDefault();
-                    } else {
-                        return;
+                delegate: Column {
+                    id: entry
+
+                    required property int index
+                    required property var modelData
+
+                    readonly property bool startsSection: index === 0 || root.rows[index - 1].section !== modelData.section
+
+                    width: parent.width
+                    spacing: 4
+                    topPadding: startsSection && index > 0 ? Theme.itemPadding : 0
+
+                    SectionHeader {
+                        visible: entry.startsSection
+                        width: entry.width
+                        text: entry.modelData.section
                     }
-                    event.accepted = true;
-                }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: root.open = false
-                }
-
-                Rectangle {
-                    anchors.centerIn: parent
-                    implicitWidth: Theme.audioWidth
-                    implicitHeight: layout.implicitHeight + Theme.notifPadding * 2
-                    color: Theme.notifBg
-                    border.width: Theme.notifBorderSize
-                    border.color: Theme.blue
-
-                    Column {
-                        id: layout
-                        anchors.centerIn: parent
-                        width: parent.width - Theme.notifPadding * 2
-                        spacing: Theme.notifPadding
-
-                        PanelHeader {
-                            icon: Pipewire.defaultAudioSink?.audio?.muted ? "󰝟" : "󰕾"
-                            title: "Audio"
-                            status: Pipewire.defaultAudioSink?.audio?.muted ? "Output muted" : ""
-                        }
-
-                        Repeater {
-                            model: root.rows
-
-                            delegate: Column {
-                                id: entry
-
-                                required property int index
-                                required property var modelData
-
-                                readonly property bool startsSection: index === 0 || root.rows[index - 1].section !== modelData.section
-
-                                width: layout.width
-                                spacing: 4
-                                topPadding: startsSection && index > 0 ? Theme.itemPadding : 0
-
-                                SectionHeader {
-                                    visible: entry.startsSection
-                                    width: entry.width
-                                    text: entry.modelData.section
-                                }
-
-                                AudioRow {
-                                    width: entry.width
-                                    node: entry.modelData.node
-                                    kind: entry.modelData.kind
-                                    title: root.label(entry.modelData.node)
-                                    isDefault: (entry.modelData.kind === "sink" && entry.modelData.node === Pipewire.defaultAudioSink)
-                                        || (entry.modelData.kind === "source" && entry.modelData.node === Pipewire.defaultAudioSource)
-                                    focused: entry.index === root.selectedIndex
-                                    onPicked: root.selectedIndex = entry.index
-                                }
-                            }
-                        }
-
-                        Text {
-                            width: parent.width
-                            text: "↑↓ · ←→ volume · m mute · ⏎ default · Esc"
-                            color: Theme.muted
-                            font.family: Theme.fontFamily
-                            font.pointSize: Theme.dialogSmallPointSize
-                            horizontalAlignment: Text.AlignRight
-                        }
+                    AudioRow {
+                        width: entry.width
+                        node: entry.modelData.node
+                        kind: entry.modelData.kind
+                        title: root.label(entry.modelData.node)
+                        isDefault: (entry.modelData.kind === "sink" && entry.modelData.node === Pipewire.defaultAudioSink)
+                            || (entry.modelData.kind === "source" && entry.modelData.node === Pipewire.defaultAudioSource)
+                        focused: entry.index === root.selectedIndex
+                        onPicked: root.selectedNode = entry.modelData.node
                     }
                 }
+            }
+
+            Text {
+                width: parent.width
+                text: "↑↓ · ←→ volume · m mute · ⏎ default · Esc"
+                color: Theme.muted
+                font.family: Theme.fontFamily
+                font.pointSize: Theme.dialogSmallPointSize
+                horizontalAlignment: Text.AlignRight
             }
         }
     }

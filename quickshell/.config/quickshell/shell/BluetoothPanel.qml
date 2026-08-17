@@ -9,25 +9,29 @@ Scope {
     id: root
 
     property bool open: false
-    property int selectedIndex: 0
-    // Set only when this panel started the scan, so closing never stops a
-    // discovery session another client owns.
+
+    // Anchored to the device, not the index: discovery adds and drops rows.
+    property var selectedDevice: null
+    readonly property int selectedIndex: {
+        const i = root.rows.findIndex(r => r.device === root.selectedDevice);
+        return i >= 0 ? i : 0;
+    }
+    readonly property var currentDevice: root.rows[root.selectedIndex]?.device ?? null
+    // Set only when this panel started the scan; never stops another client's.
     property bool startedDiscovery: false
 
     readonly property var adapter: Bluetooth.defaultAdapter
     readonly property bool enabled: adapter?.enabled ?? false
     readonly property var devices: Bluetooth.devices?.values ?? []
 
-    readonly property var known: devices.filter(d => d.paired || d.bonded || d.trusted)
-    readonly property var discovered: devices.filter(d => !(d.paired || d.bonded || d.trusted))
+    readonly property var known: devices.filter(d => root.isKnown(d))
+    readonly property var discovered: devices.filter(d => !root.isKnown(d))
 
     readonly property string enterVerb: {
-        const device = root.rows[root.selectedIndex]?.device;
+        const device = root.currentDevice;
         if (device?.connected)
             return "disconnect";
-        if (device?.paired || device?.bonded || device?.trusted)
-            return "connect";
-        return "pair";
+        return root.isKnown(device) ? "connect" : "pair";
     }
 
     readonly property var rows: {
@@ -39,23 +43,44 @@ Scope {
         return list;
     }
 
+    function isKnown(device): bool {
+        return (device?.paired ?? false) || (device?.bonded ?? false) || (device?.trusted ?? false);
+    }
+
+    function moveSelection(delta: int): void {
+        const count = root.rows.length;
+        if (count === 0)
+            return;
+        root.selectedDevice = root.rows[(root.selectedIndex + delta + count) % count]?.device ?? null;
+    }
+
+    function deviceIcon(device): string {
+        if (device?.connected)
+            return "󰂱";
+        return root.isKnown(device) ? "󰂯" : "󰂰";
+    }
+
+    function batteryLabel(device): string {
+        return (device?.batteryAvailable ?? false) ? Math.round((device?.battery ?? 0) * 100) + "%" : "";
+    }
+
     function label(device): string {
         return device?.name || device?.deviceName || device?.address || "";
     }
 
     function activate(): void {
-        const device = root.rows[root.selectedIndex]?.device;
+        const device = root.currentDevice;
         if (!device)
             return;
-        if (device.paired || device.bonded || device.trusted)
+        if (root.isKnown(device))
             device.connected = !device.connected;
         else
             device.pair();
     }
 
     function forget(): void {
-        const device = root.rows[root.selectedIndex]?.device;
-        if (device?.paired || device?.bonded || device?.trusted)
+        const device = root.currentDevice;
+        if (root.isKnown(device))
             device.forget();
     }
 
@@ -65,14 +90,13 @@ Scope {
     }
 
     function show(): void {
-        root.selectedIndex = 0;
+        root.selectedDevice = null;
         root.open = true;
     }
 
     onOpenChanged: discoverySettle.restart()
 
-    // BlueZ rejects overlapping StartDiscovery/StopDiscovery calls, so rapid
-    // open/close is coalesced into one request.
+    // BlueZ rejects overlapping StartDiscovery/StopDiscovery.
     Timer {
         id: discoverySettle
         interval: 300
@@ -105,144 +129,111 @@ Scope {
     LazyLoader {
         active: root.open
 
-        PanelWindow {
-            anchors {
-                top: true
-                bottom: true
-                left: true
-                right: true
+        PanelFrame {
+            namespace: "quickshell-bluetooth"
+
+            onCloseRequested: root.open = false
+
+            onKeyPressed: event => {
+                const count = root.rows.length;
+                if (event.key === Qt.Key_P) {
+                    root.togglePower();
+                } else if (count === 0) {
+                    return;
+                } else if (event.key === Qt.Key_Down || event.key === Qt.Key_J) {
+                    root.moveSelection(1);
+                } else if (event.key === Qt.Key_Up || event.key === Qt.Key_K) {
+                    root.moveSelection(-1);
+                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    root.activate();
+                } else if (event.key === Qt.Key_F) {
+                    root.forget();
+                } else {
+                    return;
+                }
+                event.accepted = true;
             }
 
-            exclusiveZone: 0
-            WlrLayershell.namespace: "quickshell-bluetooth"
-            WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-            color: Theme.scrimLight
+            PanelHeader {
+                icon: root.enabled ? "󰂯" : "󰂲"
+                iconColor: root.enabled ? Theme.blue : Theme.muted
+                title: "Bluetooth"
+                status: !root.enabled ? "Off" : root.adapter?.discovering ? "Scanning…" : "On"
+            }
 
-            Item {
-                anchors.fill: parent
-                focus: true
+            SectionHeader {
+                width: parent.width
+                text: "Paired"
+            }
 
-                Keys.onPressed: event => {
-                    const count = root.rows.length;
-                    if (event.key === Qt.Key_Escape) {
-                        root.open = false;
-                    } else if (event.key === Qt.Key_P) {
-                        root.togglePower();
-                    } else if (count === 0) {
-                        return;
-                    } else if (event.key === Qt.Key_Down || event.key === Qt.Key_J) {
-                        root.selectedIndex = (root.selectedIndex + 1) % count;
-                    } else if (event.key === Qt.Key_Up || event.key === Qt.Key_K) {
-                        root.selectedIndex = (root.selectedIndex - 1 + count) % count;
-                    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                        root.activate();
-                    } else if (event.key === Qt.Key_F) {
-                        root.forget();
-                    } else {
-                        return;
-                    }
-                    event.accepted = true;
+            Text {
+                visible: root.known.length === 0
+                width: parent.width
+                text: "No paired devices"
+                leftPadding: Theme.itemPadding
+                color: Theme.muted
+                font.family: Theme.fontFamily
+                font.pointSize: Theme.dialogSmallPointSize
+                font.italic: true
+            }
+
+            Repeater {
+                model: root.known
+
+                delegate: PanelRow {
+                    required property int index
+                    required property var modelData
+
+                    width: parent.width
+                    icon: root.deviceIcon(modelData)
+                    title: root.label(modelData)
+                    detail: root.batteryLabel(modelData)
+                    active: modelData.connected
+                    focused: index === root.selectedIndex
+                    onPicked: root.selectedDevice = modelData
                 }
+            }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: root.open = false
+            SectionHeader {
+                width: parent.width
+                text: "Available"
+            }
+
+            Text {
+                visible: root.discovered.length === 0
+                width: parent.width
+                text: root.adapter?.discovering ? "Scanning…" : "Nothing found"
+                leftPadding: Theme.itemPadding
+                color: Theme.muted
+                font.family: Theme.fontFamily
+                font.pointSize: Theme.dialogSmallPointSize
+                font.italic: true
+            }
+
+            Repeater {
+                model: root.discovered
+
+                delegate: PanelRow {
+                    required property int index
+                    required property var modelData
+
+                    width: parent.width
+                    icon: root.deviceIcon(modelData)
+                    title: root.label(modelData)
+                    detail: root.batteryLabel(modelData)
+                    active: modelData.connected
+                    focused: (root.known.length + index) === root.selectedIndex
+                    onPicked: root.selectedDevice = modelData
                 }
+            }
 
-                Rectangle {
-                    anchors.centerIn: parent
-                    implicitWidth: Theme.audioWidth
-                    implicitHeight: layout.implicitHeight + Theme.notifPadding * 2
-                    color: Theme.notifBg
-                    border.width: Theme.notifBorderSize
-                    border.color: Theme.blue
-
-                    Column {
-                        id: layout
-                        anchors.centerIn: parent
-                        width: parent.width - Theme.notifPadding * 2
-                        spacing: Theme.notifPadding
-
-                        PanelHeader {
-                            icon: root.enabled ? "󰂯" : "󰂲"
-                            iconColor: root.enabled ? Theme.blue : Theme.muted
-                            title: "Bluetooth"
-                            status: !root.enabled ? "Off" : root.adapter?.discovering ? "Scanning…" : "On"
-                        }
-
-                        SectionHeader {
-                            width: parent.width
-                            text: "Paired"
-                        }
-
-                        Text {
-                            visible: root.known.length === 0
-                            width: parent.width
-                            text: "No paired devices"
-                            leftPadding: Theme.itemPadding
-                            color: Theme.muted
-                            font.family: Theme.fontFamily
-                            font.pointSize: Theme.dialogSmallPointSize
-                            font.italic: true
-                        }
-
-                        Repeater {
-                            model: root.known
-
-                            delegate: BluetoothRow {
-                                required property int index
-                                required property var modelData
-
-                                width: layout.width
-                                device: modelData
-                                title: root.label(modelData)
-                                focused: index === root.selectedIndex
-                                onPicked: root.selectedIndex = index
-                            }
-                        }
-
-                        SectionHeader {
-                            width: parent.width
-                            text: "Available"
-                        }
-
-                        Text {
-                            visible: root.discovered.length === 0
-                            width: parent.width
-                            text: root.adapter?.discovering ? "Scanning…" : "Nothing found"
-                            leftPadding: Theme.itemPadding
-                            color: Theme.muted
-                            font.family: Theme.fontFamily
-                            font.pointSize: Theme.dialogSmallPointSize
-                            font.italic: true
-                        }
-
-                        Repeater {
-                            model: root.discovered
-
-                            delegate: BluetoothRow {
-                                required property int index
-                                required property var modelData
-
-                                width: layout.width
-                                device: modelData
-                                title: root.label(modelData)
-                                focused: (root.known.length + index) === root.selectedIndex
-                                onPicked: root.selectedIndex = root.known.length + index
-                            }
-                        }
-
-                        Text {
-                            width: parent.width
-                            text: "↑↓ · ⏎ " + root.enterVerb + " · f forget · p power · Esc"
-                            color: Theme.muted
-                            font.family: Theme.fontFamily
-                            font.pointSize: Theme.dialogSmallPointSize
-                            horizontalAlignment: Text.AlignRight
-                        }
-                    }
-                }
+            Text {
+                width: parent.width
+                text: "↑↓ · ⏎ " + root.enterVerb + " · f forget · p power · Esc"
+                color: Theme.muted
+                font.family: Theme.fontFamily
+                font.pointSize: Theme.dialogSmallPointSize
+                horizontalAlignment: Text.AlignRight
             }
         }
     }

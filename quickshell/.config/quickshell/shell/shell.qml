@@ -15,6 +15,7 @@ ShellRoot {
     AudioPanel {}
     BluetoothPanel {}
     NetworkPanel {}
+    DisplayPanel {}
 
     Variants {
         model: Quickshell.screens

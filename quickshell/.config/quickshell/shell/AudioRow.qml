@@ -67,7 +67,7 @@ Rectangle {
 
         Rectangle {
             width: parent.width
-            height: Theme.osdBarHeight
+            height: Theme.meterHeight
             color: Theme.bg
 
             Rectangle {

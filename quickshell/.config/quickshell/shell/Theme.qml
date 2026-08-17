@@ -51,7 +51,7 @@ Singleton {
     // ---[ OSD ]---------------------------------------------------------------
     readonly property int osdWidth: 340
     readonly property int osdHeight: 52
-    readonly property int osdBarHeight: 8
+    readonly property int meterHeight: 8
 
     // ---[ Menu ]---------------------------------------------------------------
     readonly property int menuWidth: 300
@@ -60,9 +60,9 @@ Singleton {
     readonly property int menuFontPointSize: 11
     readonly property int tuningWidth: 340
     readonly property int segmentHeight: 52
-    readonly property int audioWidth: 380
+    readonly property int panelWidth: 380
     readonly property int audioRowHeight: 52
-    readonly property int bluetoothRowHeight: 36
+    readonly property int rowHeight: 36
     readonly property int networkMaxRows: 8
 
     // ---[ Dialogs ]-----------------------------------------------------------

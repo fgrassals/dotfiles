@@ -161,11 +161,11 @@ terminal() {
 }
 
 # =============================================================================
-# SHELL — quickshell (bar, notifications, OSD, polkit) + launcher
+# SHELL — quickshell (bar, panels, notifications, OSD, polkit) + launcher
 # =============================================================================
 shell() {
     msg "shell"
-    pac quickshell fuzzel btop rocm-smi-lib wlsunset libnotify
+    pac quickshell fuzzel btop wlsunset libnotify
 }
 
 # =============================================================================

@@ -113,7 +113,7 @@ Scope {
 
                     Rectangle {
                         Layout.fillWidth: true
-                        implicitHeight: Theme.osdBarHeight
+                        implicitHeight: Theme.meterHeight
                         color: Theme.surface1
 
                         Rectangle {

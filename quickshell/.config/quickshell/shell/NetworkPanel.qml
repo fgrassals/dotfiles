@@ -9,14 +9,21 @@ Scope {
     id: root
 
     property bool open: false
-    property int selectedIndex: 0
-    // Set only when this panel started the scan, so closing never stops a
-    // scan another client owns.
+
+    // Anchored to the network, not the index: the scan adds and drops rows.
+    property var selectedNetwork: null
+    readonly property int selectedIndex: {
+        const i = root.rows.findIndex(r => r.network === root.selectedNetwork);
+        return i >= 0 ? i : 0;
+    }
+
+    // The row actually highlighted; selectedNetwork is null until something is picked.
+    readonly property var currentNetwork: root.rows[root.selectedIndex]?.network ?? null
+    // Set only when this panel started the scan; never stops another client's.
     property bool startedScan: false
 
     // Network we asked to connect, watched for connectionFailed.
     property var pending: null
-    // Network whose password field is showing.
     property var pskTarget: null
     property bool pskAttempted: false
     property string errorText: ""
@@ -31,8 +38,12 @@ Scope {
 
     readonly property var wifiNets: (root.wifiDevice?.networks?.values ?? []).filter(n => n.name !== "")
     readonly property var current: root.wifiNets.filter(n => n.connected)
-    readonly property var saved: root.wifiNets.filter(n => !n.connected && n.known).sort(root.bySignal)
-    readonly property var available: root.wifiNets.filter(n => !n.connected && !n.known).sort(root.bySignal).slice(0, Theme.networkMaxRows)
+    readonly property var saved: root.wifiNets.filter(n => !n.connected && n.known).sort(root.byRank)
+    readonly property var available: root.wifiNets.filter(n => !n.connected && !n.known).sort(root.byRank).slice(0, Theme.networkMaxRows)
+
+    // Rank is captured once per network; live signal sorting would reshuffle rows.
+    property var rank: ({})
+    readonly property string membership: root.wifiNets.map(n => n.name).sort().join("\u0000")
 
     // The unplugged wired row is rendered but absent here, so arrows skip it.
     readonly property var wiredNetwork: (root.wiredDevice?.hasLink ?? false) ? root.wiredDevice.network : null
@@ -52,14 +63,27 @@ Scope {
         return list;
     }
 
-    readonly property var selectedNetwork: root.rows[root.selectedIndex]?.network ?? null
-
-    readonly property string enterVerb: {
-        return root.selectedNetwork?.connected ? "disconnect" : "connect";
-    }
+    readonly property string enterVerb: root.currentNetwork?.connected ? "disconnect" : "connect"
 
     function bySignal(a, b): int {
         return (b.signalStrength ?? 0) - (a.signalStrength ?? 0);
+    }
+
+    function byRank(a, b): int {
+        return (root.rank[a.name] ?? 9999) - (root.rank[b.name] ?? 9999);
+    }
+
+    function captureOrder(): void {
+        const map = {};
+        let next = 0;
+        for (const key in root.rank) {
+            map[key] = root.rank[key];
+            next = Math.max(next, root.rank[key] + 1);
+        }
+        for (const n of root.wifiNets.slice().sort(root.bySignal))
+            if (map[n.name] === undefined)
+                map[n.name] = next++;
+        root.rank = map;
     }
 
     function signalIcon(strength: real): string {
@@ -72,7 +96,7 @@ Scope {
     }
 
     function activate(): void {
-        const network = root.selectedNetwork;
+        const network = root.currentNetwork;
         if (!network)
             return;
         if (network.connected) {
@@ -86,7 +110,7 @@ Scope {
     }
 
     function forgetSelected(): void {
-        const network = root.selectedNetwork;
+        const network = root.currentNetwork;
         if (network?.known)
             network.forget();
     }
@@ -118,13 +142,22 @@ Scope {
         root.errorText = "";
     }
 
+    function moveSelection(delta: int): void {
+        const count = root.rows.length;
+        if (count === 0)
+            return;
+        root.selectedNetwork = root.rows[(root.selectedIndex + delta + count) % count]?.network ?? null;
+    }
+
     function show(): void {
-        root.selectedIndex = 0;
+        root.selectedNetwork = null;
+        root.rank = ({});
         root.cancelPsk();
         root.open = true;
     }
 
     onOpenChanged: scanSettle.restart()
+    onMembershipChanged: if (root.open) root.captureOrder()
 
     Connections {
         target: root.pending ?? null
@@ -188,275 +221,238 @@ Scope {
     LazyLoader {
         active: root.open
 
-        PanelWindow {
-            anchors {
-                top: true
-                bottom: true
-                left: true
-                right: true
+        PanelFrame {
+            namespace: "quickshell-network"
+            offset: root.shakeOffset
+            interceptEscape: root.pskTarget !== null
+
+            onCloseRequested: root.open = false
+
+            onKeyPressed: event => {
+                const count = root.rows.length;
+                if (root.pskTarget) {
+                    if (event.key === Qt.Key_Escape) {
+                        root.cancelPsk();
+                        event.accepted = true;
+                    }
+                    return;
+                }
+                if (event.key === Qt.Key_W) {
+                    root.toggleWifi();
+                } else if (event.key === Qt.Key_E) {
+                    root.editConnections();
+                } else if (count === 0) {
+                    return;
+                } else if (event.key === Qt.Key_Down || event.key === Qt.Key_J) {
+                    root.moveSelection(1);
+                } else if (event.key === Qt.Key_Up || event.key === Qt.Key_K) {
+                    root.moveSelection(-1);
+                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    root.activate();
+                } else if (event.key === Qt.Key_F) {
+                    root.forgetSelected();
+                } else {
+                    return;
+                }
+                event.accepted = true;
             }
 
-            exclusiveZone: 0
-            WlrLayershell.namespace: "quickshell-network"
-            WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-            color: Theme.scrimLight
-
-            Item {
-                anchors.fill: parent
-                focus: true
-
-                Keys.onPressed: event => {
-                    const count = root.rows.length;
-                    if (root.pskTarget) {
-                        if (event.key === Qt.Key_Escape) {
-                            root.cancelPsk();
-                            event.accepted = true;
-                        }
-                        return;
-                    }
-                    if (event.key === Qt.Key_Escape) {
-                        root.open = false;
-                    } else if (event.key === Qt.Key_W) {
-                        root.toggleWifi();
-                    } else if (event.key === Qt.Key_E) {
-                        root.editConnections();
-                    } else if (count === 0) {
-                        return;
-                    } else if (event.key === Qt.Key_Down || event.key === Qt.Key_J) {
-                        root.selectedIndex = (root.selectedIndex + 1) % count;
-                    } else if (event.key === Qt.Key_Up || event.key === Qt.Key_K) {
-                        root.selectedIndex = (root.selectedIndex - 1 + count) % count;
-                    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                        root.activate();
-                    } else if (event.key === Qt.Key_F) {
-                        root.forgetSelected();
-                    } else {
-                        return;
-                    }
-                    event.accepted = true;
+            PanelHeader {
+                icon: root.wiredDevice?.connected ? "󱘖" : root.wifiOn ? "󰤨" : "󰤮"
+                iconColor: root.wifiOn || root.wiredDevice?.connected ? Theme.blue : Theme.muted
+                title: "Network"
+                status: {
+                    if (root.hwBlocked)
+                        return "Blocked by hardware";
+                    if (!Networking.wifiEnabled && !root.wiredDevice?.connected)
+                        return "Off";
+                    if (Networking.connectivity === NetworkConnectivity.Portal)
+                        return "Captive portal";
+                    if (Networking.connectivity === NetworkConnectivity.Limited)
+                        return "No internet";
+                    return "";
                 }
+            }
 
-                MouseArea {
+            SectionHeader {
+                width: parent.width
+                visible: root.wiredDevice !== null
+                text: "Wired"
+            }
+
+            PanelRow {
+                width: parent.width
+                visible: root.wiredDevice !== null
+                icon: "󰈀"
+                title: root.wiredNetwork?.name ?? root.wiredDevice?.name ?? ""
+                detail: {
+                    if (!root.wiredDevice?.hasLink)
+                        return "No cable";
+                    if (root.wiredDevice?.connected)
+                        return (root.wiredDevice?.linkSpeed ?? 0) + " Mb/s";
+                    return "";
+                }
+                active: root.wiredDevice?.connected ?? false
+                dimmed: !(root.wiredDevice?.hasLink ?? false)
+                focused: root.wiredNetwork !== null && root.selectedIndex === 0
+                onPicked: root.selectedNetwork = root.wiredNetwork
+            }
+
+            SectionHeader {
+                width: parent.width
+                text: "Current"
+            }
+
+            Text {
+                visible: root.current.length === 0
+                width: parent.width
+                text: Networking.wifiEnabled ? "Not connected" : "Wi-Fi off"
+                leftPadding: Theme.itemPadding
+                color: Theme.muted
+                font.family: Theme.fontFamily
+                font.pointSize: Theme.dialogSmallPointSize
+                font.italic: true
+            }
+
+            Repeater {
+                model: root.current
+
+                delegate: PanelRow {
+                    required property int index
+                    required property var modelData
+
+                    width: parent.width
+                    icon: root.signalIcon(modelData.signalStrength)
+                    title: modelData.name
+                    detail: Math.round((modelData.signalStrength ?? 0) * 100) + "%"
+                    secured: root.isSecured(modelData)
+                    active: true
+                    focused: (root.netOffset + index) === root.selectedIndex
+                    onPicked: root.selectedNetwork = modelData
+                }
+            }
+
+            SectionHeader {
+                width: parent.width
+                visible: root.saved.length > 0
+                text: "Saved"
+            }
+
+            Repeater {
+                model: root.saved
+
+                delegate: PanelRow {
+                    required property int index
+                    required property var modelData
+
+                    readonly property int rowIndex: root.netOffset + root.current.length + index
+
+                    width: parent.width
+                    icon: root.signalIcon(modelData.signalStrength)
+                    title: modelData.name
+                    detail: modelData.stateChanging ? "Connecting…" : Math.round((modelData.signalStrength ?? 0) * 100) + "%"
+                    secured: root.isSecured(modelData)
+                    focused: rowIndex === root.selectedIndex
+                    onPicked: root.selectedNetwork = modelData
+                }
+            }
+
+            SectionHeader {
+                width: parent.width
+                text: "Available"
+            }
+
+            Text {
+                visible: root.available.length === 0
+                width: parent.width
+                text: !root.wifiOn ? "Wi-Fi off" : root.wifiDevice?.scannerEnabled ? "Scanning…" : "Nothing found"
+                leftPadding: Theme.itemPadding
+                color: Theme.muted
+                font.family: Theme.fontFamily
+                font.pointSize: Theme.dialogSmallPointSize
+                font.italic: true
+            }
+
+            Repeater {
+                model: root.available
+
+                delegate: PanelRow {
+                    required property int index
+                    required property var modelData
+
+                    readonly property int rowIndex: root.netOffset + root.current.length + root.saved.length + index
+
+                    width: parent.width
+                    icon: root.signalIcon(modelData.signalStrength)
+                    title: modelData.name
+                    detail: modelData.stateChanging ? "Connecting…" : Math.round((modelData.signalStrength ?? 0) * 100) + "%"
+                    secured: root.isSecured(modelData)
+                    focused: rowIndex === root.selectedIndex
+                    onPicked: root.selectedNetwork = modelData
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                implicitHeight: Theme.fieldHeight
+                visible: root.pskTarget !== null
+                color: Theme.bg
+                border.width: 1
+                border.color: root.errorText !== "" ? Theme.red : Theme.blue
+
+                onVisibleChanged: if (visible) psk.forceActiveFocus()
+
+                TextInput {
+                    id: psk
                     anchors.fill: parent
-                    onClicked: root.open = false
-                }
-
-                Rectangle {
-                    anchors.centerIn: parent
-                    anchors.horizontalCenterOffset: root.shakeOffset
-                    implicitWidth: Theme.audioWidth
-                    implicitHeight: layout.implicitHeight + Theme.notifPadding * 2
+                    anchors.leftMargin: Theme.itemPadding
+                    anchors.rightMargin: Theme.itemPadding
+                    verticalAlignment: TextInput.AlignVCenter
                     clip: true
-                    color: Theme.notifBg
-                    border.width: Theme.notifBorderSize
-                    border.color: Theme.blue
+                    color: root.errorText !== "" ? Theme.red : Theme.text
+                    font.family: Theme.fontFamily
+                    font.pointSize: Theme.dialogSmallPointSize
+                    echoMode: TextInput.Password
+                    passwordCharacter: "•"
+                    selectByMouse: true
+                    cursorVisible: activeFocus
 
-                    Column {
-                        id: layout
-                        anchors.centerIn: parent
-                        width: parent.width - Theme.notifPadding * 2
-                        spacing: Theme.notifPadding
-
-                        PanelHeader {
-                            icon: root.wiredDevice?.connected ? "󱘖" : root.wifiOn ? "󰤨" : "󰤮"
-                            iconColor: root.wifiOn || root.wiredDevice?.connected ? Theme.blue : Theme.muted
-                            title: "Network"
-                            status: {
-                                if (root.hwBlocked)
-                                    return "Blocked by hardware";
-                                if (!Networking.wifiEnabled && !root.wiredDevice?.connected)
-                                    return "Off";
-                                if (Networking.connectivity === NetworkConnectivity.Portal)
-                                    return "Captive portal";
-                                if (Networking.connectivity === NetworkConnectivity.Limited)
-                                    return "No internet";
-                                return "";
-                            }
-                        }
-
-                        SectionHeader {
-                            width: parent.width
-                            visible: root.wiredDevice !== null
-                            text: "Wired"
-                        }
-
-                        NetworkRow {
-                            width: layout.width
-                            visible: root.wiredDevice !== null
-                            icon: "󰈀"
-                            title: root.wiredNetwork?.name ?? root.wiredDevice?.name ?? ""
-                            detail: {
-                                if (!root.wiredDevice?.hasLink)
-                                    return "No cable";
-                                if (root.wiredDevice?.connected)
-                                    return (root.wiredDevice?.linkSpeed ?? 0) + " Mb/s";
-                                return "";
-                            }
-                            active: root.wiredDevice?.connected ?? false
-                            dimmed: !(root.wiredDevice?.hasLink ?? false)
-                            focused: root.wiredNetwork !== null && root.selectedIndex === 0
-                            onPicked: root.selectedIndex = 0
-                        }
-
-                        SectionHeader {
-                            width: parent.width
-                            text: "Current"
-                        }
-
-                        Text {
-                            visible: root.current.length === 0
-                            width: parent.width
-                            text: Networking.wifiEnabled ? "Not connected" : "Wi-Fi off"
-                            leftPadding: Theme.itemPadding
-                            color: Theme.muted
-                            font.family: Theme.fontFamily
-                            font.pointSize: Theme.dialogSmallPointSize
-                            font.italic: true
-                        }
-
-                        Repeater {
-                            model: root.current
-
-                            delegate: NetworkRow {
-                                required property int index
-                                required property var modelData
-
-                                width: layout.width
-                                icon: root.signalIcon(modelData.signalStrength)
-                                title: modelData.name
-                                detail: Math.round((modelData.signalStrength ?? 0) * 100) + "%"
-                                secured: root.isSecured(modelData)
-                                active: true
-                                focused: (root.netOffset + index) === root.selectedIndex
-                                onPicked: root.selectedIndex = root.netOffset + index
-                            }
-                        }
-
-                        SectionHeader {
-                            width: parent.width
-                            visible: root.saved.length > 0
-                            text: "Saved"
-                        }
-
-                        Repeater {
-                            model: root.saved
-
-                            delegate: NetworkRow {
-                                required property int index
-                                required property var modelData
-
-                                readonly property int rowIndex: root.netOffset + root.current.length + index
-
-                                width: layout.width
-                                icon: root.signalIcon(modelData.signalStrength)
-                                title: modelData.name
-                                detail: modelData.stateChanging ? "Connecting…" : Math.round((modelData.signalStrength ?? 0) * 100) + "%"
-                                secured: root.isSecured(modelData)
-                                focused: rowIndex === root.selectedIndex
-                                onPicked: root.selectedIndex = rowIndex
-                            }
-                        }
-
-                        SectionHeader {
-                            width: parent.width
-                            text: "Available"
-                        }
-
-                        Text {
-                            visible: root.available.length === 0
-                            width: parent.width
-                            text: !root.wifiOn ? "Wi-Fi off" : root.wifiDevice?.scannerEnabled ? "Scanning…" : "Nothing found"
-                            leftPadding: Theme.itemPadding
-                            color: Theme.muted
-                            font.family: Theme.fontFamily
-                            font.pointSize: Theme.dialogSmallPointSize
-                            font.italic: true
-                        }
-
-                        Repeater {
-                            model: root.available
-
-                            delegate: NetworkRow {
-                                required property int index
-                                required property var modelData
-
-                                readonly property int rowIndex: root.netOffset + root.current.length + root.saved.length + index
-
-                                width: layout.width
-                                icon: root.signalIcon(modelData.signalStrength)
-                                title: modelData.name
-                                detail: modelData.stateChanging ? "Connecting…" : Math.round((modelData.signalStrength ?? 0) * 100) + "%"
-                                secured: root.isSecured(modelData)
-                                focused: rowIndex === root.selectedIndex
-                                onPicked: root.selectedIndex = rowIndex
-                            }
-                        }
-
-                        Rectangle {
-                            width: parent.width
-                            implicitHeight: Theme.fieldHeight
-                            visible: root.pskTarget !== null
-                            color: Theme.bg
-                            border.width: 1
-                            border.color: root.errorText !== "" ? Theme.red : Theme.blue
-
-                            onVisibleChanged: if (visible) psk.forceActiveFocus()
-
-                            TextInput {
-                                id: psk
-                                anchors.fill: parent
-                                anchors.leftMargin: Theme.itemPadding
-                                anchors.rightMargin: Theme.itemPadding
-                                verticalAlignment: TextInput.AlignVCenter
-                                clip: true
-                                color: root.errorText !== "" ? Theme.red : Theme.text
-                                font.family: Theme.fontFamily
-                                font.pointSize: Theme.dialogSmallPointSize
-                                echoMode: TextInput.Password
-                                passwordCharacter: "•"
-                                selectByMouse: true
-                                cursorVisible: activeFocus
-
-                                onAccepted: {
-                                    root.submitPsk(text);
-                                    text = "";
-                                }
-                            }
-
-                            Text {
-                                anchors.left: parent.left
-                                anchors.leftMargin: Theme.itemPadding
-                                anchors.verticalCenter: parent.verticalCenter
-                                visible: psk.text === ""
-                                text: root.errorText !== "" ? root.errorText : "Password for " + (root.pskTarget?.name ?? "")
-                                color: root.errorText !== "" ? Theme.red : Theme.muted
-                                font.family: Theme.fontFamily
-                                font.pointSize: Theme.dialogSmallPointSize
-                                elide: Text.ElideRight
-                                width: parent.width - Theme.itemPadding * 2
-                            }
-                        }
-
-                        Text {
-                            width: parent.width
-                            visible: root.pskTarget === null && root.errorText !== ""
-                            text: root.errorText
-                            color: Theme.red
-                            font.family: Theme.fontFamily
-                            font.pointSize: Theme.dialogSmallPointSize
-                        }
-
-                        Text {
-                            width: parent.width
-                            text: root.pskTarget ? "⏎ connect · Esc cancel" : "↑↓ · ⏎ " + root.enterVerb + " · f forget · w wi-fi · Esc"
-                            color: Theme.muted
-                            font.family: Theme.fontFamily
-                            font.pointSize: Theme.dialogSmallPointSize
-                            horizontalAlignment: Text.AlignRight
-                        }
+                    onAccepted: {
+                        root.submitPsk(text);
+                        text = "";
                     }
                 }
+
+                Text {
+                    anchors.left: parent.left
+                    anchors.leftMargin: Theme.itemPadding
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: psk.text === ""
+                    text: root.errorText !== "" ? root.errorText : "Password for " + (root.pskTarget?.name ?? "")
+                    color: root.errorText !== "" ? Theme.red : Theme.muted
+                    font.family: Theme.fontFamily
+                    font.pointSize: Theme.dialogSmallPointSize
+                    elide: Text.ElideRight
+                    width: parent.width - Theme.itemPadding * 2
+                }
+            }
+
+            Text {
+                width: parent.width
+                visible: root.pskTarget === null && root.errorText !== ""
+                text: root.errorText
+                color: Theme.red
+                font.family: Theme.fontFamily
+                font.pointSize: Theme.dialogSmallPointSize
+            }
+
+            Text {
+                width: parent.width
+                text: root.pskTarget ? "⏎ connect · Esc cancel" : "↑↓ · ⏎ " + root.enterVerb + " · f forget · w wi-fi · Esc"
+                color: Theme.muted
+                font.family: Theme.fontFamily
+                font.pointSize: Theme.dialogSmallPointSize
+                horizontalAlignment: Text.AlignRight
             }
         }
     }
