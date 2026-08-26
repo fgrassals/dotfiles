@@ -2,8 +2,8 @@
 go = "latest"
 node = "lts"
 python = "latest"
-"npm:@anthropic-ai/claude-code" = "latest"
-"npm:@google/gemini-cli" = "latest"
+claude = "latest"
+antigravity-cli = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["python", "node"]
