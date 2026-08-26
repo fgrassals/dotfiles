@@ -14,11 +14,11 @@
 </action>
 <action>
 	<icon>preferences-desktop-wallpaper</icon>
-	<name>Set as Wallpaper (swaybg)</name>
+	<name>Set as Wallpaper</name>
 	<submenu></submenu>
 	<unique-id>1780774065875661-2</unique-id>
 	<command>/home/fgm/.local/bin/set-wallpaper %f</command>
-	<description>Set this image as the swaybg wallpaper</description>
+	<description>Set this image as the desktop wallpaper</description>
 	<range></range>
 	<patterns>*.jpg;*.jpeg;*.png;*.webp;*.bmp</patterns>
 	<image-files/>

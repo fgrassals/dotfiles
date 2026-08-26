@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Set IMAGE as the swaybg wallpaper.
+# Set IMAGE as the wallpaper.
 set -euo pipefail
 
 img="${1:?usage: set-wallpaper IMAGE}"
@@ -7,6 +7,4 @@ dest="$HOME/.local/share/wallpaper.jpg"
 
 [[ "$img" -ef "$dest" ]] || cp -f -- "$img" "$dest"
 
-pkill -x swaybg 2>/dev/null || true
-swaybg -i "$dest" -m fill >/dev/null 2>&1 &
-disown
+qs -c shell ipc call wallpaper reload &>/dev/null || true

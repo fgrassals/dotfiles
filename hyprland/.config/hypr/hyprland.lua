@@ -17,12 +17,8 @@ hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
 -- ── Autostart ─────────────────────────────────────────────────────────────────
 
 hl.on("hyprland.start", function()
-	hl.exec_cmd("waybar")
-	hl.exec_cmd("/usr/lib/mate-polkit/polkit-mate-authentication-agent-1")
-	hl.exec_cmd("swaybg -i ~/.local/share/wallpaper.jpg -m fill")
+	hl.exec_cmd("quickshell -c shell")
 	hl.exec_cmd("hypridle")
-	hl.exec_cmd("mako")
-	hl.exec_cmd("swayosd-server")
 	hl.exec_cmd("wl-paste --type text --watch cliphist store")
 	hl.exec_cmd("wl-paste --type image --watch cliphist store")
 	hl.exec_cmd("wl-clip-persist --clipboard regular")
@@ -151,15 +147,18 @@ hl.bind(mainMod .. " + T", hl.dsp.layout("togglesplit"))
 
 -- Session
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("hyprlock"))
-hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("power-menu"))
-hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("power-tuning"))
+hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("qs -c shell ipc call powermenu toggle"))
+hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("qs -c shell ipc call powertuning toggle"))
 
 -- Night light — toggle wlsunset at 3500K
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("nightlight toggle"))
 
--- TUI tools
-hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("kitty --class=floating-tui -e wiremix"))
-hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("kitty --class=floating-tui -e bluetui"))
+-- Shell panels
+hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("qs -c shell ipc call audio toggle"))
+hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("qs -c shell ipc call bluetooth toggle"))
+hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("qs -c shell ipc call network toggle"))
+hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("qs -c shell ipc call display toggle"))
+hl.bind(mainMod .. " + SHIFT + O", hl.dsp.exec_cmd("qs -c shell ipc call notifications toggle"))
 
 -- Fullscreen / maximize
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
@@ -227,36 +226,28 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 -- Volume — repeatable + locked
 hl.bind(
 	"XF86AudioRaiseVolume",
-	hl.dsp.exec_cmd("swayosd-client --output-volume raise"),
+	hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"),
 	{ locked = true, repeating = true }
 )
 hl.bind(
 	"XF86AudioLowerVolume",
-	hl.dsp.exec_cmd("swayosd-client --output-volume lower"),
+	hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
 	{ locked = true, repeating = true }
 )
 hl.bind(
 	"XF86AudioMute",
-	hl.dsp.exec_cmd("swayosd-client --output-volume mute-toggle"),
+	hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),
 	{ locked = true, repeating = true }
 )
 hl.bind(
 	"XF86AudioMicMute",
-	hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"),
+	hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),
 	{ locked = true, repeating = true }
 )
 
 -- Brightness — repeatable + locked
-hl.bind(
-	"XF86MonBrightnessUp",
-	hl.dsp.exec_cmd("swayosd-client --brightness raise"),
-	{ locked = true, repeating = true }
-)
-hl.bind(
-	"XF86MonBrightnessDown",
-	hl.dsp.exec_cmd("swayosd-client --brightness lower"),
-	{ locked = true, repeating = true }
-)
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightness up"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightness down"), { locked = true, repeating = true })
 
 -- Media — locked
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
@@ -383,7 +374,7 @@ hl.window_rule({
 	size = "1200 800",
 })
 
--- Floating TUI tools (wiremix, bluetui)
+-- nmtui, launched from the network panel
 hl.window_rule({
 	match = { class = "^(floating-tui)$" },
 	float = true,

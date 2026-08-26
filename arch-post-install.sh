@@ -126,6 +126,9 @@ EOF
 exit 0
 EOF
 
+    # weekly TRIM; needs rd.luks.options=discard on the kernel cmdline to reach the disk
+    sudo systemctl enable fstrim.timer
+
     xdg-user-dirs-update
 }
 
@@ -134,19 +137,19 @@ EOF
 # =============================================================================
 audio() {
     msg "audio"
-    pac pipewire wireplumber pipewire-pulse pipewire-alsa wiremix
+    pac pipewire wireplumber pipewire-pulse pipewire-alsa
     systemctl --user enable pipewire.socket pipewire-pulse.socket wireplumber.service
 
-    pac bluez bluez-utils bluetui
+    pac bluez bluez-utils
     sudo systemctl enable bluetooth.service
 }
 
 # =============================================================================
-# HYPRLAND — compositor, lock, idle, portals, polkit agent
+# HYPRLAND — compositor, lock, idle, portals
 # =============================================================================
 hyprland() {
     msg "hyprland"
-    pac hyprland hyprlock hypridle xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-desktop-portal qt5-wayland qt6-wayland mate-polkit
+    pac hyprland hyprlock hypridle xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-desktop-portal qt5-wayland qt6-wayland
 }
 
 # =============================================================================
@@ -154,15 +157,40 @@ hyprland() {
 # =============================================================================
 terminal() {
     msg "terminal"
-    pac kitty ttf-cascadia-mono-nerd inter-font noto-fonts noto-fonts-emoji ttf-nerd-fonts-symbols-mono
+    pac kitty ttf-cascadia-mono-nerd ttf-nerd-fonts-symbols-mono
+
+    # UI + document faces
+    pac inter-font noto-fonts noto-fonts-emoji noto-fonts-cjk
+
+    # metric-compatible substitutes: without these every web page asking for
+    # Arial/Helvetica/Times/Courier/Calibri/Cambria collapses to the generic sans
+    pac ttf-liberation gsfonts ttf-carlito ttf-caladea
+
+    # gsettings is what GTK4/libadwaita and portal-aware apps actually read
+    pac dconf gsettings-desktop-schemas
 }
 
 # =============================================================================
-# SHELL — waybar + launcher + notifications
+# FONT RENDERING — keep gsettings in sync with fontconfig + gtk settings.ini
+# =============================================================================
+fontrender() {
+    msg "font rendering"
+    local i=org.gnome.desktop.interface
+    gsettings set $i font-name             'Inter 11'
+    gsettings set $i document-font-name    'Inter 11'
+    gsettings set $i monospace-font-name   'CaskaydiaMono Nerd Font 11'
+    gsettings set $i font-antialiasing     'rgba'
+    gsettings set $i font-hinting           'slight'
+    gsettings set $i font-rgba-order        'rgb'
+    fc-cache -fr >/dev/null
+}
+
+# =============================================================================
+# SHELL — quickshell (bar, panels, notifications, OSD, polkit) + launcher
 # =============================================================================
 shell() {
     msg "shell"
-    pac waybar fuzzel mako btop rocm-smi-lib wlsunset swayosd libnotify
+    pac quickshell fuzzel btop wlsunset libnotify
 }
 
 # =============================================================================
@@ -170,7 +198,7 @@ shell() {
 # =============================================================================
 session() {
     msg "session"
-    pac imagemagick swaybg cliphist wl-clip-persist brightnessctl fprintd
+    pac imagemagick cliphist wl-clip-persist brightnessctl fprintd
 
     # lid-aware: skip fprintd when lid closed
     sudo install -Dm755 /dev/stdin /usr/local/bin/lid-open <<'EOF'
@@ -279,7 +307,7 @@ login() {
 dotfiles() {
     msg "dotfiles"
     cd "$(dirname "$(readlink -f "$0")")"
-    stow -R -t "$HOME" kitty waybar fuzzel mako hyprland lazygit zathura btop bat yazi gtk xdg bin mpv thunar zsh git mise nvim fontconfig
+    stow -R -t "$HOME" kitty chromium quickshell fuzzel hyprland lazygit zathura btop bat yazi gtk xdg bin mpv thunar zsh git mise nvim fontconfig
     mkdir -p "$HOME/Pictures/Screenshots"
 
     command -v mise >/dev/null && mise install
@@ -299,6 +327,12 @@ ${c_blue}==>${c_reset} Done. Manual first-boot steps:
      and 'Sign Git commits' (your ~/.zshenv socket + ~/.gitconfig SSH signing need it).
   2. Enroll a fingerprint:   fprintd-enroll
   3. Log out/in (or 'newgrp docker') so docker group membership applies.
+  4. Fonts: verify what apps actually resolve to with
+       fc-match sans-serif && fc-match monospace && fc-match Arial
+     Expect: Inter, CaskaydiaMono Nerd Font, Liberation Sans.
+  5. quickshell still uses a MONOSPACE face for all panel text
+     (quickshell/.config/quickshell/shell/Theme.qml). Switch fontFamily to
+     'Inter' if the panels look cramped next to GTK apps.
 EOF
 }
 
@@ -316,4 +350,5 @@ media
 apps
 login
 dotfiles
+fontrender
 final_notes
