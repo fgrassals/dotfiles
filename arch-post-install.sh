@@ -157,7 +157,32 @@ hyprland() {
 # =============================================================================
 terminal() {
     msg "terminal"
-    pac kitty ttf-cascadia-mono-nerd inter-font noto-fonts noto-fonts-emoji ttf-nerd-fonts-symbols-mono
+    pac kitty ttf-cascadia-mono-nerd ttf-nerd-fonts-symbols-mono
+
+    # UI + document faces
+    pac inter-font noto-fonts noto-fonts-emoji noto-fonts-cjk
+
+    # metric-compatible substitutes: without these every web page asking for
+    # Arial/Helvetica/Times/Courier/Calibri/Cambria collapses to the generic sans
+    pac ttf-liberation gsfonts ttf-carlito ttf-caladea
+
+    # gsettings is what GTK4/libadwaita and portal-aware apps actually read
+    pac dconf gsettings-desktop-schemas
+}
+
+# =============================================================================
+# FONT RENDERING — keep gsettings in sync with fontconfig + gtk settings.ini
+# =============================================================================
+fontrender() {
+    msg "font rendering"
+    local i=org.gnome.desktop.interface
+    gsettings set $i font-name             'Inter 11'
+    gsettings set $i document-font-name    'Inter 11'
+    gsettings set $i monospace-font-name   'CaskaydiaMono Nerd Font 11'
+    gsettings set $i font-antialiasing     'rgba'
+    gsettings set $i font-hinting           'slight'
+    gsettings set $i font-rgba-order        'rgb'
+    fc-cache -fr >/dev/null
 }
 
 # =============================================================================
@@ -282,7 +307,7 @@ login() {
 dotfiles() {
     msg "dotfiles"
     cd "$(dirname "$(readlink -f "$0")")"
-    stow -R -t "$HOME" kitty quickshell fuzzel hyprland lazygit zathura btop bat yazi gtk xdg bin mpv thunar zsh git mise nvim fontconfig
+    stow -R -t "$HOME" kitty chromium quickshell fuzzel hyprland lazygit zathura btop bat yazi gtk xdg bin mpv thunar zsh git mise nvim fontconfig
     mkdir -p "$HOME/Pictures/Screenshots"
 
     command -v mise >/dev/null && mise install
@@ -302,6 +327,12 @@ ${c_blue}==>${c_reset} Done. Manual first-boot steps:
      and 'Sign Git commits' (your ~/.zshenv socket + ~/.gitconfig SSH signing need it).
   2. Enroll a fingerprint:   fprintd-enroll
   3. Log out/in (or 'newgrp docker') so docker group membership applies.
+  4. Fonts: verify what apps actually resolve to with
+       fc-match sans-serif && fc-match monospace && fc-match Arial
+     Expect: Inter, CaskaydiaMono Nerd Font, Liberation Sans.
+  5. quickshell still uses a MONOSPACE face for all panel text
+     (quickshell/.config/quickshell/shell/Theme.qml). Switch fontFamily to
+     'Inter' if the panels look cramped next to GTK apps.
 EOF
 }
 
@@ -319,4 +350,5 @@ media
 apps
 login
 dotfiles
+fontrender
 final_notes
