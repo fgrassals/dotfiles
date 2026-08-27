@@ -32,11 +32,3 @@ zmodule zsh-users/zsh-autosuggestions
 
 # Syntax highlighting as you type — valid commands turn green, errors red
 zmodule zsh-users/zsh-syntax-highlighting
-
-# ---[ Prompt ]----------------------------------------------------------------
-
-zmodule duration-info
-zmodule git-info
-
-# asciiship — zimfw's default prompt
-zmodule asciiship

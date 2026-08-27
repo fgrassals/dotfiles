@@ -65,3 +65,10 @@ if command -v fzf &>/dev/null; then
     fi
     alias eff='$EDITOR "$(ff)"'
 fi
+
+# =============================================================================
+# STARSHIP PROMPT
+# =============================================================================
+if command -v starship &>/dev/null; then
+    eval "$(starship init zsh)"
+fi

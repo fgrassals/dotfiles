@@ -41,7 +41,7 @@ foundation() {
 
     sudo pacman -Syu --noconfirm
 
-    pac git base-devel openssh man-db wl-clipboard eza fzf ripgrep fd mise stow bat git-delta jq yq glow unzip 7zip unrar tree-sitter-cli neovim
+    pac git base-devel openssh man-db wl-clipboard eza fzf ripgrep fd mise stow bat starship git-delta jq yq glow unzip 7zip unrar tree-sitter-cli neovim
 
     # paru
     if ! paru -V >/dev/null 2>&1; then
@@ -240,7 +240,7 @@ media() {
 # =============================================================================
 apps() {
     msg "apps"
-    pac firefox chromium yazi zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie wf-recorder grim slurp satty papirus-icon-theme nwg-look docker docker-compose docker-buildx
+    pac firefox chromium superfile zathura zathura-pdf-mupdf lazygit lazydocker thunar thunar-volman thunar-archive-plugin file-roller tumbler gvfs gvfs-mtp gvfs-gphoto2 gvfs-smb udiskie wf-recorder grim slurp satty papirus-icon-theme nwg-look docker docker-compose docker-buildx
     aur 1password 1password-cli
 
     # Catppuccin GTK theme from GitHub release (avoids AUR); folder name matches gtk settings.ini
@@ -289,16 +289,25 @@ EOF
 }
 
 # =============================================================================
-# LOGIN — ly, Hyprland session auto-discovered
+# LOGIN — greetd, Hyprland session
 # =============================================================================
 login() {
     msg "login"
-    pac ly
+    pac greetd greetd-tuigreet
     sudo systemctl disable getty@tty2.service
-    sudo systemctl enable ly@tty2.service
+    sudo systemctl enable greetd.service
+
+    sudo install -Dm644 /dev/stdin /etc/greetd/config.toml <<'GREETD'
+[terminal]
+vt = 2
+
+[default_session]
+command = "tuigreet --time --remember --remember-session --cmd Hyprland"
+user = "greeter"
+GREETD
 
     # auto-unlock gnome-keyring (SSH stays with 1Password)
-    grep -q pam_gnome_keyring /etc/pam.d/ly || printf 'auth       optional     pam_gnome_keyring.so\nsession    optional     pam_gnome_keyring.so auto_start\n' | sudo tee -a /etc/pam.d/ly >/dev/null
+    grep -q pam_gnome_keyring /etc/pam.d/greetd || printf 'auth       optional     pam_gnome_keyring.so\nsession    optional     pam_gnome_keyring.so auto_start\n' | sudo tee -a /etc/pam.d/greetd >/dev/null
 }
 
 # =============================================================================
@@ -307,7 +316,7 @@ login() {
 dotfiles() {
     msg "dotfiles"
     cd "$(dirname "$(readlink -f "$0")")"
-    stow -R -t "$HOME" kitty chromium quickshell fuzzel hyprland lazygit zathura btop bat yazi gtk xdg bin mpv thunar zsh git mise nvim fontconfig
+    stow -R -t "$HOME" kitty chromium quickshell fuzzel hyprland lazygit zathura btop bat superfile starship gtk xdg bin mpv thunar zsh git mise nvim fontconfig
     mkdir -p "$HOME/Pictures/Screenshots"
 
     command -v mise >/dev/null && mise install
