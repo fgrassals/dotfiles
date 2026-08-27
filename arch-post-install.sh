@@ -302,7 +302,7 @@ login() {
 vt = 2
 
 [default_session]
-command = "tuigreet --time --remember --remember-session --cmd Hyprland"
+command = "tuigreet --time --remember --remember-session"
 user = "greeter"
 GREETD
 
