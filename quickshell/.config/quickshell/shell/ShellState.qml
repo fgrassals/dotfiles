@@ -8,7 +8,7 @@ Singleton {
 
     property bool idleInhibited: false
 
-    // "" | audio | bluetooth | network | display | keybinds | powermenu | powertuning | notifications
+    // "" | audio | bluetooth | network | display | keybinds | powermenu | powertuning | notifications | updates
     property string openPanel: ""
 
     readonly property var focusedScreen: Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name) ?? Quickshell.screens[0] ?? null

@@ -41,7 +41,7 @@ foundation() {
 
     sudo pacman -Syu --noconfirm
 
-    pac git base-devel openssh man-db wl-clipboard eza fzf ripgrep fd mise stow bat starship git-delta jq yq glow unzip 7zip unrar tree-sitter-cli neovim
+    pac git base-devel openssh man-db wl-clipboard eza fzf ripgrep fd mise stow bat starship git-delta jq yq glow unzip 7zip unrar tree-sitter-cli neovim pacman-contrib
 
     # paru
     if ! paru -V >/dev/null 2>&1; then
@@ -74,6 +74,9 @@ Restart=on-failure
 WantedBy=default.target
 EOF
     systemctl --user enable battery-alert.service
+
+    # keep firmware update metadata fresh
+    sudo systemctl enable --now fwupd-refresh.timer
 
     # firewall: deny incoming, allow outgoing
     sudo ufw default deny incoming
@@ -316,8 +319,11 @@ GREETD
 dotfiles() {
     msg "dotfiles"
     cd "$(dirname "$(readlink -f "$0")")"
-    stow -R -t "$HOME" kitty chromium quickshell fuzzel hyprland lazygit zathura btop bat superfile starship gtk xdg bin mpv thunar zsh git mise nvim fontconfig
+    stow -R -t "$HOME" kitty chromium quickshell fuzzel hyprland lazygit zathura btop bat superfile starship gtk xdg bin mpv thunar zsh git mise nvim fontconfig systemd
     mkdir -p "$HOME/Pictures/Screenshots"
+
+    systemctl --user daemon-reload
+    systemctl --user enable --now updates-check.timer
 
     command -v mise >/dev/null && mise install
 

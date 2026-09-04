@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Run one updater interactively, refresh the bar's state, then drop to a shell.
+set -uo pipefail
+
+mise_upgrade() {
+    mise upgrade --dry-run
+    echo
+    read -rp "Proceed with mise upgrade? [y/N] " ans
+    [[ "$ans" =~ ^[Yy]$ ]] && mise upgrade
+}
+
+case "${1:?usage: update-run pacman|aur|mise|all|firmware}" in
+    pacman)   sudo pacman -Syu ;;
+    aur)      paru -Sua ;;
+    mise)     mise_upgrade ;;
+    all)      sudo pacman -Syu && paru -Sua && mise_upgrade ;;
+    firmware) fwupdmgr update ;;
+    *)        echo "usage: update-run pacman|aur|mise|all|firmware" >&2; exit 1 ;;
+esac
+
+updates-check
+
+echo
+echo "--- done, press enter to close ---"
+read -r

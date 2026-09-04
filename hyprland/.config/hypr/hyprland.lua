@@ -228,6 +228,9 @@ hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:mag
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("pgrep -x btop > /dev/null || kitty --class=floating-btop -e btop"))
 hl.bind(mainMod .. " + B", hl.dsp.workspace.toggle_special("btop"), { desc = "Apps: Toggle btop scratchpad" })
 
+-- Updates panel
+hl.bind(mainMod .. " + SHIFT + U", hl.dsp.exec_cmd("qs -c shell ipc call updates toggle"), { desc = "Apps: Toggle updates panel" })
+
 -- Scroll through workspaces with Super+scroll
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }), { desc = "Workspaces: Cycle workspaces (scroll)" })
 hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))

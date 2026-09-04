@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Check pacman/AUR/mise/firmware for available updates; write JSON for the bar.
+set -uo pipefail
+
+OUT="${XDG_RUNTIME_DIR:-/tmp}/updates.json"
+
+pacman_count=$(checkupdates 2>/dev/null | grep -c .)
+aur_count=$(paru -Qua 2>/dev/null | grep -c .)
+mise_count=$(mise outdated --json 2>/dev/null | jq 'keys | length' 2>/dev/null || echo 0)
+firmware_count=$(fwupdmgr get-updates --json 2>/dev/null | jq '[.Devices[]? | select((.Releases // []) | length > 0)] | length' 2>/dev/null || echo 0)
+pacman_count="${pacman_count:-0}" aur_count="${aur_count:-0}" mise_count="${mise_count:-0}" firmware_count="${firmware_count:-0}"
+
+total=$((pacman_count + aur_count + mise_count + firmware_count))
+prev_total=0
+[[ -f "$OUT" ]] && prev_total=$(jq '(.pacman // 0) + (.aur // 0) + (.mise // 0) + (.firmware // 0)' "$OUT" 2>/dev/null || echo 0)
+
+# Only notify when the count changes, not on every periodic re-check.
+if [[ "$total" -gt 0 && "$total" != "$prev_total" ]]; then
+    parts=()
+    [[ "$pacman_count" -gt 0 ]] && parts+=("$pacman_count pacman")
+    [[ "$aur_count" -gt 0 ]] && parts+=("$aur_count AUR")
+    [[ "$mise_count" -gt 0 ]] && parts+=("$mise_count mise")
+    [[ "$firmware_count" -gt 0 ]] && parts+=("$firmware_count firmware")
+    body=$(printf '%s, ' "${parts[@]}")
+    notify-send -i software-update-available "Updates available" "${body%, }"
+fi
+
+jq -n \
+    --argjson pacman "${pacman_count:-0}" \
+    --argjson aur "${aur_count:-0}" \
+    --argjson mise "${mise_count:-0}" \
+    --argjson firmware "${firmware_count:-0}" \
+    --arg checked "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    '{pacman: $pacman, aur: $aur, mise: $mise, firmware: $firmware, checked: $checked}' \
+    >"$OUT"

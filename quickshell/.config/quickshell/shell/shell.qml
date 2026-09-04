@@ -17,6 +17,7 @@ ShellRoot {
     DisplayPanel {}
     KeybindPanel {}
     NotificationHistory {}
+    UpdatesPanel {}
 
     Variants {
         model: Quickshell.screens
@@ -60,6 +61,10 @@ ShellRoot {
                         }
 
                         NotificationBell {
+                            Layout.fillHeight: true
+                        }
+
+                        Updates {
                             Layout.fillHeight: true
                         }
 
