@@ -93,6 +93,7 @@ EOF
 # set ThinkPad charge start/stop thresholds: set-charge-threshold <80|100>
 set -euo pipefail
 end="${1:-80}"
+[[ "$end" =~ ^[0-9]+$ ]] || { echo "usage: set-charge-threshold <integer>" >&2; exit 1; }
 [[ "$end" == "100" ]] && start=95 || start=$(( end - 30 ))
 for bat in /sys/class/power_supply/BAT*; do
     sf="$bat/charge_control_start_threshold"; ef="$bat/charge_control_end_threshold"
