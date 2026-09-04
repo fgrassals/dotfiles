@@ -31,7 +31,7 @@ Singleton {
     readonly property int clockPadding: 12
     readonly property int trayIconSize: 14
     readonly property int traySpacing: 12
-    readonly property int privacyPadding: 4
+    readonly property int privacyPadding: 8
     readonly property int privacySpacing: 12
     readonly property color tooltipBg: "#000000"
     readonly property int tooltipPadding: 8
@@ -64,6 +64,8 @@ Singleton {
     readonly property int tuningWidth: 340
     readonly property int segmentHeight: 52
     readonly property int panelWidth: 380
+    readonly property int keybindPanelWidth: 460
+    readonly property int keybindPanelHeight: 420
     readonly property int audioRowHeight: 52
     readonly property int rowHeight: 36
     readonly property int networkMaxRows: 8

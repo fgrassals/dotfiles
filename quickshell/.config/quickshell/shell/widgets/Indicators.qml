@@ -15,10 +15,13 @@ Rectangle {
         objects: root.nodes
     }
 
-    visible: micActive || screenActive
-    implicitWidth: visible ? row.implicitWidth + Theme.privacyPadding * 2 : 0
+    implicitWidth: row.implicitWidth + Theme.privacyPadding * 2
     implicitHeight: Theme.barHeight
     color: Theme.pill
+
+    HoverHandler {
+        id: hover
+    }
 
     RowLayout {
         id: row
@@ -38,6 +41,23 @@ Rectangle {
             visible: root.micActive
             text: "󰍬"
             color: Theme.peach
+            font.family: Theme.fontFamily
+            font.pixelSize: Theme.fontSize
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        Nightlight {
+            visible: active || hover.hovered
+        }
+
+        IdleToggle {
+            visible: ShellState.idleInhibited || hover.hovered
+        }
+
+        Text {
+            visible: !hover.hovered
+            text: "›"
+            color: Theme.muted
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
             verticalAlignment: Text.AlignVCenter

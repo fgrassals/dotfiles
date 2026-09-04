@@ -17,11 +17,7 @@ Rectangle {
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontSize
 
-        text: {
-            if (root.unread > 0)
-                return "󰂚 " + root.unread;
-            return root.total > 0 ? "󰂚" : "󰂛";
-        }
+        text: root.unread > 0 ? "󰂚 " + root.unread : "󰂚"
 
         color: {
             if (mouse.containsMouse) return Theme.blue;

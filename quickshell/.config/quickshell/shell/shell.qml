@@ -15,6 +15,7 @@ ShellRoot {
     BluetoothPanel {}
     NetworkPanel {}
     DisplayPanel {}
+    KeybindPanel {}
     NotificationHistory {}
 
     Variants {
@@ -58,11 +59,11 @@ ShellRoot {
                             Layout.fillHeight: true
                         }
 
-                        Privacy {
+                        NotificationBell {
                             Layout.fillHeight: true
                         }
 
-                        NotificationBell {
+                        Indicators {
                             Layout.fillHeight: true
                         }
                     }

@@ -24,8 +24,6 @@ Rectangle {
 
         Display { Layout.fillHeight: true }
         GtkTheme { Layout.fillHeight: true }
-        Nightlight { Layout.fillHeight: true }
-        IdleToggle { Layout.fillHeight: true }
         Bluetooth { Layout.fillHeight: true }
         Network { Layout.fillHeight: true }
         Audio { Layout.fillHeight: true }

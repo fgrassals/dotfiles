@@ -31,7 +31,8 @@ Scope {
 
     readonly property var devices: Networking.devices?.values ?? []
     readonly property var wifiDevice: devices.find(d => d.type === DeviceType.Wifi) ?? null
-    readonly property var wiredDevice: devices.find(d => d.type === DeviceType.Wired) ?? null
+    readonly property var wiredDevices: devices.filter(d => d.type === DeviceType.Wired)
+    readonly property var wiredDevice: root.wiredDevices.find(d => d.hasLink) ?? root.wiredDevices[0] ?? null
 
     readonly property bool hwBlocked: !Networking.wifiHardwareEnabled
     readonly property bool wifiOn: Networking.wifiEnabled && !root.hwBlocked
