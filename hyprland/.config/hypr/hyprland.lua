@@ -88,7 +88,7 @@ hl.config({
 		follow_mouse = 1,
 		sensitivity = 0,
 		touchpad = {
-			natural_scroll = false,
+			natural_scroll = true,
 			tap_to_click = true,
 			tap_and_drag = true,
 			drag_lock = true,
