@@ -22,7 +22,7 @@ if [[ "$total" -gt 0 && "$total" != "$prev_total" ]]; then
     [[ "$mise_count" -gt 0 ]] && parts+=("$mise_count mise")
     [[ "$firmware_count" -gt 0 ]] && parts+=("$firmware_count firmware")
     body=$(printf '%s, ' "${parts[@]}")
-    notify-send -i software-update-available "Updates available" "${body%, }"
+    notify-send "Updates available" "${body%, }"
 fi
 
 jq -n \
