@@ -4,6 +4,7 @@ node = "lts"
 python = "latest"
 claude = "latest"
 antigravity-cli = "latest"
+cursor-cli = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["python", "node"]
