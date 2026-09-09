@@ -161,26 +161,54 @@ hl.bind(mainMod .. " + T", hl.dsp.layout("togglesplit"), { desc = "Windows: Togg
 
 -- Session
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("hyprlock"), { desc = "Session: Lock screen" })
-hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("qs -c shell ipc call powermenu toggle"), { desc = "Session: Power menu" })
-hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("qs -c shell ipc call powertuning toggle"), { desc = "Session: Power tuning" })
+hl.bind(
+	mainMod .. " + SHIFT + P",
+	hl.dsp.exec_cmd("qs -c shell ipc call powermenu toggle"),
+	{ desc = "Session: Power menu" }
+)
+hl.bind(
+	mainMod .. " + SHIFT + T",
+	hl.dsp.exec_cmd("qs -c shell ipc call powertuning toggle"),
+	{ desc = "Session: Power tuning" }
+)
 
 -- Night light — toggle wlsunset at 3500K
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("nightlight toggle"), { desc = "Display: Toggle night light" })
 
 -- Shell panels
 hl.bind(mainMod .. " + SHIFT + A", hl.dsp.exec_cmd("qs -c shell ipc call audio toggle"), { desc = "Panels: Audio" })
-hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("qs -c shell ipc call bluetooth toggle"), { desc = "Panels: Bluetooth" })
+hl.bind(
+	mainMod .. " + SHIFT + B",
+	hl.dsp.exec_cmd("qs -c shell ipc call bluetooth toggle"),
+	{ desc = "Panels: Bluetooth" }
+)
 hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("qs -c shell ipc call network toggle"), { desc = "Panels: Network" })
 hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("qs -c shell ipc call display toggle"), { desc = "Panels: Display" })
-hl.bind(mainMod .. " + SHIFT + O", hl.dsp.exec_cmd("qs -c shell ipc call notifications toggle"), { desc = "Panels: Notifications" })
-hl.bind(mainMod .. " + SLASH", hl.dsp.exec_cmd("qs -c shell ipc call keybinds toggle"), { desc = "Panels: Keybinds cheat sheet" })
+hl.bind(
+	mainMod .. " + SHIFT + O",
+	hl.dsp.exec_cmd("qs -c shell ipc call notifications toggle"),
+	{ desc = "Panels: Notifications" }
+)
+hl.bind(
+	mainMod .. " + SLASH",
+	hl.dsp.exec_cmd("qs -c shell ipc call keybinds toggle"),
+	{ desc = "Panels: Keybinds cheat sheet" }
+)
 
 -- Fullscreen / maximize
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }), { desc = "Windows: Toggle fullscreen" })
-hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = "maximized" }), { desc = "Windows: Toggle maximize" })
+hl.bind(
+	mainMod .. " + SHIFT + F",
+	hl.dsp.window.fullscreen({ mode = "maximized" }),
+	{ desc = "Windows: Toggle maximize" }
+)
 
 -- Clipboard history picker
-hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"), { desc = "Apps: Clipboard history" })
+hl.bind(
+	mainMod .. " + C",
+	hl.dsp.exec_cmd("cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"),
+	{ desc = "Apps: Clipboard history" }
+)
 
 -- Focus — arrow keys and vim keys
 hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "l" }), { desc = "Focus: Focus left" })
@@ -203,38 +231,82 @@ hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.move({ direction = "u" }))
 hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.move({ direction = "d" }))
 
 -- Resize window — repeatable
-hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 30, y = 0, relative = true }), { repeating = true, desc = "Windows: Resize wider" })
-hl.bind(mainMod .. " + CTRL + left", hl.dsp.window.resize({ x = -30, y = 0, relative = true }), { repeating = true, desc = "Windows: Resize narrower" })
-hl.bind(mainMod .. " + CTRL + up", hl.dsp.window.resize({ x = 0, y = -30, relative = true }), { repeating = true, desc = "Windows: Resize shorter" })
-hl.bind(mainMod .. " + CTRL + down", hl.dsp.window.resize({ x = 0, y = 30, relative = true }), { repeating = true, desc = "Windows: Resize taller" })
+hl.bind(
+	mainMod .. " + CTRL + right",
+	hl.dsp.window.resize({ x = 30, y = 0, relative = true }),
+	{ repeating = true, desc = "Windows: Resize wider" }
+)
+hl.bind(
+	mainMod .. " + CTRL + left",
+	hl.dsp.window.resize({ x = -30, y = 0, relative = true }),
+	{ repeating = true, desc = "Windows: Resize narrower" }
+)
+hl.bind(
+	mainMod .. " + CTRL + up",
+	hl.dsp.window.resize({ x = 0, y = -30, relative = true }),
+	{ repeating = true, desc = "Windows: Resize shorter" }
+)
+hl.bind(
+	mainMod .. " + CTRL + down",
+	hl.dsp.window.resize({ x = 0, y = 30, relative = true }),
+	{ repeating = true, desc = "Windows: Resize taller" }
+)
 
 -- Focus and move windows between monitors
 hl.bind(mainMod .. " + comma", hl.dsp.focus({ monitor = "-1" }), { desc = "Monitors: Focus previous monitor" })
 hl.bind(mainMod .. " + period", hl.dsp.focus({ monitor = "+1" }), { desc = "Monitors: Focus next monitor" })
-hl.bind(mainMod .. " + SHIFT + comma", hl.dsp.window.move({ monitor = "-1" }), { desc = "Monitors: Move window to previous monitor" })
-hl.bind(mainMod .. " + SHIFT + period", hl.dsp.window.move({ monitor = "+1" }), { desc = "Monitors: Move window to next monitor" })
+hl.bind(
+	mainMod .. " + SHIFT + comma",
+	hl.dsp.window.move({ monitor = "-1" }),
+	{ desc = "Monitors: Move window to previous monitor" }
+)
+hl.bind(
+	mainMod .. " + SHIFT + period",
+	hl.dsp.window.move({ monitor = "+1" }),
+	{ desc = "Monitors: Move window to next monitor" }
+)
 
 -- Workspaces — switch (1–9 via loop, 10 via 0 key)
 for i = 1, 9 do
-	hl.bind(mainMod .. " + " .. i, hl.dsp.focus({ workspace = i }), i == 1 and { desc = "Workspaces: Focus workspace (1–9, 0 = 10)" } or nil)
-	hl.bind(mainMod .. " + SHIFT + " .. i, hl.dsp.window.move({ workspace = i }), i == 1 and { desc = "Workspaces: Move window to workspace (1–9, 0 = 10)" } or nil)
+	hl.bind(
+		mainMod .. " + " .. i,
+		hl.dsp.focus({ workspace = i }),
+		i == 1 and { desc = "Workspaces: Focus workspace (1–9, 0 = 10)" } or nil
+	)
+	hl.bind(
+		mainMod .. " + SHIFT + " .. i,
+		hl.dsp.window.move({ workspace = i }),
+		i == 1 and { desc = "Workspaces: Move window to workspace (1–9, 0 = 10)" } or nil
+	)
 end
 hl.bind(mainMod .. " + 0", hl.dsp.focus({ workspace = 10 }))
 hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = 10 }))
 
 -- Special workspace (scratchpad)
 hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"), { desc = "Workspaces: Toggle scratchpad" })
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }), { desc = "Workspaces: Move window to scratchpad" })
+hl.bind(
+	mainMod .. " + SHIFT + S",
+	hl.dsp.window.move({ workspace = "special:magic" }),
+	{ desc = "Workspaces: Move window to scratchpad" }
+)
 
 -- btop scratchpad — launch if not running, toggle visibility
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("pgrep -x btop > /dev/null || kitty --class=floating-btop -e btop"))
 hl.bind(mainMod .. " + B", hl.dsp.workspace.toggle_special("btop"), { desc = "Apps: Toggle btop scratchpad" })
 
 -- Updates panel
-hl.bind(mainMod .. " + SHIFT + U", hl.dsp.exec_cmd("qs -c shell ipc call updates toggle"), { desc = "Apps: Toggle updates panel" })
+hl.bind(
+	mainMod .. " + SHIFT + U",
+	hl.dsp.exec_cmd("qs -c shell ipc call updates toggle"),
+	{ desc = "Apps: Toggle updates panel" }
+)
 
 -- Scroll through workspaces with Super+scroll
-hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }), { desc = "Workspaces: Cycle workspaces (scroll)" })
+hl.bind(
+	mainMod .. " + mouse_down",
+	hl.dsp.focus({ workspace = "e+1" }),
+	{ desc = "Workspaces: Cycle workspaces (scroll)" }
+)
 hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 
 -- Move/resize windows with mouse
@@ -264,8 +336,16 @@ hl.bind(
 )
 
 -- Brightness — repeatable + locked
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightness up"), { locked = true, repeating = true, desc = "Media: Brightness up" })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightness down"), { locked = true, repeating = true, desc = "Media: Brightness down" })
+hl.bind(
+	"XF86MonBrightnessUp",
+	hl.dsp.exec_cmd("brightness up"),
+	{ locked = true, repeating = true, desc = "Media: Brightness up" }
+)
+hl.bind(
+	"XF86MonBrightnessDown",
+	hl.dsp.exec_cmd("brightness down"),
+	{ locked = true, repeating = true, desc = "Media: Brightness down" }
+)
 
 -- Media — locked
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true, desc = "Media: Next track" })
