@@ -6,8 +6,9 @@ set -euo pipefail
 # =============================================================================
 # HELPERS
 # =============================================================================
-c_blue=$'\e[1;34m'; c_red=$'\e[1;31m'; c_reset=$'\e[0m'
+c_blue=$'\e[1;34m'; c_yellow=$'\e[1;33m'; c_red=$'\e[1;31m'; c_reset=$'\e[0m'
 msg()  { printf '%s==>%s %s\n'  "$c_blue"   "$c_reset" "$*"; }
+warn() { printf '%s::%s  %s\n' "$c_yellow" "$c_reset" "$*"; }
 die()  { printf '%serror:%s %s\n' "$c_red"  "$c_reset" "$*" >&2; exit 1; }
 
 pac() { sudo pacman -S --needed --noconfirm "$@"; }
@@ -20,6 +21,7 @@ aur() { paru -S --needed "$@"; }
 command -v sudo >/dev/null || die "sudo not found."
 
 sudo -v
+while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done &
 
 # =============================================================================
 # FOUNDATION — PACMAN, PARU, CLI TOOLS
@@ -30,6 +32,8 @@ foundation() {
     sudo sed -i -e 's/^#Color/Color/' -e 's/^#ParallelDownloads.*/ParallelDownloads = 10/' /etc/pacman.conf
     grep -q '^ILoveCandy' /etc/pacman.conf || sudo sed -i '/^ParallelDownloads/a ILoveCandy' /etc/pacman.conf
 
+    sudo pacman -Syu --noconfirm reflector
+    sudo reflector --country US,CA --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist || warn "reflector failed; keeping current mirrors"
     sudo pacman -Syu --noconfirm
 
     pac git base-devel openssh man-db curl wl-clipboard eza fzf ripgrep fd mise stow bat starship git-delta jq yq glow zip unzip 7zip unrar tree-sitter-cli neovim pacman-contrib btop libnotify
@@ -145,23 +149,8 @@ dotfiles() {
     systemctl --user daemon-reload
     systemctl --user enable --now updates-check.timer
 
+    mise install
     command -v bat >/dev/null && bat cache --build
-}
-
-# =============================================================================
-# FIRST-BOOT NOTES
-# =============================================================================
-final_notes() {
-    cat <<EOF
-
-${c_blue}==>${c_reset} Done. Manual first-boot steps:
-  1. Sign in to 1Password; enable its SSH agent and Git signing.
-  2. Enroll a fingerprint for Plasma unlock with fprintd-enroll.
-  3. Log out/in to apply docker group membership.
-  4. Configure Plasma displays, charging limits, lock delay, and Spectacle shortcuts.
-  5. Test Teams camera, microphone, and screen sharing.
-  6. Pin mise versions, then run mise install.
-EOF
 }
 
 # =============================================================================
@@ -177,4 +166,3 @@ media
 apps
 login
 dotfiles
-final_notes
