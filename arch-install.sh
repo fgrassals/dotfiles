@@ -1,32 +1,51 @@
 #!/usr/bin/env bash
-# Arch Linux install script
-# Run from the live ISO as root. Connect to the internet before running.
-# Edit the variables below before running.
+# Run from the Arch ISO as root with network access after editing the variables.
 
 set -euo pipefail
 
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
-DISK="/dev/nvme0n1"
+DISK=""
 HOSTNAME="yourhostname"
 USERNAME="yourusername"
 TIMEZONE="Region/City"   # e.g. America/New_York
 
 # =============================================================================
-# DERIVED
-# =============================================================================
-PART_BOOT="${DISK}p1"
-PART_LUKS="${DISK}p2"
-
-# =============================================================================
 # PRE-FLIGHT
 # =============================================================================
 [[ $EUID -ne 0 ]] && echo "Run as root." && exit 1
+[[ -d /sys/firmware/efi/efivars ]] || { echo "Boot the Arch ISO in UEFI mode." >&2; exit 1; }
+for tool in lsblk mountpoint sgdisk partprobe mkfs.fat cryptsetup mkfs.ext4 pacstrap genfstab arch-chroot udevadm; do
+    command -v "$tool" >/dev/null || { echo "Missing live-ISO tool: $tool" >&2; exit 1; }
+done
+[[ -n "$DISK" && -b "$DISK" ]] || { echo "Set DISK to an existing block device." >&2; exit 1; }
+[[ $(lsblk -dn -o TYPE "$DISK") == disk ]] || { echo "DISK must be a whole disk." >&2; exit 1; }
+[[ -n "$HOSTNAME" && -n "$USERNAME" && -n "$TIMEZONE" && "$HOSTNAME" != yourhostname && "$USERNAME" != yourusername && "$TIMEZONE" != Region/City ]] || {
+    echo "Set HOSTNAME, USERNAME, and TIMEZONE before running." >&2; exit 1;
+}
+[[ -f "/usr/share/zoneinfo/$TIMEZONE" ]] || { echo "Invalid TIMEZONE: $TIMEZONE" >&2; exit 1; }
+
+DISK=$(readlink -f "$DISK")
+if lsblk -nr -o MOUNTPOINT "$DISK" | grep -q '[^[:space:]]'; then
+    echo "Unmount all partitions on $DISK before installing." >&2
+    exit 1
+fi
+if mountpoint -q /mnt; then
+    echo "Unmount /mnt before installing." >&2
+    exit 1
+fi
+if [[ "$DISK" == *[0-9] ]]; then
+    PART_BOOT="${DISK}p1"
+    PART_LUKS="${DISK}p2"
+else
+    PART_BOOT="${DISK}1"
+    PART_LUKS="${DISK}2"
+fi
 
 echo "WARNING: This will wipe ${DISK} entirely."
-read -rp "Type YES to continue: " confirm
-[[ "$confirm" == "YES" ]] || { echo "Aborted."; exit 0; }
+read -rp "Type ${DISK} to continue: " confirm
+[[ "$confirm" == "$DISK" ]] || { echo "Aborted."; exit 0; }
 
 # =============================================================================
 # CLOCK
@@ -41,6 +60,7 @@ sgdisk --zap-all "$DISK"
 sgdisk -n 1:0:+1G  -t 1:EF00 "$DISK"
 sgdisk -n 2:0:0    -t 2:8300 -c 2:cryptroot "$DISK"
 partprobe "$DISK"
+udevadm settle
 
 # =============================================================================
 # FORMAT + LUKS
@@ -69,7 +89,7 @@ pacstrap -K /mnt \
     linux-firmware \
     amd-ucode \
     cryptsetup \
-    plymouth \
+    mkinitcpio plymouth dosfstools \
     networkmanager \
     zram-generator \
     sudo \
@@ -101,7 +121,7 @@ echo "LANG=en_US.UTF-8" > /etc/locale.conf
 echo "${HOSTNAME}" > /etc/hostname
 
 sed -i 's/^MODULES=.*/MODULES=()/' /etc/mkinitcpio.conf
-sed -i 's/^HOOKS=.*/HOOKS=(base systemd plymouth autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
+sed -i 's/^HOOKS=.*/HOOKS=(base systemd plymouth keyboard autodetect microcode modconf kms sd-vconsole block sd-encrypt filesystems fsck)/' /etc/mkinitcpio.conf
 
 plymouth-set-default-theme spinfinity
 mkinitcpio -P
@@ -112,14 +132,12 @@ chmod 0440 /etc/sudoers.d/wheel
 
 systemctl enable NetworkManager
 
-# zram swap (compressed RAM swap; no swap partition)
 cat > /etc/systemd/zram-generator.conf <<ZRAM
 [zram0]
 zram-size = min(ram / 2, 8192)
 compression-algorithm = zstd
 ZRAM
 
-# --- systemd-boot ---
 bootctl install
 
 cat > /boot/loader/loader.conf <<LOADER
@@ -175,3 +193,4 @@ cryptsetup close cryptroot
 
 echo ""
 echo "Installation complete. Remove the USB and reboot."
+echo "If using Wi-Fi, connect with nmcli before running arch-post-install.sh."

@@ -1,25 +1,65 @@
 #!/usr/bin/env bash
-# Run one updater interactively, refresh the bar's state, then drop to a shell.
+# Run one updater interactively, then refresh update status.
 set -uo pipefail
 
-mise_upgrade() {
-    mise upgrade --dry-run
-    echo
-    read -rp "Proceed with mise upgrade? [y/N] " ans
-    [[ "$ans" =~ ^[Yy]$ ]] && mise upgrade
+usage() {
+    echo "usage: update-run [pacman|aur|mise|all|firmware]" >&2
+    exit 2
 }
 
-case "${1:?usage: update-run pacman|aur|mise|all|firmware}" in
-    pacman)   sudo pacman -Syu ;;
-    aur)      paru -Sua ;;
-    mise)     mise_upgrade ;;
-    all)      sudo pacman -Syu && paru -Sua && mise_upgrade ;;
-    firmware) fwupdmgr update ;;
-    *)        echo "usage: update-run pacman|aur|mise|all|firmware" >&2; exit 1 ;;
-esac
+choose_update() {
+    printf '%s\n' \
+        'Choose updates to run:' \
+        '  1) Pacman' \
+        '  2) AUR (paru)' \
+        '  3) mise' \
+        '  4) Firmware' \
+        '  5) All software (pacman, AUR, mise)' \
+        '  q) Cancel'
+    read -rp '> ' choice || exit 0
+    case "$choice" in
+        1) action=pacman ;;
+        2) action=aur ;;
+        3) action=mise ;;
+        4) action=firmware ;;
+        5) action=all ;;
+        q|Q) exit 0 ;;
+        *) echo 'Invalid choice.' >&2; exit 2 ;;
+    esac
+}
 
-updates-check
+mise_upgrade() {
+    mise upgrade --dry-run || return $?
+    echo
+    read -rp "Proceed with mise upgrade? [y/N] " answer || return 0
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+        mise upgrade
+    fi
+}
 
-echo
-echo "--- done, press enter to close ---"
-read -r
+run_update() {
+    case "$action" in
+        pacman)   sudo pacman -Syu ;;
+        aur)      paru -Sua ;;
+        mise)     mise_upgrade ;;
+        all)      sudo pacman -Syu && paru -Sua && mise_upgrade ;;
+        firmware) fwupdmgr update ;;
+        *)        usage ;;
+    esac
+}
+
+(( $# <= 1 )) || usage
+action="${1:-}"
+[[ -n "$action" ]] || choose_update
+
+status=0
+run_update || status=$?
+check_status=0
+"$(dirname "${BASH_SOURCE[0]}")/updates-check" || check_status=$?
+if (( status == 0 )); then
+    status=$check_status
+fi
+if (( status != 0 )); then
+    printf 'Update command failed (exit %s).\n' "$status" >&2
+fi
+exit "$status"

@@ -176,6 +176,6 @@ zoxide_support = false
 # MUST BE IN THE VERY END OF THE FILE BECAUSE TOML CANNOT CLOSE TABLES
 # Example:
 #   png = "feh"
-#   pdf = "zathura"
+#   pdf = "okular"
 #   conf = "nvim"
 [open_with]

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Update system
+Comment=Choose pacman, AUR, mise, or firmware updates
+Exec=kitty --hold /bin/bash -c "exec ~/.local/bin/update-run"
+Icon=system-software-update
+Terminal=false
+Categories=System;
+OnlyShowIn=KDE;
+X-KDE-Shortcuts=Meta+Shift+U

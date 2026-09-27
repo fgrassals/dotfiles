@@ -3,8 +3,8 @@ go = "latest"
 node = "lts"
 python = "latest"
 claude = "latest"
-antigravity-cli = "latest"
 cursor-cli = "latest"
+"aqua:openai/codex" = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["python", "node"]

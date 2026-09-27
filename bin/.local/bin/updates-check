@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Check pacman/AUR/mise/firmware for available updates; write JSON for the bar.
+# Check pacman/AUR/mise/firmware for available updates; notify on changes.
 set -uo pipefail
 
-OUT="${XDG_RUNTIME_DIR:-/tmp}/updates.json"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/updates-check"
+state_file="$state_dir/last-count"
 
 pacman_count=$(checkupdates 2>/dev/null | grep -c .)
 aur_count=$(paru -Qua 2>/dev/null | grep -c .)
@@ -12,7 +13,8 @@ pacman_count="${pacman_count:-0}" aur_count="${aur_count:-0}" mise_count="${mise
 
 total=$((pacman_count + aur_count + mise_count + firmware_count))
 prev_total=0
-[[ -f "$OUT" ]] && prev_total=$(jq '(.pacman // 0) + (.aur // 0) + (.mise // 0) + (.firmware // 0)' "$OUT" 2>/dev/null || echo 0)
+[[ -f "$state_file" ]] && read -r prev_total < "$state_file"
+[[ "$prev_total" =~ ^[0-9]+$ ]] || prev_total=0
 
 # Only notify when the count changes, not on every periodic re-check.
 if [[ "$total" -gt 0 && "$total" != "$prev_total" ]]; then
@@ -25,11 +27,5 @@ if [[ "$total" -gt 0 && "$total" != "$prev_total" ]]; then
     notify-send "Updates available" "${body%, }"
 fi
 
-jq -n \
-    --argjson pacman "${pacman_count:-0}" \
-    --argjson aur "${aur_count:-0}" \
-    --argjson mise "${mise_count:-0}" \
-    --argjson firmware "${firmware_count:-0}" \
-    --arg checked "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-    '{pacman: $pacman, aur: $aur, mise: $mise, firmware: $firmware, checked: $checked}' \
-    >"$OUT"
+mkdir -p "$state_dir"
+printf '%s\n' "$total" > "$state_file"
