@@ -36,7 +36,7 @@ foundation() {
     sudo reflector --country US,CA --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist || warn "reflector failed; keeping current mirrors"
     sudo pacman -Syu --noconfirm
 
-    pac git base-devel openssh man-db curl wl-clipboard eza fzf ripgrep fd mise stow bat starship git-delta jq yq glow zip unzip 7zip unrar tree-sitter-cli neovim pacman-contrib btop libnotify
+    pac git base-devel openssh man-db curl wl-clipboard eza fzf ripgrep fd mise stow bat starship git-delta jq yq glow zip unzip 7zip unrar tree-sitter-cli neovim pacman-contrib btop rocm-smi-lib libnotify
 
     if ! paru -V >/dev/null 2>&1; then
         msg "bootstrapping paru"
@@ -86,7 +86,10 @@ audio() {
 # =============================================================================
 desktop() {
     msg "KDE Plasma"
-    pac plasma-meta dolphin ark kamera gwenview okular haruna elisa ffmpegthumbs kdegraphics-thumbnailers qt5-wayland
+    pac plasma-meta dolphin ark kamera gwenview okular haruna elisa \
+        kate filelight kcalc dolphin-plugins partitionmanager skanpage \
+        kolourpaint kfind kamoso ktorrent \
+        ffmpegthumbs kdegraphics-thumbnailers qt5-wayland
 }
 
 # =============================================================================
