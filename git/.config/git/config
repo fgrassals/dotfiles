@@ -5,6 +5,15 @@
 [push]
   autoSetupRemote = true
 
+[fetch]
+  prune = true
+
+[branch]
+  sort = -committerdate
+
+[rerere]
+  enabled = true
+
 [merge]
   conflictstyle = zdiff3
 
