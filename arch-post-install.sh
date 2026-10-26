@@ -36,7 +36,7 @@ foundation() {
     sudo reflector --country US,CA --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist || warn "reflector failed; keeping current mirrors"
     sudo pacman -Syu --noconfirm
 
-    pac git base-devel openssh man-db curl wl-clipboard eza fzf ripgrep fd mise stow bat starship git-delta jq yq glow zip unzip 7zip unrar tree-sitter-cli neovim pacman-contrib btop rocm-smi-lib libnotify
+    pac git base-devel openssh man-db curl wl-clipboard eza fzf ripgrep fd mise uv stow bat starship git-delta jq yq glow zip unzip 7zip unrar tree-sitter-cli neovim pacman-contrib btop rocm-smi-lib libnotify github-cli
 
     if ! paru -V >/dev/null 2>&1; then
         msg "bootstrapping paru"
@@ -53,7 +53,8 @@ foundation() {
 # =============================================================================
 system() {
     msg "system"
-    pac fwupd ufw libsecret power-profiles-daemon lm_sensors upower xdg-user-dirs xdg-utils exfatprogs
+    pac fwupd ufw libsecret power-profiles-daemon lm_sensors upower xdg-user-dirs xdg-utils exfatprogs \
+        cups cups-pdf avahi nss-mdns system-config-printer
 
     sudo systemctl enable --now fwupd-refresh.timer
 
@@ -63,6 +64,8 @@ system() {
     sudo systemctl enable ufw.service
 
     sudo systemctl enable --now power-profiles-daemon.service
+
+    sudo systemctl enable --now cups.socket avahi-daemon.service
 
     sudo systemctl enable --now fstrim.timer
 
@@ -125,7 +128,7 @@ media() {
 # =============================================================================
 apps() {
     msg "apps"
-    pac firefox chromium superfile lazygit lazydocker docker docker-compose docker-buildx
+    pac firefox chromium libreoffice-fresh superfile lazygit lazydocker docker docker-compose docker-buildx
     aur 1password 1password-cli
 
     sudo systemctl enable --now docker.socket
