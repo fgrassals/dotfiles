@@ -67,8 +67,12 @@ udevadm settle
 # =============================================================================
 mkfs.fat -F32 "$PART_BOOT"
 
-cryptsetup luksFormat --type luks2 "$PART_LUKS"
-cryptsetup open "$PART_LUKS" cryptroot
+until cryptsetup luksFormat --type luks2 "$PART_LUKS"; do
+    echo "LUKS format failed, try again."
+done
+until cryptsetup open "$PART_LUKS" cryptroot; do
+    echo "Failed to unlock LUKS partition, try again."
+done
 
 mkfs.ext4 -L arch /dev/mapper/cryptroot
 
@@ -181,9 +185,13 @@ systemctl enable systemd-boot-update.service
 EOF
 
 echo "Set root password:"
-arch-chroot /mnt passwd
+until arch-chroot /mnt passwd; do
+    echo "Passwords did not match, try again."
+done
 echo "Set password for ${USERNAME}:"
-arch-chroot /mnt passwd "$USERNAME"
+until arch-chroot /mnt passwd "$USERNAME"; do
+    echo "Passwords did not match, try again."
+done
 
 # =============================================================================
 # DONE
