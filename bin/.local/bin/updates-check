@@ -5,11 +5,12 @@ set -uo pipefail
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/updates-check"
 state_file="$state_dir/last-count"
 
-pacman_count=$(checkupdates 2>/dev/null | grep -c .)
-aur_count=$(paru -Qua 2>/dev/null | grep -c .)
-mise_count=$(mise outdated --json 2>/dev/null | jq 'keys | length' 2>/dev/null || echo 0)
-firmware_count=$(fwupdmgr get-updates --json 2>/dev/null | jq '[.Devices[]? | select((.Releases // []) | length > 0)] | length' 2>/dev/null || echo 0)
-pacman_count="${pacman_count:-0}" aur_count="${aur_count:-0}" mise_count="${mise_count:-0}" firmware_count="${firmware_count:-0}"
+pacman_count=$(checkupdates 2>/dev/null | grep -c . || true)
+aur_count=$(paru -Qua 2>/dev/null | grep -c . || true)
+mise_count=$(mise outdated --json 2>/dev/null | jq 'keys | length' 2>/dev/null) || mise_count=0
+firmware_count=$(fwupdmgr get-updates --json 2>/dev/null | jq '[.Devices[]? | select((.Releases // []) | length > 0)] | length' 2>/dev/null) || firmware_count=0
+[[ "$mise_count" =~ ^[0-9]+$ ]] || mise_count=0
+[[ "$firmware_count" =~ ^[0-9]+$ ]] || firmware_count=0
 
 total=$((pacman_count + aur_count + mise_count + firmware_count))
 prev_total=0

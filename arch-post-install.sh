@@ -117,7 +117,7 @@ session() {
 # =============================================================================
 media() {
     msg "media"
-    pac ffmpeg gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav libva libva-utils
+    pac ffmpeg gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav libva libva-utils vulkan-radeon
 }
 
 # =============================================================================

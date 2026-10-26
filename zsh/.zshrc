@@ -63,7 +63,10 @@ if command -v fzf &>/dev/null; then
     else
         alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
     fi
-    alias eff='$EDITOR "$(ff)"'
+    eff() {
+        local file
+        file=$(ff) && [[ -n "$file" ]] && "$EDITOR" "$file"
+    }
 fi
 
 # =============================================================================
