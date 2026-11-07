@@ -5,9 +5,11 @@ set -uo pipefail
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/updates-check"
 state_file="$state_dir/last-count"
 
+export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
+
 pacman_count=$(checkupdates 2>/dev/null | grep -c . || true)
 aur_count=$(paru -Qua 2>/dev/null | grep -c . || true)
-mise_count=$(mise outdated --json 2>/dev/null | jq 'keys | length' 2>/dev/null) || mise_count=0
+mise_count=$(mise outdated --cd "$HOME" --json 2>/dev/null | jq 'keys | length' 2>/dev/null) || mise_count=0
 firmware_count=$(fwupdmgr get-updates --json 2>/dev/null | jq '[.Devices[]? | select((.Releases // []) | length > 0)] | length' 2>/dev/null) || firmware_count=0
 [[ "$mise_count" =~ ^[0-9]+$ ]] || mise_count=0
 [[ "$firmware_count" =~ ^[0-9]+$ ]] || firmware_count=0
@@ -25,7 +27,7 @@ if [[ "$total" -gt 0 && "$total" != "$prev_total" ]]; then
     [[ "$mise_count" -gt 0 ]] && parts+=("$mise_count mise")
     [[ "$firmware_count" -gt 0 ]] && parts+=("$firmware_count firmware")
     body=$(printf '%s, ' "${parts[@]}")
-    notify-send "Updates available" "${body%, }"
+    notify-send "Updates available" "${body%, }" || exit 0
 fi
 
 mkdir -p "$state_dir"

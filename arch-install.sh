@@ -27,8 +27,8 @@ done
 [[ -f "/usr/share/zoneinfo/$TIMEZONE" ]] || { echo "Invalid TIMEZONE: $TIMEZONE" >&2; exit 1; }
 
 DISK=$(readlink -f "$DISK")
-if lsblk -nr -o MOUNTPOINT "$DISK" | grep -q '[^[:space:]]'; then
-    echo "Unmount all partitions on $DISK before installing." >&2
+if lsblk -nr -o MOUNTPOINT "$DISK" | grep -q '[^[:space:]]' || lsblk -nr -o TYPE "$DISK" | grep -qx crypt; then
+    echo "Unmount all partitions and close any open LUKS mappings on $DISK before installing." >&2
     exit 1
 fi
 if mountpoint -q /mnt; then
@@ -80,8 +80,9 @@ mkfs.ext4 -L arch /dev/mapper/cryptroot
 # MOUNT
 # =============================================================================
 mount /dev/mapper/cryptroot /mnt
-mkdir -p /mnt/boot
+mkdir -p /mnt/boot /mnt/etc
 mount "$PART_BOOT" /mnt/boot
+echo "KEYMAP=us" > /mnt/etc/vconsole.conf
 
 # =============================================================================
 # PACSTRAP

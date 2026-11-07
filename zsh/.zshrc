@@ -59,13 +59,27 @@ if command -v fzf &>/dev/null; then
     # ff    → fuzzy-find a file with a preview (image preview in Kitty, bat elsewhere)
     # eff   → fuzzy-find a file and open it in $EDITOR
     if [[ "$TERM" == "xterm-kitty" ]]; then
-        alias ff="fzf --preview 'case \$(file --mime-type -b {}) in image/*) kitty icat --clear --transfer-mode=memory --stdin=no --place=\${FZF_PREVIEW_COLUMNS}x\${FZF_PREVIEW_LINES}@0x0 {} ;; *) bat --style=numbers --color=always {} ;; esac'"
+        alias ff="fzf --preview 'case \$(file --mime-type -b {}) in image/*) kitten icat --clear --transfer-mode=memory --stdin=no --place=\${FZF_PREVIEW_COLUMNS}x\${FZF_PREVIEW_LINES}@0x0 {} ;; *) bat --style=numbers --color=always {} ;; esac'"
     else
         alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
     fi
     eff() {
         local file
         file=$(ff) && [[ -n "$file" ]] && "$EDITOR" "$file"
+    }
+fi
+
+# =============================================================================
+# SUPERFILE — terminal file manager (press Q to cd on quit)
+# =============================================================================
+if command -v spf &>/dev/null; then
+    spf() {
+        export SPF_LAST_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/superfile/lastdir"
+        command spf "$@"
+        [[ ! -f "$SPF_LAST_DIR" ]] || {
+            . "$SPF_LAST_DIR"
+            rm -f -- "$SPF_LAST_DIR" >/dev/null
+        }
     }
 fi
 

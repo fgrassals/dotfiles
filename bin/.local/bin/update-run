@@ -29,11 +29,11 @@ choose_update() {
 }
 
 mise_upgrade() {
-    mise upgrade --dry-run || return $?
+    mise upgrade --cd "$HOME" --dry-run || return $?
     echo
     read -rp "Proceed with mise upgrade? [y/N] " answer || return 0
     if [[ "$answer" =~ ^[Yy]$ ]]; then
-        mise upgrade
+        mise upgrade --cd "$HOME"
     fi
 }
 

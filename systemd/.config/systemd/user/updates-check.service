@@ -1,5 +1,6 @@
 [Unit]
 Description=Check for pacman/AUR/mise/firmware updates
+After=graphical-session.target
 
 [Service]
 Type=oneshot

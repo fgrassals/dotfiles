@@ -29,21 +29,21 @@ while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done &
 foundation() {
     msg "foundation"
 
-    sudo sed -i -e 's/^#Color/Color/' -e 's/^#ParallelDownloads.*/ParallelDownloads = 10/' /etc/pacman.conf
+    sudo sed -i -e 's/^#Color/Color/' -e 's/^#\?ParallelDownloads.*/ParallelDownloads = 10/' /etc/pacman.conf
     grep -q '^ILoveCandy' /etc/pacman.conf || sudo sed -i '/^ParallelDownloads/a ILoveCandy' /etc/pacman.conf
 
     sudo pacman -Syu --noconfirm reflector
     sudo reflector --country US,CA --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist || warn "reflector failed; keeping current mirrors"
     sudo pacman -Syu --noconfirm
 
-    pac git base-devel openssh man-db curl wl-clipboard eza fzf ripgrep fd mise uv stow bat starship git-delta jq yq glow zip unzip 7zip unrar tree-sitter-cli neovim pacman-contrib btop rocm-smi-lib libnotify github-cli
+    pac git base-devel openssh man-db curl wl-clipboard eza fzf ripgrep fd mise uv stow bat starship git-delta jq yq zip unzip 7zip unrar tree-sitter-cli neovim pacman-contrib btop rocm-smi-lib libnotify github-cli
 
     if ! paru -V >/dev/null 2>&1; then
         msg "bootstrapping paru"
         pacman -Q paru-bin >/dev/null 2>&1 && sudo pacman -R --noconfirm paru-bin
         tmp=$(mktemp -d)
         git clone --depth=1 https://aur.archlinux.org/paru.git "$tmp/paru"
-        ( cd "$tmp/paru" && makepkg -si --noconfirm )
+        ( cd "$tmp/paru" && makepkg -sir --noconfirm )
         rm -rf "$tmp"
     fi
 }
@@ -54,7 +54,7 @@ foundation() {
 system() {
     msg "system"
     pac fwupd ufw libsecret power-profiles-daemon lm_sensors upower xdg-user-dirs xdg-utils exfatprogs \
-        cups cups-pdf avahi nss-mdns system-config-printer
+        cups cups-pdf avahi nss-mdns
 
     sudo systemctl enable --now fwupd-refresh.timer
 
@@ -65,9 +65,11 @@ system() {
 
     sudo systemctl enable --now power-profiles-daemon.service
 
+    grep -q 'mdns_minimal' /etc/nsswitch.conf || \
+        sudo sed -i 's/\(hosts:.*mymachines\) /\1 mdns_minimal [NOTFOUND=return] /' /etc/nsswitch.conf
     sudo systemctl enable --now cups.socket avahi-daemon.service
 
-    sudo systemctl enable --now fstrim.timer
+    sudo systemctl enable --now fstrim.timer paccache.timer
 
     xdg-user-dirs-update
 }
@@ -128,9 +130,23 @@ media() {
 # =============================================================================
 apps() {
     msg "apps"
-    pac firefox chromium libreoffice-fresh superfile lazygit lazydocker docker docker-compose docker-buildx
+    pac firefox chromium libreoffice-fresh superfile lazygit docker docker-compose docker-buildx
+
+    curl -fsSL https://downloads.1password.com/linux/keys/1password.asc | gpg --import
     aur 1password 1password-cli
 
+    sudo mkdir -p /etc/docker
+    if [[ ! -f /etc/docker/daemon.json ]]; then
+        sudo tee /etc/docker/daemon.json >/dev/null <<'EOF'
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
+EOF
+    fi
     sudo systemctl enable --now docker.socket
     sudo usermod -aG docker "$(id -un)"
 }
@@ -149,11 +165,20 @@ login() {
 dotfiles() {
     msg "dotfiles"
     cd "$(dirname "$(readlink -f "$0")")"
+    for f in "$HOME/.zshrc" "$HOME/.zshenv" "$HOME/.zimrc" "$HOME/.config/mimeapps.list"; do
+        [[ -e "$f" && ! -L "$f" ]] && rm -f "$f"
+    done
     stow -R --no-folding -t "$HOME" kitty chromium lazygit btop bat superfile starship xdg bin zsh git mise nvim systemd plasma
-    mkdir -p "$HOME/Pictures/Screenshots"
+
+    # KDE Plasma defaults: Kitty as default terminal, filename-only Baloo indexing
+    if command -v kwriteconfig6 >/dev/null 2>&1; then
+        kwriteconfig6 --file kdeglobals --group General --key TerminalApplication kitty
+        kwriteconfig6 --file kdeglobals --group General --key TerminalService kitty.desktop
+        kwriteconfig6 --file baloofilerc --group General --key "only basic indexing" true
+    fi
 
     systemctl --user daemon-reload
-    systemctl --user enable --now updates-check.timer
+    systemctl --user enable updates-check.timer
 
     mise install
     command -v bat >/dev/null && bat cache --build

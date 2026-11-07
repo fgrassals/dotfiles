@@ -2,6 +2,7 @@
 Description=Daily updates check
 
 [Timer]
+OnBootSec=3min
 OnCalendar=daily
 Persistent=true
 
